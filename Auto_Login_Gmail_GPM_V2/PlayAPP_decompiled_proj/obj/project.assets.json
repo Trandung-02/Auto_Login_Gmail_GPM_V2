@@ -54,11 +54,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj",
+      "projectUniqueName": "d:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj",
       "projectName": "PlayAPP",
-      "projectPath": "D:\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj",
+      "projectPath": "d:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj",
       "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-      "outputPath": "D:\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\obj\\",
+      "outputPath": "d:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config"

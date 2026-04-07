@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Fill2faLive")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+638b09ee3e52215ffb083a9e6969b9222f35d2df")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a5460c94bb6eee7ce48f5a56cb0e57a880d15777")]
 [assembly: System.Reflection.AssemblyProductAttribute("Fill2faLive")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Fill2faLive")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

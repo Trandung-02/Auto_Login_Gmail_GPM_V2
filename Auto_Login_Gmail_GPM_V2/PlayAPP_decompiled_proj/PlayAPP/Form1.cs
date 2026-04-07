@@ -29,14 +29,10 @@ public class Form1 : Form
 
 	private bool _running = false;
 
-	private const int BrowserWidth = 400;
-
-	private const int BrowserHeight = 600;
-
 	/// <summary>Tối đa số Chrome chạy song song mỗi đợt (sau mỗi đợt đóng hết rồi mở lô tiếp theo).</summary>
 	private const int MaxConcurrentBrowsers = 10;
 
-	private new const int Margin = 20;
+	private static readonly int[] AllowedLuongValues = new int[3] { 2, 5, 10 };
 
 	private int BrowserCount = 1;
 
@@ -93,11 +89,9 @@ public class Form1 : Form
 
 	private string _savedGpmGroupId;
 
-	private CheckBox cb_hide;
+	// "Ẩn trình duyệt" removed
 
-	private TextBox txt_username;
-
-	private Label label1;
+	// Username UI removed
 
 	private Label labelUser;
 
@@ -105,7 +99,7 @@ public class Form1 : Form
 
 	private Label label2;
 
-	private TextBox txt_luong;
+	private ComboBox cb_luong;
 
 	private ContextMenuStrip contextMenuStrip1;
 
@@ -192,12 +186,13 @@ public class Form1 : Form
 			_startRow = 0;
 			_endRow = dataGridView1.Rows.Count - 1;
 		}
-		if (!int.TryParse(txt_luong.Text, out var luongRaw) || luongRaw < 1)
+		int luong = GetSelectedLuong();
+		if (luong < 1)
 		{
-			MessageBox.Show("Vui lòng nhập số luồng hợp lệ (≥ 1)!");
+			MessageBox.Show("Vui lòng chọn số luồng (2, 5 hoặc 10).");
 			return;
 		}
-		int luong = Math.Min(luongRaw, MaxConcurrentBrowsers);
+		luong = Math.Min(luong, MaxConcurrentBrowsers);
 		int soAccountWanted = 0;
 		if (int.TryParse(txt_so_account_log.Text?.Trim(), out var parsedSo) && parsedSo > 0)
 		{
@@ -417,6 +412,10 @@ public class Form1 : Form
 		bool on = cb_sudungproxy.Checked;
 		lbl_gpm_group.Visible = on;
 		cb_gpm_group.Visible = on;
+		int y = on ? 238 : 198;
+		cb_changeinfo.Location = new Point(cb_changeinfo.Location.X, y);
+		cb_taoform.Location = new Point(cb_taoform.Location.X, y + 25);
+		cb_offchrome.Location = new Point(cb_offchrome.Location.X, y + 50);
 	}
 
 	private async Task RefreshGpmGroupComboAsync()
@@ -646,23 +645,59 @@ public class Form1 : Form
 		}
 	}
 
-	/// <summary>GPM mặc định đôi khi mở cửa sổ ngoài vùng nhìn thấy; gắn win_pos/win_size để luôn thấy khi không bật ẩn.</summary>
-	private string BuildGpmProfileStartUrl(string profileId, int slotIndexInBatch)
+	/// <summary>GPM mặc định đôi khi mở cửa sổ ngoài vùng nhìn thấy; gắn win_pos/win_size theo lưới vừa màn hình.</summary>
+	private static void ComputeBrowserTileLayout(int countInBatch, out int cols, out int winW, out int winH, out int gapPx)
 	{
-		string path = "http://127.0.0.1:19995/api/v3/profiles/start/" + Uri.EscapeDataString(profileId);
-		if (cb_hide.Checked)
+		gapPx = 10;
+		if (countInBatch <= 0)
 		{
-			return path + "?win_scale=0.15&win_pos=-2800,-2800&win_size=" + BrowserWidth + "," + BrowserHeight;
+			cols = 1;
+			winW = 400;
+			winH = 600;
+			return;
 		}
-		int col = slotIndexInBatch % 5;
-		int row = slotIndexInBatch / 5;
-		int x = 32 + col * (BrowserWidth + Margin);
-		int y = 32 + row * (BrowserHeight + Margin);
-		return path + "?win_scale=1&win_pos=" + x + "," + y + "&win_size=" + BrowserWidth + "," + BrowserHeight;
+		Rectangle wa = Screen.PrimaryScreen?.WorkingArea ?? new Rectangle(0, 0, 1920, 1040);
+		const int edge = 8;
+		const int minW = 280;
+		const int minH = 360;
+		int availW = Math.Max(640, wa.Width - 2 * edge);
+		int availH = Math.Max(400, wa.Height - 2 * edge);
+		cols = 1;
+		winW = minW;
+		winH = minH;
+		for (int tryCols = Math.Min(countInBatch, 6); tryCols >= 1; tryCols--)
+		{
+			int tryRows = (int)Math.Ceiling((double)countInBatch / tryCols);
+			int w = (availW - gapPx * (tryCols + 1)) / tryCols;
+			int h = (availH - gapPx * (tryRows + 1)) / tryRows;
+			if (w >= minW && h >= minH)
+			{
+				cols = tryCols;
+				winW = w;
+				winH = h;
+				return;
+			}
+		}
+		cols = Math.Min(countInBatch, 5);
+		int rows2 = (int)Math.Ceiling((double)countInBatch / cols);
+		winW = Math.Max(240, (availW - gapPx * (cols + 1)) / cols);
+		winH = Math.Max(300, (availH - gapPx * (rows2 + 1)) / rows2);
+	}
+
+	private string BuildGpmProfileStartUrl(string profileId, int slotIndexInBatch, int cols, int winW, int winH, int gapPx)
+	{
+		Rectangle wa = Screen.PrimaryScreen?.WorkingArea ?? new Rectangle(0, 0, 1920, 1040);
+		string path = "http://127.0.0.1:19995/api/v3/profiles/start/" + Uri.EscapeDataString(profileId);
+		int col = slotIndexInBatch % cols;
+		int row = slotIndexInBatch / cols;
+		int x = wa.Left + 8 + col * (winW + gapPx);
+		int y = wa.Top + 8 + row * (winH + gapPx);
+		return path + "?win_scale=1&win_pos=" + x + "," + y + "&win_size=" + winW + "," + winH;
 	}
 
 	private async Task LaunchBrowserBatchAsync(HttpClient client, List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> slice)
 	{
+		ComputeBrowserTileLayout(slice.Count, out int tileCols, out int tileW, out int tileH, out int tileGap);
 		for (int bi = 0; bi < slice.Count; bi++)
 		{
 			var item = slice[bi];
@@ -671,7 +706,7 @@ public class Form1 : Form
 				break;
 			}
 			string profileId = cb_sudungproxy.Checked ? _profileIds[item.rowIndex] : GetNextProfileId();
-			string startUrl = BuildGpmProfileStartUrl(profileId, bi);
+			string startUrl = BuildGpmProfileStartUrl(profileId, bi, tileCols, tileW, tileH, tileGap);
 			dynamic json = JsonConvert.DeserializeObject(await client.GetStringAsync(startUrl));
 			string debugAddress = json.data.remote_debugging_address;
 			string versionJson = await client.GetStringAsync("http://" + debugAddress + "/json/version");
@@ -872,19 +907,507 @@ public class Form1 : Form
 					await page.FillAsync("input[type='password']", password);
 					SetText(vitri, "STATUS", "STEP 2: Submit password");
 					await page.ClickAsync("#passwordNext");
-					SetText(vitri, "STATUS", "STEP 3: Lấy mã 2FA");
-					token = await Get2FAToken(ma2fa);
-					await page.WaitForSelectorAsync("input[name='totpPin']", new PageWaitForSelectorOptions
+
+					// STEP 2.5: Nếu Google hiện màn "Sign in faster" (passkey enrollment) thì bấm "Not now"
+					// rồi mới xử lý các bước verify (2FA / recovery...) tiếp theo.
+					try
 					{
-						Timeout = 15000f
-					});
-					await page.FillAsync("input[name='totpPin']", token);
-					SetText(vitri, "STATUS", "STEP 3: Submit 2FA");
-					await page.ClickAsync("#totpNext");
-					await Task.Delay(5000);
-					await page.GotoAsync("https://myaccount.google.com/language");
+						string u0 = "";
+						try { u0 = page.Url ?? ""; } catch { }
+						if (!string.IsNullOrEmpty(u0) && u0.Contains("speedbump/passkeyenrollment"))
+						{
+							SetText(vitri, "STATUS", "STEP 2.5: Gặp passkey enrollment — bấm Not now...");
+							try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
+
+							ILocator notNow = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Not now" });
+							if (await notNow.CountAsync() == 0)
+								notNow = page.Locator("button:has-text(\"Not now\")");
+							if (await notNow.CountAsync() == 0)
+								notNow = page.Locator("span[jsname='V67aGc']:has-text(\"Not now\")");
+							if (await notNow.CountAsync() == 0)
+								notNow = page.Locator("[data-secondary-action-label='Not now'] button, [data-secondary-action-label='Not now']");
+
+							if (await notNow.CountAsync() > 0)
+							{
+								try { await notNow.First.ScrollIntoViewIfNeededAsync(); } catch { }
+								try
+								{
+									await notNow.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f, Force = true });
+								}
+								catch
+								{
+									try
+									{
+										var box2 = await notNow.First.BoundingBoxAsync();
+										if (box2 != null)
+										{
+											float cx2 = (float)(box2.X + (box2.Width / 2.0));
+											float cy2 = (float)(box2.Y + (box2.Height / 2.0));
+											await page.Mouse.ClickAsync(cx2, cy2);
+										}
+									}
+									catch
+									{
+									}
+								}
+								try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
+								try { await Task.Delay(1500); } catch { }
+								try { SetText(vitri, "STATUS", "STEP 2.5: Đã bấm Not now"); } catch { }
+							}
+							else
+							{
+								try { SetText(vitri, "STATUS", "STEP 2.5 [LOG]: Không thấy nút Not now"); } catch { }
+							}
+						}
+					}
+					catch
+					{
+					}
+
+					// STEP 3: 2FA hoặc chọn "Confirm your recovery email" nếu không có ô totpPin
+					SetText(vitri, "STATUS", "STEP 3: Xử lý Verify (2FA / Recovery email)...");
+					try
+					{
+						await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+					}
+					catch
+					{
+					}
+
+					bool bypassVerifyByPasskey = false;
+
+					// STEP 3.0: Ưu tiên bỏ qua màn "Sign in faster" (passkey enrollment) nếu Google hiện ra ở đây.
+					// Thực tế trang này thường chỉ xuất hiện sau khi submit password và URL sẽ đổi sau vài giây,
+					// nên cần check + bấm "Not now" ngay đầu bước 3 (không dựa vào check tức thời ở STEP 2.5).
+					try
+					{
+						DateTime waitPasskeyStart = DateTime.Now;
+						bool dismissedPasskey = false;
+						while ((DateTime.Now - waitPasskeyStart).TotalSeconds < 20.0)
+						{
+							string uPass = "";
+							try { uPass = page.Url ?? ""; } catch { }
+							// URL có thể khác nhau theo từng tài khoản (TL/ifkv/dsh...), nên chỉ cần match path passkeyenrollment là đủ.
+							if (!string.IsNullOrEmpty(uPass) && (uPass.Contains("/v3/signin/speedbump/passkeyenrollment") || uPass.Contains("speedbump/passkeyenrollment")))
+							{
+								SetText(vitri, "STATUS", "STEP 3.0: Gặp Sign in faster — bấm Not now...");
+								try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
+
+								// Click đúng nút "Not now" (button). Tránh bị nhầm với nút "Continue" (cũng jsname="LgbsSe").
+								// Ưu tiên theo container có data-secondary-action-label="Not now", và div jsname="eBSUOb" (khối action phụ).
+								ILocator notNowBtn = page.Locator("[data-secondary-action-label='Not now'] div[jsname='eBSUOb'] button[jsname='LgbsSe']");
+								if (await notNowBtn.CountAsync() == 0)
+									notNowBtn = page.Locator("[data-secondary-action-label='Not now'] button[jsname='LgbsSe']:has(span[jsname='V67aGc']:has-text(\"Not now\"))");
+								if (await notNowBtn.CountAsync() == 0)
+									notNowBtn = page.Locator("[data-secondary-action-label='Not now'] button:has(span[jsname='V67aGc']:has-text(\"Not now\"))");
+								if (await notNowBtn.CountAsync() == 0)
+									notNowBtn = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Not now" });
+								// log nhanh để biết có tìm thấy đúng nút không
+								try { SetText(vitri, "STATUS", "STEP 3.0 [LOG]: notNowBtn.count=" + (await notNowBtn.CountAsync())); } catch { }
+								try
+								{
+									// đợi nút xuất hiện (tối đa 10s) để tránh check CountAsync quá sớm
+									await notNowBtn.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000f });
+								}
+								catch
+								{
+								}
+
+								// Click thẳng đúng locator đã tìm được. Tránh tự "biến hình" locator gây mất nút.
+								bool clicked = false;
+								try
+								{
+									if (await notNowBtn.CountAsync() > 0)
+									{
+										try { await notNowBtn.First.ScrollIntoViewIfNeededAsync(); } catch { }
+										await notNowBtn.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f, Force = true });
+										clicked = true;
+									}
+								}
+								catch
+								{
+									try
+									{
+										var box3 = await notNowBtn.First.BoundingBoxAsync();
+										if (box3 != null)
+										{
+											float cx3 = (float)(box3.X + (box3.Width / 2.0));
+											float cy3 = (float)(box3.Y + (box3.Height / 2.0));
+											await page.Mouse.ClickAsync(cx3, cy3);
+											clicked = true;
+										}
+									}
+									catch
+									{
+									}
+								}
+
+								// Fallback JS: click đúng button chứa span "Not now"
+								if (!clicked)
+								{
+									try
+									{
+										bool jsClicked = await page.EvaluateAsync<bool>(
+											@"() => {
+											  const spans = Array.from(document.querySelectorAll('span[jsname=""V67aGc""]'));
+											  const s = spans.find(x => (x.textContent || '').trim() === 'Not now');
+											  if (!s) return false;
+											  const btn = s.closest('button');
+											  if (!btn) return false;
+											  btn.click();
+											  return true;
+											}");
+										clicked = jsClicked;
+									}
+									catch { }
+								}
+
+								if (clicked)
+								{
+									dismissedPasskey = true;
+									bypassVerifyByPasskey = true;
+								}
+
+								if (dismissedPasskey)
+								{
+									try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
+									try { await Task.Delay(1500); } catch { }
+									try { SetText(vitri, "STATUS", "STEP 3.0: Đã bấm Not now"); } catch { }
+									bypassVerifyByPasskey = true;
+								}
+								else
+								{
+									try { SetText(vitri, "STATUS", "STEP 3.0 [LOG]: Click Not now nhưng chưa thoát speedbump"); } catch { }
+								}
+								break;
+							}
+
+							// Không break sớm theo các selector chung chung (vd input[type=email]) vì có thể URL passkeyenrollment chưa kịp load.
+							// Chỉ break khi chắc chắn đã qua bước verify khác (totp/challenge) hoặc đã vào myaccount/mail.
+							try
+							{
+								bool hasVerifyUi = (await page.Locator("input[name='totpPin'], div[jsname='EBHGs'][data-action='selectchallenge'], #totpNext").CountAsync() > 0);
+								if (hasVerifyUi)
+									break;
+							}
+							catch { }
+							try
+							{
+								string u2 = "";
+								try { u2 = page.Url ?? ""; } catch { }
+								if (!string.IsNullOrEmpty(u2) && (u2.Contains("myaccount.google.com") || u2.Contains("mail.google.com")))
+									break;
+							}
+							catch { }
+
+							await Task.Delay(500);
+						}
+					}
+					catch
+					{
+					}
+
+					// Nếu đã dismiss passkey enrollment: bỏ qua hẳn 2FA/Recovery và chạy bước tiếp theo luôn.
+					if (bypassVerifyByPasskey)
+					{
+						try { SetText(vitri, "STATUS", "STEP 3: Bỏ qua 2FA/Recovery (Sign in faster) — qua bước tiếp theo..."); } catch { }
+						try { await Task.Delay(1500); } catch { }
+						try
+						{
+							// cố gắng chờ thoát speedbump trước khi goto để tránh bị "kẹt" đúng URL passkeyenrollment
+							await page.WaitForURLAsync(new Regex("^(?!.*speedbump/passkeyenrollment).*$"), new PageWaitForURLOptions { Timeout = 10000f });
+						}
+						catch
+						{
+						}
+						try { await page.GotoAsync("https://myaccount.google.com/language"); } catch { }
+						goto AFTER_VERIFY_STEP_3;
+					}
+
+					string ma2faTrim = (ma2fa ?? "").Trim();
+					string recoveryEmailTrim = (mail2 ?? "").Trim();
+					bool verifyDone = false;
+					bool switchedToRecoveryEmail = false;
+					bool clickedRecoveryChoice = false;
+
+					// Log context để debug việc tìm/click challenge.
+					try
+					{
+						string t = "";
+						try { t = await page.TitleAsync(); } catch { }
+						SetText(vitri, "STATUS", "STEP 3 [LOG]: url=" + page.Url + " | title=" + t);
+					}
+					catch
+					{
+					}
+
+					ILocator totpInput = page.Locator("input[name='totpPin']");
+					bool hasTotpInput = await totpInput.CountAsync() > 0;
+					try { SetText(vitri, "STATUS", "STEP 3 [LOG]: hasTotpInput=" + hasTotpInput); } catch { }
+
+					// Nếu cột 2FA trống: luôn ưu tiên "Confirm your recovery email" (challenge type 12)
+					if (string.IsNullOrEmpty(ma2faTrim))
+					{
+						SetText(vitri, "STATUS", "STEP 3: Không có 2FA — chọn Recovery email");
+
+						// Chờ UI verify render: hoặc ô totpPin, hoặc danh sách challenge (type 12) xuất hiện.
+						try
+						{
+							await page.WaitForSelectorAsync("input[name='totpPin'], div[jsname='EBHGs'][data-action='selectchallenge']", new PageWaitForSelectorOptions
+							{
+								Timeout = 20000f
+							});
+						}
+						catch
+						{
+						}
+
+						// Nếu đang đứng ở màn totpPin thì bấm "Try another way" để về danh sách lựa chọn
+						if (hasTotpInput)
+						{
+							ILocator tryAnotherWay = page.GetByRole(AriaRole.Link, new PageGetByRoleOptions
+							{
+								Name = "Try another way"
+							});
+							if (await tryAnotherWay.CountAsync() == 0)
+							{
+								tryAnotherWay = page.Locator("[data-action='tryAnotherWay'], a:has-text(\"Try another way\"), div[role='link']:has-text(\"Try another way\"), button:has-text(\"Try another way\")");
+							}
+							if (await tryAnotherWay.CountAsync() > 0)
+							{
+								try { await tryAnotherWay.First.ClickAsync(); } catch { }
+								try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
+								try
+								{
+									await page.WaitForSelectorAsync("div[jsname='EBHGs'][data-action='selectchallenge']", new PageWaitForSelectorOptions
+									{
+										Timeout = 20000f
+									});
+								}
+								catch
+								{
+								}
+							}
+						}
+
+						// Màn "Verify it's you" / "Choose how you want to sign in"
+						// Ưu tiên click đúng option challenge type 12: Confirm your recovery email
+						ILocator recovery = page.Locator("div.VV3oRb[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
+						ILocator recovery2 = page.Locator("div[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
+						ILocator recovery3 = page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Confirm your recovery email" });
+						ILocator recovery4 = page.Locator("div[jsname='EBHGs'][role='link']").Filter(new LocatorFilterOptions { HasTextString = "Confirm your recovery email" });
+
+						int c1 = 0, c2 = 0, c3 = 0, c4 = 0;
+						try { c1 = await recovery.CountAsync(); } catch { }
+						try { c2 = await recovery2.CountAsync(); } catch { }
+						try { c3 = await recovery3.CountAsync(); } catch { }
+						try { c4 = await recovery4.CountAsync(); } catch { }
+						SetText(vitri, "STATUS", "STEP 3 [LOG]: recovery counts => css1=" + c1 + " css2=" + c2 + " role=" + c3 + " textFilter=" + c4);
+
+						if (c1 == 0) recovery = recovery2;
+						if ((await recovery.CountAsync()) == 0) recovery = recovery3;
+						if ((await recovery.CountAsync()) == 0) recovery = recovery4;
+						if (await recovery.CountAsync() > 0)
+						{
+							SetText(vitri, "STATUS", "STEP 3: Chọn Confirm recovery email");
+							try { await recovery.First.ScrollIntoViewIfNeededAsync(); } catch { }
+							try
+							{
+								await recovery.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 15000f });
+							}
+							catch
+							{
+							}
+							// Click "cứng": thử force click, nếu fail thì click theo tọa độ bounding box.
+							try
+							{
+								await recovery.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f, Force = true });
+								clickedRecoveryChoice = true;
+							}
+							catch
+							{
+								try
+								{
+									var box = await recovery.First.BoundingBoxAsync();
+									if (box != null)
+									{
+										float cx = (float)(box.X + (box.Width / 2.0));
+										float cy = (float)(box.Y + (box.Height / 2.0));
+										await page.Mouse.ClickAsync(cx, cy);
+										clickedRecoveryChoice = true;
+									}
+								}
+								catch
+								{
+								}
+							}
+							SetText(vitri, "STATUS", "STEP 3 [LOG]: clickedRecoveryChoice=" + clickedRecoveryChoice);
+							switchedToRecoveryEmail = true;
+
+							// Đợi trang/step chuyển sang màn nhập recovery email (để không nhảy sang bước khác)
+							try
+							{
+								// input ở step recovery email thường là email input, có thể khác với identifier.
+								ILocator recInput = page.Locator("input[type='email'], input[type='email'][name], input[autocomplete='email']");
+								await recInput.First.WaitForAsync(new LocatorWaitForOptions
+								{
+									State = WaitForSelectorState.Visible,
+									Timeout = 15000f
+								});
+
+								if (!string.IsNullOrEmpty(recoveryEmailTrim))
+								{
+									SetText(vitri, "STATUS", "STEP 3: Nhập recovery email");
+									await recInput.First.FillAsync(recoveryEmailTrim);
+									// Nút Next ở step này thường là "Next"
+									ILocator nextBtn = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Next" });
+									if (await nextBtn.CountAsync() == 0)
+										nextBtn = page.Locator("button:has-text(\"Next\"), #knowledgePreregisteredEmailNext, #next");
+									if (await nextBtn.CountAsync() > 0)
+										await nextBtn.First.ClickAsync();
+								}
+							}
+							catch
+							{
+								// ignore: Google UI thay đổi; ít nhất đã click option
+							}
+						}
+
+						// Khi không có 2FA: chỉ hợp lệ nếu click được recovery choice (type 12).
+						// Nếu không tìm/click được thì dừng lại để tránh nhảy sang STEP 4.
+						if (!clickedRecoveryChoice)
+						{
+							try { SetText(vitri, "STATUS", "STEP 3 [LOG]: KHÔNG click được challengetype=12 => BỎ QUA, QUA BƯỚC TIẾP THEO"); } catch { }
+							goto AFTER_VERIFY_STEP_3;
+						}
+
+						verifyDone = false; // đang ở flow recovery email, chưa verify xong
+					}
+					else if (hasTotpInput)
+					{
+						// Có secret 2FA và có ô totpPin: nhập 2FA bình thường
+						SetText(vitri, "STATUS", "STEP 3: Nhập mã 2FA");
+						token = await Get2FAToken(ma2faTrim);
+						await totpInput.First.WaitForAsync(new LocatorWaitForOptions
+						{
+							State = WaitForSelectorState.Visible,
+							Timeout = 15000f
+						});
+						await totpInput.First.FillAsync(token);
+						SetText(vitri, "STATUS", "STEP 3: Submit 2FA");
+						await page.ClickAsync("#totpNext");
+						verifyDone = true;
+					}
+					else
+					{
+						// Có 2FA nhưng không thấy ô totpPin: giữ logic fallback (trường hợp Google đưa danh sách lựa chọn)
+						// Chờ danh sách challenge render
+						try
+						{
+							await page.WaitForSelectorAsync("div[jsname='EBHGs'][data-action='selectchallenge']", new PageWaitForSelectorOptions
+							{
+								Timeout = 20000f
+							});
+						}
+						catch
+						{
+						}
+
+						ILocator recovery = page.Locator("div.VV3oRb[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
+						if (await recovery.CountAsync() == 0)
+							recovery = page.Locator("div[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
+						if (await recovery.CountAsync() == 0)
+							recovery = page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Confirm your recovery email" });
+						if (await recovery.CountAsync() == 0)
+							recovery = page.Locator("div[jsname='EBHGs'][role='link']").Filter(new LocatorFilterOptions { HasTextString = "Confirm your recovery email" });
+						if (await recovery.CountAsync() > 0)
+						{
+							SetText(vitri, "STATUS", "STEP 3: Chọn Confirm recovery email");
+							try { await recovery.First.ScrollIntoViewIfNeededAsync(); } catch { }
+							try
+							{
+								await recovery.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 15000f });
+							}
+							catch
+							{
+							}
+							await recovery.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f });
+							switchedToRecoveryEmail = true;
+						}
+						else
+						{
+							try { SetText(vitri, "STATUS", "STEP 3 [LOG]: Có 2FA nhưng không thấy challengetype=12 => BỎ QUA, QUA BƯỚC TIẾP THEO"); } catch { }
+							goto AFTER_VERIFY_STEP_3;
+						}
+						verifyDone = false;
+					}
+
+					// Chỉ điều hướng tiếp khi đã verify xong (2FA OK). Nếu đang ở flow recovery email thì dừng tại đó.
+					if (verifyDone)
+					{
+						await Task.Delay(5000);
+						await page.GotoAsync("https://myaccount.google.com/language");
+					}
+					else
+					{
+						// Nếu đang ở flow recovery email: chờ Google chuyển bước (có thể mất thời gian).
+						try
+						{
+							SetText(vitri, "STATUS", "STEP 3 [LOG]: verifyDone=false (dừng tại màn verify/recovery). url=" + page.Url);
+						}
+						catch
+						{
+						}
+
+						// Quan trọng: khi chưa verify xong thì KHÔNG được chạy các bước tiếp theo (mở inbox/đổi info...).
+						// Nhưng nếu đã chọn recovery email thì phải CHỜ hoàn tất verify, không báo lỗi ngay.
+						if (clickedRecoveryChoice || switchedToRecoveryEmail)
+						{
+							SetText(vitri, "STATUS", "STEP 3: Đã chọn Recovery email — chờ Google xử lý...");
+							DateTime startWait = DateTime.Now;
+							while ((DateTime.Now - startWait).TotalSeconds < 90.0)
+							{
+								string u = "";
+								try { u = page.Url ?? ""; } catch { }
+								if (!string.IsNullOrEmpty(u) && (u.Contains("myaccount.google.com") || u.Contains("mail.google.com") || u.Contains("/myaccount")))
+								{
+									verifyDone = true;
+									break;
+								}
+								await Task.Delay(1000);
+							}
+
+							if (verifyDone)
+							{
+								SetText(vitri, "STATUS", "STEP 3: Verify OK — tiếp tục...");
+								try
+								{
+									await page.GotoAsync("https://myaccount.google.com/language");
+								}
+								catch
+								{
+								}
+							}
+							else
+							{
+								SetText(vitri, "STATUS", "STEP 3: Chờ verify quá lâu — BỎ QUA, QUA BƯỚC TIẾP THEO");
+								goto AFTER_VERIFY_STEP_3;
+							}
+						}
+						else
+						{
+							// Không phải recovery flow và cũng chưa verify: theo yêu cầu mới thì vẫn qua bước tiếp theo.
+							try { SetText(vitri, "STATUS", "STEP 3 [LOG]: Chưa verify xong nhưng vẫn QUA BƯỚC TIẾP THEO"); } catch { }
+							goto AFTER_VERIFY_STEP_3;
+						}
+					}
 				}
-				await page.EvaluateAsync("async () => {\r\n                        const html = document.documentElement.innerHTML;\r\n\r\n                        // regex bắt cả ' và \"\r\n                        const match = html.match(/(['\"])(APv[^'\"]+)\\1/);\r\n                        const at = match ? match[2] : null;\r\n\r\n                        if (!at) {\r\n                            console.log('❌ Không tìm thấy AT');\r\n                            return 'NO_AT';\r\n                        }\r\n\r\n                        console.log('✅ AT:', at);\r\n\r\n                        const res = await fetch('/_/language_update?hl=en&soc-app=1&soc-platform=1&soc-device=1', {\r\n                            method: 'POST',\r\n                            headers: {\r\n                                'content-type': 'application/x-www-form-urlencoded'\r\n                            },\r\n                            body: 'f.req=%5B%5B%22en%22%5D%5D&at=' + encodeURIComponent(at)\r\n                        });\r\n\r\n                        const text = await res.text();\r\n                        console.log(text);\r\n                        return 'OK';\r\n                    }");
+				AFTER_VERIFY_STEP_3:
+				// Chỉ đổi ngôn ngữ khi đã verify xong. Tránh trường hợp chưa click được challenge mà vẫn nhảy bước.
+				if (page.Url.Contains("myaccount"))
+				{
+					await page.EvaluateAsync("async () => {\r\n                        const html = document.documentElement.innerHTML;\r\n\r\n                        // regex bắt cả ' và \"\r\n                        const match = html.match(/(['\"])(APv[^'\"]+)\\1/);\r\n                        const at = match ? match[2] : null;\r\n\r\n                        if (!at) {\r\n                            console.log('❌ Không tìm thấy AT');\r\n                            return 'NO_AT';\r\n                        }\r\n\r\n                        console.log('✅ AT:', at);\r\n\r\n                        const res = await fetch('/_/language_update?hl=en&soc-app=1&soc-platform=1&soc-device=1', {\r\n                            method: 'POST',\r\n                            headers: {\r\n                                'content-type': 'application/x-www-form-urlencoded'\r\n                            },\r\n                            body: 'f.req=%5B%5B%22en%22%5D%5D&at=' + encodeURIComponent(at)\r\n                        });\r\n\r\n                        const text = await res.text();\r\n                        console.log(text);\r\n                        return 'OK';\r\n                    }");
+				}
 			}
 			catch (Exception ex)
 			{
@@ -892,8 +1415,20 @@ public class Form1 : Form
 				SetText(vitri, "STATUS", "Lỗi Login " + ex2.Message);
 				return false;
 			}
-			SetText(vitri, "STATUS", "Đăng nhập xong — mở Fill2faLive (đúng dòng " + (vitri + 1) + ")...");
-			TryLaunchFill2faLive(vitri);
+			SetText(vitri, "STATUS", "Đăng nhập xong — mở tab Gmail Inbox...");
+			try
+			{
+				IPage inbox = await context.NewPageAsync();
+				await inbox.GotoAsync("https://mail.google.com/mail/u/0/", new PageGotoOptions
+				{
+					WaitUntil = WaitUntilState.DOMContentLoaded
+				});
+				await inbox.BringToFrontAsync();
+			}
+			catch
+			{
+				// ignore: mở tab chỉ để tiện thao tác, không ảnh hưởng luồng chính
+			}
 			if (cb_changeinfo.Checked)
 			{
 				SetText(vitri, "STATUS", "STEP 4: Mở trang Personal Info");
@@ -962,12 +1497,17 @@ public class Form1 : Form
 			}
 			if (cb_taoform.Checked)
 			{
-				SetText(vitri, "STATUS", "[Form] Bước 1/3: Điều hướng tới trang tạo Google Form...");
+				SetText(vitri, "STATUS", "[Form] Bước 1/3: Tab mới → tạo Google Form...");
 				await Task.Delay(3000);
-				await page.GotoAsync("https://docs.google.com/forms/u/0/create?usp=forms_home&ths=true");
+				IPage formPage = await context.NewPageAsync();
+				await formPage.GotoAsync("https://docs.google.com/forms/u/0/create?usp=forms_home&ths=true", new PageGotoOptions
+				{
+					WaitUntil = WaitUntilState.DOMContentLoaded,
+					Timeout = 120000f
+				});
 				await Task.Delay(3000);
 				SetText(vitri, "STATUS", "[Form] Đóng popup quyền truy cập Forms (nếu có)...");
-				await DismissGoogleFormsAccessControlDialogIfPresentAsync(page);
+				await DismissGoogleFormsAccessControlDialogIfPresentAsync(formPage);
 				await Task.Delay(500);
 				if (_noidung.Count == 0)
 				{
@@ -979,51 +1519,51 @@ public class Form1 : Form
 				string formLink = "";
 				try
 				{
-					await DismissGoogleFormsAccessControlDialogIfPresentAsync(page, waitBeforeCheck: false);
+					await DismissGoogleFormsAccessControlDialogIfPresentAsync(formPage, waitBeforeCheck: false);
 					SetText(vitri, "STATUS", "[Form] Điền tiêu đề form (chữ thuần, không HTML)...");
-					ILocator formTitle = page.Locator("div[jsname='yrriRe'][contenteditable='true']").Or(page.Locator("div[role='textbox'][aria-label='Form title'][contenteditable='true']")).Or(page.Locator("div[aria-label='Form title'][contenteditable='true']")).First;
-					ILocator desc = page.Locator("div[aria-label='Form description']").First;
+					ILocator formTitle = formPage.Locator("div[jsname='yrriRe'][contenteditable='true']").Or(formPage.Locator("div[role='textbox'][aria-label='Form title'][contenteditable='true']")).Or(formPage.Locator("div[aria-label='Form title'][contenteditable='true']")).First;
+					ILocator desc = formPage.Locator("div[aria-label='Form description']").First;
 					string titlePlain = ToPlainTextForGoogleForm(nd.tieude);
 					await formTitle.ClickAsync();
-					await page.WaitForTimeoutAsync(250f);
-					if (!await TrySetGoogleFormEditablePlainAsync(page, "title", titlePlain))
+					await formPage.WaitForTimeoutAsync(250f);
+					if (!await TrySetGoogleFormEditablePlainAsync(formPage, "title", titlePlain))
 					{
 						SetText(vitri, "STATUS", "[Form] Tiêu đề: fallback clipboard (text/plain)...");
 						await _clipLock.WaitAsync();
 						try
 						{
-							await page.EvaluateAsync("() => {\r\n  const el = document.querySelector('div[jsname=\"yrriRe\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[role=\"textbox\"][aria-label=\"Form title\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[aria-label=\"Form title\"][contenteditable=\"true\"]');\r\n  if (!el) return;\r\n  el.focus();\r\n  const range = document.createRange();\r\n  range.selectNodeContents(el);\r\n  range.deleteContents();\r\n  el.dispatchEvent(new InputEvent('input', { bubbles: true }));\r\n}");
-							await page.Keyboard.PressAsync("Control+A");
-							await page.Keyboard.PressAsync("Backspace");
-							await ClipboardWritePlainAsync(page, titlePlain);
-							await page.WaitForTimeoutAsync(400f);
+							await formPage.EvaluateAsync("() => {\r\n  const el = document.querySelector('div[jsname=\"yrriRe\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[role=\"textbox\"][aria-label=\"Form title\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[aria-label=\"Form title\"][contenteditable=\"true\"]');\r\n  if (!el) return;\r\n  el.focus();\r\n  const range = document.createRange();\r\n  range.selectNodeContents(el);\r\n  range.deleteContents();\r\n  el.dispatchEvent(new InputEvent('input', { bubbles: true }));\r\n}");
+							await formPage.Keyboard.PressAsync("Control+A");
+							await formPage.Keyboard.PressAsync("Backspace");
+							await ClipboardWritePlainAsync(formPage, titlePlain);
+							await formPage.WaitForTimeoutAsync(400f);
 							await formTitle.ClickAsync();
-							await page.Keyboard.PressAsync("Control+V");
-							await page.WaitForTimeoutAsync(500f);
+							await formPage.Keyboard.PressAsync("Control+V");
+							await formPage.WaitForTimeoutAsync(500f);
 						}
 						finally
 						{
 							_clipLock.Release();
 						}
 					}
-					await page.EvaluateAsync("() => {\r\n  const el = document.querySelector('div[jsname=\"yrriRe\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[role=\"textbox\"][aria-label=\"Form title\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[aria-label=\"Form title\"][contenteditable=\"true\"]');\r\n  if (!el) {\r\n    return;\r\n  }\r\n  const strip = /^[\\s\\r\\n]*Untitled form[\\s\\r\\n]*/i;\r\n  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);\r\n  const textNodes = [];\r\n  let n;\r\n  while ((n = walker.nextNode())) {\r\n    textNodes.push(n);\r\n  }\r\n  for (let i = 0; i < textNodes.length; i++) {\r\n    const t = textNodes[i];\r\n    if (t.textContent && /Untitled form/i.test(t.textContent)) {\r\n      t.textContent = t.textContent.replace(strip, '');\r\n    }\r\n  }\r\n  while (el.firstChild && el.firstChild.nodeType === 3 && el.firstChild.textContent.trim() === '') {\r\n    el.removeChild(el.firstChild);\r\n  }\r\n  el.dispatchEvent(new InputEvent('input', { bubbles: true }));\r\n}");
-					await page.WaitForTimeoutAsync(250f);
+					await formPage.EvaluateAsync("() => {\r\n  const el = document.querySelector('div[jsname=\"yrriRe\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[role=\"textbox\"][aria-label=\"Form title\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[aria-label=\"Form title\"][contenteditable=\"true\"]');\r\n  if (!el) {\r\n    return;\r\n  }\r\n  const strip = /^[\\s\\r\\n]*Untitled form[\\s\\r\\n]*/i;\r\n  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);\r\n  const textNodes = [];\r\n  let n;\r\n  while ((n = walker.nextNode())) {\r\n    textNodes.push(n);\r\n  }\r\n  for (let i = 0; i < textNodes.length; i++) {\r\n    const t = textNodes[i];\r\n    if (t.textContent && /Untitled form/i.test(t.textContent)) {\r\n      t.textContent = t.textContent.replace(strip, '');\r\n    }\r\n  }\r\n  while (el.firstChild && el.firstChild.nodeType === 3 && el.firstChild.textContent.trim() === '') {\r\n    el.removeChild(el.firstChild);\r\n  }\r\n  el.dispatchEvent(new InputEvent('input', { bubbles: true }));\r\n}");
+					await formPage.WaitForTimeoutAsync(250f);
 					SetText(vitri, "STATUS", "[Form] Điền mô tả form (chữ thuần, không HTML)...");
 					string descPlain = ToPlainTextForGoogleForm(nd.noidungchinh);
 					await desc.ClickAsync();
-					await page.WaitForTimeoutAsync(500f);
-					if (!await TrySetGoogleFormEditablePlainAsync(page, "description", descPlain))
+					await formPage.WaitForTimeoutAsync(500f);
+					if (!await TrySetGoogleFormEditablePlainAsync(formPage, "description", descPlain))
 					{
 						SetText(vitri, "STATUS", "[Form] Mô tả: fallback clipboard (text/plain)...");
 						await _clipLock.WaitAsync();
 						try
 						{
-							await page.Keyboard.PressAsync("Control+A");
-							await page.Keyboard.PressAsync("Delete");
-							await ClipboardWritePlainAsync(page, descPlain);
-							await page.WaitForTimeoutAsync(600f);
-							await page.Keyboard.PressAsync("Control+V");
-							await page.WaitForTimeoutAsync(2000f);
+							await formPage.Keyboard.PressAsync("Control+A");
+							await formPage.Keyboard.PressAsync("Delete");
+							await ClipboardWritePlainAsync(formPage, descPlain);
+							await formPage.WaitForTimeoutAsync(600f);
+							await formPage.Keyboard.PressAsync("Control+V");
+							await formPage.WaitForTimeoutAsync(2000f);
 						}
 						finally
 						{
@@ -1032,32 +1572,32 @@ public class Form1 : Form
 					}
 					else
 					{
-						await page.WaitForTimeoutAsync(600f);
+						await formPage.WaitForTimeoutAsync(600f);
 					}
-					await page.WaitForTimeoutAsync(1000f);
+					await formPage.WaitForTimeoutAsync(1000f);
 					SetText(vitri, "STATUS", "[Form] Xóa câu hỏi mặc định (Question 1)...");
-					ILocator desc2 = page.Locator("div[aria-label='Question']").First;
+					ILocator desc2 = formPage.Locator("div[aria-label='Question']").First;
 					await desc2.ClickAsync();
-					ILocator desc3 = page.Locator("div[aria-label='Delete question']").First;
+					ILocator desc3 = formPage.Locator("div[aria-label='Delete question']").First;
 					await desc3.ClickAsync();
 					try
 					{
-						await page.WaitForTimeoutAsync(1000f);
+						await formPage.WaitForTimeoutAsync(1000f);
 						SetText(vitri, "STATUS", "[Form] Theme: mở Customize Theme...");
-						await page.Locator("[aria-label='Customize Theme']").ClickAsync();
-						await page.WaitForTimeoutAsync(1000f);
+						await formPage.Locator("[aria-label='Customize Theme']").ClickAsync();
+						await formPage.WaitForTimeoutAsync(1000f);
 						SetText(vitri, "STATUS", "[Form] Theme: chọn ảnh header (Upload → Browse)...");
 						string headerPath = ResolveBundledImagePath("header.jpg");
 						if (!File.Exists(headerPath))
 						{
 							SetText(vitri, "STATUS", "[Form] Không thấy header.jpg — đặt file cạnh PlayAPP.exe hoặc Data\\");
-							throw new FileNotFoundException("Đặt header.jpg (ảnh header đúng màu #509beb) cạnh PlayAPP.exe hoặc trong thư mục Data.", headerPath);
+							throw new FileNotFoundException("Đặt header.jpg (ảnh header gần màu #509beb / #4f9beb) cạnh PlayAPP.exe hoặc trong thư mục Data.", headerPath);
 						}
 						SetText(vitri, "STATUS", "[Form] Theme: upload file " + headerPath);
-						await page.Locator("[aria-label='Choose image for header']").ClickAsync();
-						await page.WaitForTimeoutAsync(1000f);
-						await page.WaitForSelectorAsync("iframe[src*='picker']");
-						IFrameLocator frame2 = page.FrameLocator("iframe[src*='picker']");
+						await formPage.Locator("[aria-label='Choose image for header']").ClickAsync();
+						await formPage.WaitForTimeoutAsync(1000f);
+						await formPage.WaitForSelectorAsync("iframe[src*='picker']");
+						IFrameLocator frame2 = formPage.FrameLocator("iframe[src*='picker']");
 						await frame2.GetByRole(AriaRole.Tab, new FrameLocatorGetByRoleOptions
 						{
 							Name = "Upload"
@@ -1069,7 +1609,7 @@ public class Form1 : Form
 						{
 							Name = "Upload"
 						}).ClickAsync();
-						await (await page.RunAndWaitForFileChooserAsync(async delegate
+						await (await formPage.RunAndWaitForFileChooserAsync(async delegate
 						{
 							await frame2.GetByText("Browse").ClickAsync();
 						})).SetFilesAsync(headerPath);
@@ -1089,14 +1629,14 @@ public class Form1 : Form
 						SetText(vitri, "STATUS", "[Form] Theme: ảnh header đã áp dụng (Done)");
 						try
 						{
-							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn #509beb...");
-							await page.WaitForTimeoutAsync(2000f);
+							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn màu #509beb hoặc #4f9beb...");
+							await formPage.WaitForTimeoutAsync(2000f);
 							bool colorApplied = false;
-							LocatorFilterOptions has509 = new LocatorFilterOptions
+							LocatorFilterOptions hasThemeBlue = new LocatorFilterOptions
 							{
-								Has = page.Locator("div.UBrD9d[data-color='#509beb']")
+								Has = formPage.Locator("div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']")
 							};
-							ILocator themeDialog = page.Locator("div[role='dialog'][aria-label='Theme']");
+							ILocator themeDialog = formPage.Locator("div[role='dialog'][aria-label='Theme']");
 							try
 							{
 								await themeDialog.First.WaitForAsync(new LocatorWaitForOptions
@@ -1104,20 +1644,20 @@ public class Form1 : Form
 									State = WaitForSelectorState.Visible,
 									Timeout = 18000f
 								});
-								ILocator colorSwatch = themeDialog.Locator("div.UBrD9d[data-color='#509beb']").First;
+								ILocator colorSwatch = themeDialog.Locator("div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
 								await colorSwatch.WaitForAsync(new LocatorWaitForOptions
 								{
 									State = WaitForSelectorState.Visible,
 									Timeout = 45000f
 								});
 								await colorSwatch.ScrollIntoViewIfNeededAsync();
-								await page.WaitForTimeoutAsync(200f);
+								await formPage.WaitForTimeoutAsync(200f);
 								await colorSwatch.ClickAsync(new LocatorClickOptions
 								{
 									Timeout = 30000f,
 									Force = true
 								});
-								await page.WaitForTimeoutAsync(400f);
+								await formPage.WaitForTimeoutAsync(400f);
 								ILocator applyInTheme = themeDialog.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
 								{
 									Name = "Apply"
@@ -1154,9 +1694,9 @@ public class Form1 : Form
 							{
 								ILocator[] themeSidebars = new ILocator[3]
 								{
-									page.Locator("div[role='complementary'][aria-roledescription='sidebar']").Filter(has509).First,
-									page.Locator("div.lOsMle.kiQbk.cvymMe").Filter(has509).First,
-									page.Locator("div.lOsMle.cvymMe").Filter(has509).First
+									formPage.Locator("div[role='complementary'][aria-roledescription='sidebar']").Filter(hasThemeBlue).First,
+									formPage.Locator("div.lOsMle.kiQbk.cvymMe").Filter(hasThemeBlue).First,
+									formPage.Locator("div.lOsMle.cvymMe").Filter(hasThemeBlue).First
 								};
 								foreach (ILocator themePanel in themeSidebars)
 								{
@@ -1167,18 +1707,18 @@ public class Form1 : Form
 											State = WaitForSelectorState.Visible,
 											Timeout = 12000f
 										});
-										ILocator colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#509beb'][data-label='#509beb']").First;
+										ILocator colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#509beb'][data-label='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb'][data-label='#4f9beb']").First;
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#509beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#509beb'][data-label='#509beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[data-color='#509beb'][data-label='#509beb'], div.UBrD9d[data-color='#4f9beb'][data-label='#4f9beb']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#509beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
@@ -1186,7 +1726,11 @@ public class Form1 : Form
 											{
 												Name = "#509beb",
 												Exact = true
-											}).First;
+											}).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
+											{
+												Name = "#4f9beb",
+												Exact = true
+											})).First;
 										}
 										await colorItem.WaitForAsync(new LocatorWaitForOptions
 										{
@@ -1194,13 +1738,13 @@ public class Form1 : Form
 											Timeout = 30000f
 										});
 										await colorItem.ScrollIntoViewIfNeededAsync();
-										await page.WaitForTimeoutAsync(250f);
+										await formPage.WaitForTimeoutAsync(250f);
 										await colorItem.ClickAsync(new LocatorClickOptions
 										{
 											Timeout = 30000f,
 											Force = true
 										});
-										await page.WaitForTimeoutAsync(500f);
+										await formPage.WaitForTimeoutAsync(500f);
 										ILocator applyInPanel = themePanel.Locator("span.snByac").Filter(new LocatorFilterOptions
 										{
 											HasTextString = "Apply"
@@ -1238,7 +1782,7 @@ public class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								bool jsPick = await page.EvaluateAsync<bool>("() => {\r\n  const pick = (root) => {\r\n    if (!root) return null;\r\n    return root.querySelector('div.UBrD9d[role=\"listitem\"][data-color=\"#509beb\"][data-label=\"#509beb\"]')\r\n      || root.querySelector('div.UBrD9d[data-color=\"#509beb\"][data-label=\"#509beb\"]')\r\n      || root.querySelector('div.UBrD9d[data-color=\"#509beb\"]');\r\n  };\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Theme\"]');\r\n  let el = pick(dlg);\r\n  if (el) {\r\n    el.scrollIntoView({ block: 'center', inline: 'center' });\r\n    el.click();\r\n    return true;\r\n  }\r\n  const sideSels = ['div[role=\"complementary\"][aria-roledescription=\"sidebar\"]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];\r\n  for (let s = 0; s < sideSels.length; s++) {\r\n    const nodes = document.querySelectorAll(sideSels[s]);\r\n    for (let i = 0; i < nodes.length; i++) {\r\n      el = pick(nodes[i]);\r\n      if (el) {\r\n        el.scrollIntoView({ block: 'center', inline: 'center' });\r\n        el.click();\r\n        return true;\r\n      }\r\n    }\r\n  }\r\n  el = document.querySelector('div.UBrD9d[data-color=\"#509beb\"]');\r\n  if (!el) return false;\r\n  el.scrollIntoView({ block: 'center', inline: 'center' });\r\n  el.click();\r\n  return true;\r\n}");
+								bool jsPick = await formPage.EvaluateAsync<bool>("() => {\r\n  const colors = ['#509beb', '#4f9beb'];\r\n  const pick = (root) => {\r\n    if (!root) return null;\r\n    for (let j = 0; j < colors.length; j++) {\r\n      const c = colors[j];\r\n      let hit = root.querySelector('div.UBrD9d[role=\"listitem\"][data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"]');\r\n      if (hit) return hit;\r\n    }\r\n    return null;\r\n  };\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Theme\"]');\r\n  let el = pick(dlg);\r\n  if (el) {\r\n    el.scrollIntoView({ block: 'center', inline: 'center' });\r\n    el.click();\r\n    return true;\r\n  }\r\n  const sideSels = ['div[role=\"complementary\"][aria-roledescription=\"sidebar\"]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];\r\n  for (let s = 0; s < sideSels.length; s++) {\r\n    const nodes = document.querySelectorAll(sideSels[s]);\r\n    for (let i = 0; i < nodes.length; i++) {\r\n      el = pick(nodes[i]);\r\n      if (el) {\r\n        el.scrollIntoView({ block: 'center', inline: 'center' });\r\n        el.click();\r\n        return true;\r\n      }\r\n    }\r\n  }\r\n  el = document.querySelector('div.UBrD9d[data-color=\"#509beb\"], div.UBrD9d[data-color=\"#4f9beb\"]');\r\n  if (!el) return false;\r\n  el.scrollIntoView({ block: 'center', inline: 'center' });\r\n  el.click();\r\n  return true;\r\n}");
 								if (jsPick)
 								{
 									try
@@ -1294,9 +1838,9 @@ public class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								throw new Exception("Không tìm thấy ô màu #509beb (dialog Theme hoặc sidebar lOsMle/kiQbk).");
+								throw new Exception("Không tìm thấy ô màu #509beb / #4f9beb (dialog Theme hoặc sidebar lOsMle/kiQbk).");
 							}
-							await page.WaitForTimeoutAsync(1000f);
+							await formPage.WaitForTimeoutAsync(1000f);
 							SetText(vitri, "STATUS", "[Form] Theme: đã Apply màu / hoàn tất tùy chỉnh");
 						}
 						catch (Exception exTheme)
@@ -1310,11 +1854,11 @@ public class Form1 : Form
 						SetText(vitri, "STATUS", "[Form] Lỗi ảnh header / picker: " + ex5.Message);
 					}
 					SetText(vitri, "STATUS", "[Form] Publish: mở hộp thoại Publish form...");
-					await page.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+					await formPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
 					{
 						Name = "Publish"
 					}).First.ClickAsync();
-					ILocator dialog = page.GetByRole(AriaRole.Dialog, new PageGetByRoleOptions
+					ILocator dialog = formPage.GetByRole(AriaRole.Dialog, new PageGetByRoleOptions
 					{
 						Name = "Publish form"
 					});
@@ -1327,10 +1871,10 @@ public class Form1 : Form
 						Name = "Publish"
 					}).ClickAsync();
 					SetText(vitri, "STATUS", "[Form] Publish: xác nhận trong dialog → copy link responder");
-					await page.GetByLabel("Click to copy responder link").ClickAsync();
-					await page.WaitForTimeoutAsync(500f);
-					formLink = await page.EvaluateAsync<string>("() => navigator.clipboard.readText()");
-					url1 = page.Url;
+					await formPage.GetByLabel("Click to copy responder link").ClickAsync();
+					await formPage.WaitForTimeoutAsync(500f);
+					formLink = await formPage.EvaluateAsync<string>("() => navigator.clipboard.readText()");
+					url1 = formPage.Url;
 					SetText(vitri, "LINK_DOC", url1);
 					SetText(vitri, "STATUS", "[Form] Xong: đã lưu LINK_DOC + link phản hồi (clipboard)");
 				}
@@ -1340,25 +1884,26 @@ public class Form1 : Form
 				}
 				try
 				{
-					SetText(vitri, "STATUS", "[Sheet] Bước 2/3: Mở Google Sheets (tạo file mới)...");
+					SetText(vitri, "STATUS", "[Sheet] Bước 2/3: Tab mới → Google Sheets (tạo file)...");
 					await Task.Delay(5000);
-					await page.GotoAsync("https://docs.google.com/spreadsheets/u/0/create?usp=sheets_home&ths=true", new PageGotoOptions
+					IPage sheetPage = await context.NewPageAsync();
+					await sheetPage.GotoAsync("https://docs.google.com/spreadsheets/u/0/create?usp=sheets_home&ths=true", new PageGotoOptions
 					{
 						WaitUntil = WaitUntilState.DOMContentLoaded,
 						Timeout = 120000f
 					});
 					await Task.Delay(4500);
 					SetText(vitri, "STATUS", "[Sheet] Chờ tab sheet (docs-sheet-tab-name)...");
-					await page.WaitForSelectorAsync(".docs-sheet-tab-name", new PageWaitForSelectorOptions
+					await sheetPage.WaitForSelectorAsync(".docs-sheet-tab-name", new PageWaitForSelectorOptions
 					{
 						Timeout = 120000f
 					});
 					SetText(vitri, "STATUS", "[Sheet] Đổi tên tab thành Sheet1 → Enter...");
-					await page.DblClickAsync(".docs-sheet-tab-name");
+					await sheetPage.DblClickAsync(".docs-sheet-tab-name");
 					string newSheetName = "Sheet1";
-					await page.Keyboard.TypeAsync(newSheetName);
-					await page.Keyboard.PressAsync("Enter");
-					string url3 = page.Url;
+					await sheetPage.Keyboard.TypeAsync(newSheetName);
+					await sheetPage.Keyboard.PressAsync("Enter");
+					string url3 = sheetPage.Url;
 					SetText(vitri, "LINK_SHEET", url3);
 					SetText(vitri, "STATUS", "[Sheet] Đã lưu LINK_SHEET → mở script.new (tab mới)...");
 					IPage scriptPage = await context.NewPageAsync();
@@ -1444,21 +1989,40 @@ public class Form1 : Form
 					SetText(vitri, "LINK_SCRIPT", url4);
 					SetText(vitri, "STATUS", "[Script] Đã lưu LINK_SCRIPT → Run function (lần 1)...");
 					await scriptPage.Locator("button[aria-label='Run the selected function']").ClickAsync();
-					await page.WaitForTimeoutAsync(10000f);
+					await scriptPage.WaitForTimeoutAsync(10000f);
 					SetText(vitri, "STATUS", "[Script] Run function (lần 2)...");
 					await scriptPage.Locator("button[aria-label='Run the selected function']").ClickAsync();
-					await page.WaitForTimeoutAsync(10000f);
+					await scriptPage.WaitForTimeoutAsync(10000f);
 					try
 					{
-						SetText(vitri, "STATUS", "[Script] OAuth: chờ Review permissions → mở tab xác thực...");
-						await scriptPage.WaitForSelectorAsync("text=Review permissions", new PageWaitForSelectorOptions
-						{
-							Timeout = 45000f
-						});
-						await scriptPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+						SetText(vitri, "STATUS", "[Script] OAuth: chờ cấp quyền (Authorization required / Review permissions)...");
+						ILocator oauthReviewBtn = scriptPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
 						{
 							Name = "Review permissions"
-						}).ClickAsync();
+						});
+						try
+						{
+							await oauthReviewBtn.WaitForAsync(new LocatorWaitForOptions
+							{
+								State = WaitForSelectorState.Visible,
+								Timeout = 60000f
+							});
+						}
+						catch
+						{
+							ILocator authDlg = scriptPage.Locator("text=Authorization required").Or(scriptPage.Locator("text=Review permissions"));
+							await authDlg.First.WaitForAsync(new LocatorWaitForOptions
+							{
+								State = WaitForSelectorState.Visible,
+								Timeout = 30000f
+							});
+							await oauthReviewBtn.WaitForAsync(new LocatorWaitForOptions
+							{
+								State = WaitForSelectorState.Visible,
+								Timeout = 20000f
+							});
+						}
+						await oauthReviewBtn.ClickAsync();
 						IPage authPage = await context.WaitForPageAsync();
 						await authPage.WaitForLoadStateAsync();
 						try
@@ -1472,42 +2036,73 @@ public class Form1 : Form
 						{
 						}
 						await Task.Delay(2500);
-						string oldToken = token;
-						string newToken = oldToken;
-						while (newToken == oldToken)
+						string ma2faOAuthTrim = ma2fa?.Trim() ?? "";
+						bool hasSecretForOAuth = ma2faOAuthTrim.Length > 0;
+						if (hasSecretForOAuth)
 						{
-							await Task.Delay(1000);
-							newToken = await Get2FAToken(ma2fa);
+							string oldToken = token;
+							string newToken = oldToken;
+							while (newToken == oldToken)
+							{
+								await Task.Delay(1000);
+								newToken = await Get2FAToken(ma2faOAuthTrim);
+							}
+							token = newToken;
+							try
+							{
+								await authPage.WaitForSelectorAsync("input[name='totpPin']", new PageWaitForSelectorOptions
+								{
+									Timeout = 25000f
+								});
+								await authPage.FillAsync("input[name='totpPin']", token);
+								await authPage.ClickAsync("#totpNext");
+								await scriptPage.WaitForTimeoutAsync(9000f);
+							}
+							catch
+							{
+								SetText(vitri, "STATUS", "[Script] OAuth: có secret 2FA nhưng không thấy ô TOTP — tiếp tục bước Continue / cấp quyền");
+								await Task.Delay(2000);
+							}
 						}
-						token = newToken;
-						await authPage.WaitForSelectorAsync("input[name='totpPin']", new PageWaitForSelectorOptions
+						else
 						{
-							Timeout = 15000f
-						});
-						await authPage.FillAsync("input[name='totpPin']", token);
-						await authPage.ClickAsync("#totpNext");
-						await page.WaitForTimeoutAsync(9000f);
+							SetText(vitri, "STATUS", "[Script] OAuth: không có mã 2FA trong Account — bỏ qua TOTP, tiếp tục cấp quyền");
+							try
+							{
+								ILocator totpMaybe = authPage.Locator("input[name='totpPin']");
+								await totpMaybe.WaitForAsync(new LocatorWaitForOptions
+								{
+									State = WaitForSelectorState.Visible,
+									Timeout = 10000f
+								});
+								SetText(vitri, "STATUS", "[Script] OAuth: Google vẫn hiện TOTP — thiếu secret trong Account, bỏ qua điền → tiếp tục");
+							}
+							catch
+							{
+							}
+							await Task.Delay(2000);
+						}
 						ILocator advanced = authPage.Locator("a:has-text('Advanced')");
 						if (await advanced.CountAsync() > 0)
 						{
 							await advanced.ClickAsync();
-							await page.WaitForTimeoutAsync(2000f);
+							await scriptPage.WaitForTimeoutAsync(2000f);
 						}
 						ILocator gotouniti = authPage.Locator("a:has-text('Go to Untitled project (unsafe)')");
 						if (await gotouniti.CountAsync() > 0)
 						{
 							await gotouniti.ClickAsync();
-							await page.WaitForTimeoutAsync(3500f);
+							await scriptPage.WaitForTimeoutAsync(3500f);
 						}
 						else
 						{
-							await page.WaitForTimeoutAsync(2000f);
+							await scriptPage.WaitForTimeoutAsync(2000f);
 						}
 						await authPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
 						{
 							Name = "Continue"
 						}).ClickAsync();
-						await page.WaitForTimeoutAsync(4500f);
+						await scriptPage.WaitForTimeoutAsync(4500f);
 						try
 						{
 							await authPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
@@ -1530,12 +2125,12 @@ public class Form1 : Form
 						{
 							Timeout = 20000f
 						});
-						await page.WaitForTimeoutAsync(4500f);
+						await scriptPage.WaitForTimeoutAsync(4500f);
 						await authPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
 						{
 							Name = "Continue"
 						}).ClickAsync();
-						await page.WaitForTimeoutAsync(3000f);
+						await scriptPage.WaitForTimeoutAsync(3000f);
 						SetText(vitri, "STATUS", "[Script] OAuth: cấp quyền / Continue / checkbox → xong");
 					}
 					catch (Exception ex7)
@@ -1546,22 +2141,6 @@ public class Form1 : Form
 				catch (Exception ex8)
 				{
 					SetText(vitri, "STATUS", "[Sheet/Script] Lỗi (Sheets, editor, API hoặc Run): " + ex8.Message);
-				}
-				if (!string.IsNullOrWhiteSpace(url1) && Uri.TryCreate(url1, UriKind.Absolute, out Uri _))
-				{
-					try
-					{
-						SetText(vitri, "STATUS", "[Form] Mở lại LINK_DOC trong tab mới (DOMContentLoaded)...");
-						await (await context.NewPageAsync()).GotoAsync(url1, new PageGotoOptions
-						{
-							WaitUntil = WaitUntilState.DOMContentLoaded,
-							Timeout = 60000f
-						});
-					}
-					catch (Exception exNav)
-					{
-						SetText(vitri, "STATUS", "[Form] Không mở lại LINK_DOC: " + exNav.Message);
-					}
 				}
 				SetText(vitri, "STATUS", "[Form+Sheet+Script] Hoàn tất pipeline — sẵn sàng DONE");
 			}
@@ -2529,6 +3108,45 @@ public class Form1 : Form
 	{
 	}
 
+	private int GetSelectedLuong()
+	{
+		if (cb_luong?.SelectedItem == null)
+		{
+			return 5;
+		}
+		string s = cb_luong.SelectedItem.ToString()?.Trim() ?? "";
+		if (int.TryParse(s, out int v) && Array.IndexOf(AllowedLuongValues, v) >= 0)
+		{
+			return v;
+		}
+		return 5;
+	}
+
+	private void RestoreLuongComboFromSavedValue(string raw)
+	{
+		if (cb_luong == null || cb_luong.Items.Count == 0)
+		{
+			return;
+		}
+		if (!int.TryParse((raw ?? "").Trim(), out int v))
+		{
+			cb_luong.SelectedItem = "5";
+			return;
+		}
+		int best = AllowedLuongValues[0];
+		int bestDist = int.MaxValue;
+		foreach (int a in AllowedLuongValues)
+		{
+			int d = Math.Abs(a - v);
+			if (d < bestDist)
+			{
+				bestDist = d;
+				best = a;
+			}
+		}
+		cb_luong.SelectedItem = best.ToString();
+	}
+
 	private async void Form1_Load(object sender, EventArgs e)
 	{
 		LoadSettings();
@@ -2611,11 +3229,11 @@ public class Form1 : Form
 			}
 			if (dictionary.ContainsKey("username"))
 			{
-				txt_username.Text = dictionary["username"];
+				// username setting removed
 			}
 			if (dictionary.ContainsKey("luong"))
 			{
-				txt_luong.Text = dictionary["luong"];
+				RestoreLuongComboFromSavedValue(dictionary["luong"]);
 			}
 			if (dictionary.ContainsKey("sudungproxy") && bool.TryParse(dictionary["sudungproxy"], out var result))
 			{
@@ -2641,10 +3259,6 @@ public class Form1 : Form
 			{
 				cb_taoform.Checked = result3;
 			}
-			if (dictionary.ContainsKey("hide") && bool.TryParse(dictionary["hide"], out var result4))
-			{
-				cb_hide.Checked = result4;
-			}
 		}
 		catch (Exception)
 		{
@@ -2660,11 +3274,9 @@ public class Form1 : Form
 		List<string> contents = new List<string>
 		{
 			"so_account_log=" + txt_so_account_log.Text,
-			"username=" + txt_username.Text,
-			"luong=" + txt_luong.Text,
+			"luong=" + GetSelectedLuong(),
 			$"sudungproxy={cb_sudungproxy.Checked}",
-			$"gpm_proxy_group_id={GetSelectedGpmGroupId() ?? ""}",
-			$"hide={cb_hide.Checked}"
+			$"gpm_proxy_group_id={GetSelectedGpmGroupId() ?? ""}"
 		};
 		File.WriteAllLines("Data/Setting.txt", contents);
 	}
@@ -3010,13 +3622,10 @@ public class Form1 : Form
 		this.txt_so_account_log = new System.Windows.Forms.TextBox();
 		this.lbl_status = new System.Windows.Forms.Label();
 		this.label2 = new System.Windows.Forms.Label();
-		this.txt_luong = new System.Windows.Forms.TextBox();
-		this.label1 = new System.Windows.Forms.Label();
-		this.txt_username = new System.Windows.Forms.TextBox();
+		this.cb_luong = new System.Windows.Forms.ComboBox();
 		this.cb_sudungproxy = new System.Windows.Forms.CheckBox();
 		this.lbl_gpm_group = new System.Windows.Forms.Label();
 		this.cb_gpm_group = new System.Windows.Forms.ComboBox();
-		this.cb_hide = new System.Windows.Forms.CheckBox();
 		this.topbar = new System.Windows.Forms.Panel();
 		this.btn_start = new System.Windows.Forms.Button();
 		this.btn_stop = new System.Windows.Forms.Button();
@@ -3059,13 +3668,10 @@ public class Form1 : Form
 		this.sidebar.Controls.Add(this.txt_so_account_log);
 		this.sidebar.Controls.Add(this.lbl_status);
 		this.sidebar.Controls.Add(this.label2);
-		this.sidebar.Controls.Add(this.txt_luong);
-		this.sidebar.Controls.Add(this.label1);
-		this.sidebar.Controls.Add(this.txt_username);
+		this.sidebar.Controls.Add(this.cb_luong);
 		this.sidebar.Controls.Add(this.cb_sudungproxy);
 		this.sidebar.Controls.Add(this.lbl_gpm_group);
 		this.sidebar.Controls.Add(this.cb_gpm_group);
-		this.sidebar.Controls.Add(this.cb_hide);
 		this.sidebar.Dock = System.Windows.Forms.DockStyle.Left;
 		this.sidebar.Location = new System.Drawing.Point(0, 60);
 		this.sidebar.Name = "sidebar";
@@ -3073,12 +3679,12 @@ public class Form1 : Form
 		this.sidebar.TabIndex = 0;
 		this.cb_taoform.AutoSize = true;
 		this.cb_taoform.ForeColor = System.Drawing.Color.White;
-		this.cb_taoform.Location = new System.Drawing.Point(20, 341);
+		this.cb_taoform.Location = new System.Drawing.Point(20, 263);
 		this.cb_taoform.Name = "cb_taoform";
 		this.cb_taoform.TabIndex = 10;
 		this.cb_taoform.Text = "Tạo Form + Ggs + Script";
 		this.cb_changeinfo.ForeColor = System.Drawing.Color.White;
-		this.cb_changeinfo.Location = new System.Drawing.Point(20, 316);
+		this.cb_changeinfo.Location = new System.Drawing.Point(20, 238);
 		this.cb_changeinfo.Name = "cb_changeinfo";
 		this.cb_changeinfo.Size = new System.Drawing.Size(104, 24);
 		this.cb_changeinfo.TabIndex = 9;
@@ -3105,42 +3711,32 @@ public class Form1 : Form
 		this.lbl_status.TabIndex = 2;
 		this.lbl_status.Text = "Status: Ready";
 		this.label2.ForeColor = System.Drawing.Color.Silver;
-		this.label2.Location = new System.Drawing.Point(19, 164);
+		// "Luồng" nằm trên cả "Sử dụng Proxy" (đúng layout yêu cầu)
+		this.label2.Location = new System.Drawing.Point(19, 109);
 		this.label2.Name = "label2";
 		this.label2.Size = new System.Drawing.Size(69, 23);
 		this.label2.TabIndex = 6;
-		this.label2.Text = "Luồng";
-		this.txt_luong.BackColor = System.Drawing.Color.FromArgb(40, 40, 40);
-		this.txt_luong.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-		this.txt_luong.ForeColor = System.Drawing.Color.White;
-		this.txt_luong.Location = new System.Drawing.Point(17, 189);
-		this.txt_luong.Name = "txt_luong";
-		this.txt_luong.Size = new System.Drawing.Size(213, 23);
-		this.txt_luong.TabIndex = 5;
-		this.txt_luong.Text = "5";
-		this.label1.ForeColor = System.Drawing.Color.Silver;
-		this.label1.Location = new System.Drawing.Point(20, 109);
-		this.label1.Name = "label1";
-		this.label1.Size = new System.Drawing.Size(69, 23);
-		this.label1.TabIndex = 1;
-		this.label1.Text = "Username";
-		this.txt_username.BackColor = System.Drawing.Color.FromArgb(40, 40, 40);
-		this.txt_username.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-		this.txt_username.ForeColor = System.Drawing.Color.White;
-		this.txt_username.Location = new System.Drawing.Point(20, 134);
-		this.txt_username.Name = "txt_username";
-		this.txt_username.Size = new System.Drawing.Size(210, 23);
-		this.txt_username.TabIndex = 2;
-		this.txt_username.Text = "admin";
+		this.label2.Text = "Luồng (2 / 5 / 10)";
+		this.cb_luong.BackColor = System.Drawing.Color.FromArgb(40, 40, 40);
+		this.cb_luong.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+		this.cb_luong.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.cb_luong.ForeColor = System.Drawing.Color.White;
+		this.cb_luong.FormattingEnabled = true;
+		this.cb_luong.Items.AddRange(new object[3] { "2", "5", "10" });
+		this.cb_luong.Location = new System.Drawing.Point(17, 134);
+		this.cb_luong.Name = "cb_luong";
+		this.cb_luong.Size = new System.Drawing.Size(213, 23);
+		this.cb_luong.TabIndex = 5;
+		this.cb_luong.SelectedItem = "5";
 		this.cb_sudungproxy.ForeColor = System.Drawing.Color.White;
-		this.cb_sudungproxy.Location = new System.Drawing.Point(20, 214);
+		this.cb_sudungproxy.Location = new System.Drawing.Point(20, 164);
 		this.cb_sudungproxy.Name = "cb_sudungproxy";
 		this.cb_sudungproxy.Size = new System.Drawing.Size(130, 24);
-		this.cb_sudungproxy.TabIndex = 3;
+		this.cb_sudungproxy.TabIndex = 2;
 		this.cb_sudungproxy.Text = "Sử dụng Proxy";
 		this.cb_sudungproxy.CheckedChanged += new System.EventHandler(cb_sudungproxy_CheckedChanged);
 		this.lbl_gpm_group.ForeColor = System.Drawing.Color.Silver;
-		this.lbl_gpm_group.Location = new System.Drawing.Point(20, 238);
+		this.lbl_gpm_group.Location = new System.Drawing.Point(20, 188);
 		this.lbl_gpm_group.Name = "lbl_gpm_group";
 		this.lbl_gpm_group.Size = new System.Drawing.Size(210, 18);
 		this.lbl_gpm_group.TabIndex = 12;
@@ -3149,18 +3745,12 @@ public class Form1 : Form
 		this.cb_gpm_group.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 		this.cb_gpm_group.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_gpm_group.ForeColor = System.Drawing.Color.White;
-		this.cb_gpm_group.Location = new System.Drawing.Point(20, 258);
+		this.cb_gpm_group.Location = new System.Drawing.Point(20, 208);
 		this.cb_gpm_group.Name = "cb_gpm_group";
 		this.cb_gpm_group.Size = new System.Drawing.Size(210, 23);
 		this.cb_gpm_group.TabIndex = 13;
 		this.lbl_gpm_group.Visible = false;
 		this.cb_gpm_group.Visible = false;
-		this.cb_hide.ForeColor = System.Drawing.Color.White;
-		this.cb_hide.Location = new System.Drawing.Point(20, 288);
-		this.cb_hide.Name = "cb_hide";
-		this.cb_hide.Size = new System.Drawing.Size(104, 24);
-		this.cb_hide.TabIndex = 4;
-		this.cb_hide.Text = "Ẩn trình duyệt";
 		this.topbar.BackColor = System.Drawing.Color.FromArgb(37, 37, 38);
 		this.topbar.Controls.Add(this.btn_start);
 		this.topbar.Controls.Add(this.btn_stop);
@@ -3323,7 +3913,7 @@ public class Form1 : Form
 		this.copy2FAToolStripMenuItem.Text = "Copy 2FA";
 		this.copy2FAToolStripMenuItem.Click += new System.EventHandler(copy2FAToolStripMenuItem_Click);
 		this.cb_offchrome.ForeColor = System.Drawing.Color.White;
-		this.cb_offchrome.Location = new System.Drawing.Point(20, 366);
+		this.cb_offchrome.Location = new System.Drawing.Point(20, 288);
 		this.cb_offchrome.Name = "cb_offchrome";
 		this.cb_offchrome.Size = new System.Drawing.Size(104, 24);
 		this.cb_offchrome.TabIndex = 11;

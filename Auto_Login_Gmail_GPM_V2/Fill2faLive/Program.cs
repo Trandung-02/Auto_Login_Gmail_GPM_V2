@@ -9,7 +9,6 @@ using Microsoft.Playwright;
 
 ConfigureConsoleUtf8();
 
-const string GmailInboxUrl = "https://mail.google.com/mail/u/0/";
 const int DefaultSecretColumnIndex = 2; // cột 3 trong Account.txt (0-based): secret TOTP / app
 
 var root = FindProjectRoot();
@@ -240,10 +239,7 @@ try
             }
 
             var context = PickBrowserContext(browser) ?? await browser.NewContextAsync();
-            // Không mở 2fa.live nữa. Nếu cần, vẫn có thể mở Gmail để người dùng dễ thao tác.
-            var gmailTab = await OpenUrlInNewTabAsync(context, GmailInboxUrl, "mail.google.com");
-            Console.WriteLine($"[Fill2faLive] Tab Gmail: {await gmailTab.EvaluateAsync<string>("() => location.href")}");
-            await gmailTab.BringToFrontAsync();
+            // Không mở thêm tab nào nữa (kể cả Gmail). Chỉ attach CDP để đảm bảo mapping profile/dòng nếu cần.
         }
 
         var secret = Regex.Replace(secretRaw, @"\s+", "").ToUpperInvariant();
