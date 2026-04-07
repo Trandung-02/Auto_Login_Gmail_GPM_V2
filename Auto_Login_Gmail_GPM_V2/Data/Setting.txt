@@ -1,0 +1,6 @@
+so_account_log=25
+username=11
+luong=10
+sudungproxy=True
+gpm_proxy_group_id=10
+hide=False

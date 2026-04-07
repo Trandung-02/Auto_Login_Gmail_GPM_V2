@@ -1,0 +1,13 @@
+# One line (after comments): full URL to Chrome DevTools for THIS profile.
+#
+# GPM often uses a HIGH random port (e.g. 55055), NOT 9222.
+# Find it: open GPM Chrome -> chrome://version -> Command Line -> look for:
+#   --remote-debugging-port=NUMBER
+# Then set: http://127.0.0.1:NUMBER
+#
+# Port can change when you reopen the profile - update this file if Fill2faLive fails.
+# Or use --auto-find-cdp (SauPlayAPP adds it) to scan listening ports on your PC.
+#
+# Many profiles: different port per profile -> optional column in Account.txt + --cdp-column N
+
+http://127.0.0.1:9222

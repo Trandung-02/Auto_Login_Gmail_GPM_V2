@@ -1,0 +1,8 @@
+# One line: comma-separated remote-debugging-port values from chrome://version (per GPM profile).
+# Order MUST match row order in Account.txt (row 1 = first port, row 2 = second port, ...).
+# Copy to CdpPorts.txt and set real ports. Open BOTH profiles in GPM before running Fill2faLive.
+#
+# Example (replace with your ports):
+# 55055,58331
+
+55055,58331

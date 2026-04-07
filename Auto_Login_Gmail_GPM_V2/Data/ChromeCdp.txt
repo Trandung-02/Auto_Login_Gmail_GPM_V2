@@ -1,0 +1,3 @@
+# Số cổng lấy từ chrome://version → Command Line → --remote-debugging-port=...
+# Ví dụ GPM của bạn: 55055
+http://127.0.0.1:55055

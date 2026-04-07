@@ -1,0 +1,5 @@
+# One line: folder that contains GPM profile dirs (--user-data-dir under this tree).
+# Fill2faLive matches chrome.exe WMI to this root, then reads --remote-debugging-port.
+# If omitted: env GPM_PROFILES_ROOT, else D:\Login_GPM when that folder exists.
+
+D:\Login_GPM
