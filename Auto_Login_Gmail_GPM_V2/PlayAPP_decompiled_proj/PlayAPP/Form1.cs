@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.Playwright;
@@ -23,7 +24,7 @@ using Newtonsoft.Json.Linq;
 
 namespace PlayAPP;
 
-public class Form1 : Form
+public partial class Form1 : Form
 {
 	private IPlaywright _playwright;
 
@@ -64,7 +65,14 @@ public class Form1 : Form
 
 	private int m_Rowindex = 0;
 
-	private static readonly HttpClient client = new HttpClient();
+	private static HttpClient CreateSharedHttpClient()
+	{
+		HttpClient c = new HttpClient();
+		c.Timeout = TimeSpan.FromSeconds(120.0);
+		return c;
+	}
+
+	private static readonly HttpClient client = CreateSharedHttpClient();
 
 	private int _startRow = 0;
 
@@ -82,7 +90,33 @@ public class Form1 : Form
 
 	private const long AutomationLogMaxBytesBeforeRotate = 5242880L;
 
-	/// <summary>Hàng nào cần đóng Chrome ngay cả khi tắt "Đóng Chrome sau mỗi account" (vd. tài khoản kẹt reCAPTCHA / quá nhiều lần thử).</summary>
+	private static readonly UTF8Encoding Utf8NoBomEnc = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+
+	private static readonly Channel<string> AutomationLogChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
+	{
+		SingleReader = true,
+		AllowSynchronousContinuations = false
+	});
+
+	private static Task _automationLogPumpTask;
+
+	private static readonly object AutomationLogPumpInitSync = new object();
+
+	private CancellationTokenSource _batchCts;
+
+	private CancellationToken _batchToken;
+
+	private DateTime _batchStartedUtc;
+
+	private int _batchTotalPlanned;
+
+	/// <summary>Lát chờ Playwright (ms) giữa các lần kiểm tra hủy batch.</summary>
+	private int _waitSliceMs = 250;
+
+	/// <summary>Sau mỗi lần bấm Run trong editor Apps Script (chờ execution log).</summary>
+	private int _scriptRunPauseMs = 10000;
+
+	/// <summary>Hàng nào cần đóng Chrome ngay cả khi tắt "Đóng Chrome sau mỗi account" (tài khoản chết: reCAPTCHA/Verify, myaccount/restrictions). Sau finally còn gọi GPM xóa profile.</summary>
 	private readonly ConcurrentDictionary<int, bool> _forceCloseChromeAfterCycle = new ConcurrentDictionary<int, bool>();
 
 	/// <summary>Profile GPM vừa mở theo chỉ số hàng lưới trong batch hiện tại (để gọi API đóng profile).</summary>
@@ -177,6 +211,10 @@ public class Form1 : Form
 
 	private CheckBox cb_offchrome;
 
+	private Button btn_open_data_folder;
+
+	private Button btn_export_diagnostics;
+
 	public Form1()
 	{
 		InitializeComponent();
@@ -184,8 +222,7 @@ public class Form1 : Form
 
 	private async void btnStart_Click(object sender, EventArgs e)
 	{
-		bool Runauto = true;
-		if (!Runauto || _running)
+		if (_running)
 		{
 			return;
 		}
@@ -271,6 +308,11 @@ public class Form1 : Form
 		Interlocked.Exchange(ref _batchFail, 0);
 		LoadNoiDung();
 		AppendAutomationLog("INFO", null, null, "Bắt đầu batch: " + accountQueue.Count + " account, luồng " + luong + ", proxy=" + cb_sudungproxy.Checked + ", nhóm GPM log=\"" + GetGpmGroupIdForLoginLog() + "\".");
+		_batchCts?.Dispose();
+		_batchCts = new CancellationTokenSource();
+		_batchToken = _batchCts.Token;
+		_batchStartedUtc = DateTime.UtcNow;
+		_batchTotalPlanned = accountQueue.Count;
 		_running = true;
 		Interlocked.Exchange(ref _currentProfileIndex, -1);
 		try
@@ -293,6 +335,9 @@ public class Form1 : Form
 			_browsers.Clear();
 			_playwright?.Dispose();
 			_playwright = null;
+			_batchToken = default;
+			_batchCts?.Dispose();
+			_batchCts = null;
 			_running = false;
 			_lastBatchOk = Volatile.Read(ref _batchOk);
 			_lastBatchFail = Volatile.Read(ref _batchFail);
@@ -301,9 +346,63 @@ public class Form1 : Form
 		}
 	}
 
+	private void btn_open_data_folder_Click(object sender, EventArgs e)
+	{
+		try
+		{
+			string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+			Directory.CreateDirectory(dir);
+			Process.Start(new ProcessStartInfo
+			{
+				FileName = dir,
+				UseShellExecute = true
+			});
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show("Không mở được thư mục Data:\n" + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+		}
+	}
+
+	private void btn_export_diagnostics_Click(object sender, EventArgs e)
+	{
+		try
+		{
+			using SaveFileDialog dlg = new SaveFileDialog
+			{
+				Filter = "ZIP (*.zip)|*.zip",
+				FileName = "PlayAPP_diagnostics_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".zip",
+				OverwritePrompt = true
+			};
+			if (dlg.ShowDialog() != DialogResult.OK)
+			{
+				return;
+			}
+			string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+			if (!DiagnosticsExport.TryCreateZip(baseDir, dlg.FileName, out string err))
+			{
+				MessageBox.Show("Không tạo được ZIP:\n" + err, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				return;
+			}
+			AppendAutomationLog("INFO", null, null, "Xuất gói chẩn đoán ZIP: " + dlg.FileName);
+			MessageBox.Show("Đã lưu gói chẩn đoán (log + screenshot gần đây, không gồm Account/proxy):\n" + dlg.FileName, "Chẩn đoán", MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show("Lỗi xuất ZIP:\n" + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+		}
+	}
+
 	private async void btnStop_Click(object sender, EventArgs e)
 	{
 		AppendAutomationLog("INFO", null, null, "Người dùng bấm Dừng — đang đóng trình duyệt.");
+		try
+		{
+			_batchCts?.Cancel();
+		}
+		catch
+		{
+		}
 		_running = false;
 		foreach (IBrowser browser in _browsers)
 		{
@@ -339,7 +438,7 @@ public class Form1 : Form
 		try
 		{
 			using CancellationTokenSource cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
-			using HttpResponseMessage resp = await client.GetAsync("http://127.0.0.1:19995/api/v3/groups", HttpCompletionOption.ResponseHeadersRead, cts.Token).ConfigureAwait(false);
+			using HttpResponseMessage resp = await client.GetAsync(GpmApi.GroupsEndpoint, HttpCompletionOption.ResponseHeadersRead, cts.Token).ConfigureAwait(false);
 			return resp.IsSuccessStatusCode;
 		}
 		catch
@@ -398,46 +497,25 @@ public class Form1 : Form
 		return local.Substring(0, 1) + "***" + domain;
 	}
 
-	private static void AppendAutomationLog(string level, int? rowIndex, string email, string message)
+	private static void EnsureAutomationLogPump()
+	{
+		lock (AutomationLogPumpInitSync)
+		{
+			if (_automationLogPumpTask != null)
+			{
+				return;
+			}
+			_automationLogPumpTask = Task.Run(AutomationLogPumpAsync);
+		}
+	}
+
+	private static async Task AutomationLogPumpAsync()
 	{
 		try
 		{
-			string dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
-			Directory.CreateDirectory(dataDir);
-			lock (AutomationLogSync)
+			await foreach (string line in AutomationLogChannel.Reader.ReadAllAsync().ConfigureAwait(false))
 			{
-				try
-				{
-					if (File.Exists(AutomationLogPath))
-					{
-						FileInfo fi = new FileInfo(AutomationLogPath);
-						if (fi.Length > AutomationLogMaxBytesBeforeRotate)
-						{
-							string bak = AutomationLogPath + ".1.bak";
-							if (File.Exists(bak))
-							{
-								File.Delete(bak);
-							}
-							File.Move(AutomationLogPath, bak);
-						}
-					}
-				}
-				catch
-				{
-				}
-				string rowPart = rowIndex.HasValue ? "hàng " + (rowIndex.Value + 1) : "-";
-				string who = string.IsNullOrEmpty(email) ? "" : MaskEmailForLog(email);
-				string msg = (message ?? "").Replace('\r', ' ').Replace('\n', ' ').Trim();
-				if (msg.Length > 2000)
-				{
-					msg = msg.Substring(0, 1997) + "...";
-				}
-				string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\t" + (level ?? "INFO") + "\t" + rowPart + "\t" + who + "\t" + msg;
-				if (!File.Exists(AutomationLogPath))
-				{
-					File.WriteAllText(AutomationLogPath, "# time[TAB]LEVEL[TAB]row[TAB]email_masked[TAB]message — UTF-8" + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-				}
-				File.AppendAllText(AutomationLogPath, line + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+				WriteAutomationLogLineUnderLock(line);
 			}
 		}
 		catch
@@ -445,14 +523,250 @@ public class Form1 : Form
 		}
 	}
 
-	private static async Task TryCaptureFailureScreenshotAsync(IPage page, int rowIndex, string reasonSlug)
+	private static void WriteAutomationLogLineUnderLock(string line)
 	{
+		lock (AutomationLogSync)
+		{
+			try
+			{
+				if (File.Exists(AutomationLogPath))
+				{
+					FileInfo fi = new FileInfo(AutomationLogPath);
+					if (fi.Length > AutomationLogMaxBytesBeforeRotate)
+					{
+						string bak = AutomationLogPath + ".1.bak";
+						if (File.Exists(bak))
+						{
+							File.Delete(bak);
+						}
+						File.Move(AutomationLogPath, bak);
+					}
+				}
+			}
+			catch
+			{
+			}
+			if (!File.Exists(AutomationLogPath))
+			{
+				File.WriteAllText(AutomationLogPath, "# time[TAB]LEVEL[TAB]row[TAB]email_masked[TAB]message — UTF-8" + Environment.NewLine, Utf8NoBomEnc);
+			}
+			File.AppendAllText(AutomationLogPath, line + Environment.NewLine, Utf8NoBomEnc);
+		}
+	}
+
+	private static void ShutdownAutomationLogWriter()
+	{
+		try
+		{
+			AutomationLogChannel.Writer.TryComplete();
+			if (_automationLogPumpTask != null && !_automationLogPumpTask.Wait(2500))
+			{
+				string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\tWARN\t-\t\tGhi log: pump chưa kịp flush hết trong 2,5s.";
+				try
+				{
+					string dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+					Directory.CreateDirectory(dataDir);
+					WriteAutomationLogLineUnderLock(line);
+				}
+				catch
+				{
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private static void AppendAutomationLog(string level, int? rowIndex, string email, string message)
+	{
+		try
+		{
+			string dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+			Directory.CreateDirectory(dataDir);
+			string rowPart = rowIndex.HasValue ? "hàng " + (rowIndex.Value + 1) : "-";
+			string who = string.IsNullOrEmpty(email) ? "" : MaskEmailForLog(email);
+			string msg = (message ?? "").Replace('\r', ' ').Replace('\n', ' ').Trim();
+			if (msg.Length > 2000)
+			{
+				msg = msg.Substring(0, 1997) + "...";
+			}
+			string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\t" + (level ?? "INFO") + "\t" + rowPart + "\t" + who + "\t" + msg;
+			EnsureAutomationLogPump();
+			if (!AutomationLogChannel.Writer.TryWrite(line))
+			{
+				WriteAutomationLogLineUnderLock(line);
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	private Task DelayBatchAsync(int millisecondsDelay)
+	{
+		if (_batchToken.CanBeCanceled)
+		{
+			return Task.Delay(millisecondsDelay, _batchToken);
+		}
+		return Task.Delay(millisecondsDelay);
+	}
+
+	private Task PageWaitCancellableAsync(IPage page, float totalMs)
+	{
+		if (page == null || totalMs <= 0f)
+		{
+			return Task.CompletedTask;
+		}
+		CancellationToken ct = _batchToken.CanBeCanceled ? _batchToken : CancellationToken.None;
+		return PlaywrightWaitHelpers.PageWaitAsync(page, totalMs, ct, _waitSliceMs);
+	}
+
+	/// <summary>Chọn tab phù hợp khi có nhiều trang: ưu tiên accounts.google (signin/challenge), rồi myaccount, rồi Gmail, cuối cùng tab cuối hoặc preferred.</summary>
+	private static IPage PickPageForFailureScreenshot(IPage preferred, IBrowserContext contextFallback)
+	{
+		IBrowserContext ctx = contextFallback;
+		if (ctx == null && preferred != null)
+		{
+			try
+			{
+				ctx = preferred.Context;
+			}
+			catch
+			{
+				ctx = null;
+			}
+		}
+		List<IPage> live = new List<IPage>();
+		if (ctx != null)
+		{
+			try
+			{
+				foreach (IPage p in ctx.Pages)
+				{
+					if (p == null)
+					{
+						continue;
+					}
+					try
+					{
+						if (!p.IsClosed)
+						{
+							live.Add(p);
+						}
+					}
+					catch
+					{
+					}
+				}
+			}
+			catch
+			{
+			}
+		}
+		if (live.Count == 0)
+		{
+			if (preferred == null)
+			{
+				return null;
+			}
+			try
+			{
+				return preferred.IsClosed ? null : preferred;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+		if (live.Count == 1)
+		{
+			return live[0];
+		}
+		foreach (IPage p in live)
+		{
+			string u = "";
+			try
+			{
+				u = p.Url ?? "";
+			}
+			catch
+			{
+				continue;
+			}
+			if (u.IndexOf("accounts.google.com", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				continue;
+			}
+			if (u.IndexOf("/signin/", StringComparison.OrdinalIgnoreCase) >= 0 || u.IndexOf("ServiceLogin", StringComparison.OrdinalIgnoreCase) >= 0 || u.IndexOf("challenge", StringComparison.OrdinalIgnoreCase) >= 0 || u.IndexOf("oauth", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return p;
+			}
+		}
+		foreach (IPage p in live)
+		{
+			string u = "";
+			try
+			{
+				u = p.Url ?? "";
+			}
+			catch
+			{
+				continue;
+			}
+			if (u.IndexOf("accounts.google.com", StringComparison.OrdinalIgnoreCase) >= 0 || u.IndexOf("myaccount.google.com", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return p;
+			}
+		}
+		foreach (IPage p in live)
+		{
+			string u = "";
+			try
+			{
+				u = p.Url ?? "";
+			}
+			catch
+			{
+				continue;
+			}
+			if (u.IndexOf("mail.google.com", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return p;
+			}
+		}
+		if (preferred != null)
+		{
+			foreach (IPage p in live)
+			{
+				if (ReferenceEquals(p, preferred))
+				{
+					return preferred;
+				}
+			}
+		}
+		return live[live.Count - 1];
+	}
+
+	private static async Task TryCaptureFailureScreenshotAsync(IPage preferredPage, int rowIndex, string reasonSlug, IBrowserContext contextFallback = null)
+	{
+		IPage page = PickPageForFailureScreenshot(preferredPage, contextFallback);
 		if (page == null)
 		{
 			return;
 		}
 		try
 		{
+			try
+			{
+				await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded, new PageWaitForLoadStateOptions
+				{
+					Timeout = 3000f
+				});
+			}
+			catch
+			{
+			}
 			string dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "screenshots");
 			Directory.CreateDirectory(dir);
 			string safe = new string((reasonSlug ?? "fail").Where(ch => !Path.GetInvalidFileNameChars().Contains(ch)).ToArray());
@@ -462,11 +776,21 @@ public class Form1 : Form
 			}
 			string name = safe + "_hang" + (rowIndex + 1) + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmssfff") + ".png";
 			string full = Path.Combine(dir, name);
+			string urlForFull = "";
+			try
+			{
+				urlForFull = page.Url ?? "";
+			}
+			catch
+			{
+			}
+			bool fullPage = urlForFull.IndexOf("mail.google.com", StringComparison.OrdinalIgnoreCase) < 0;
 			await page.ScreenshotAsync(new PageScreenshotOptions
 			{
 				Path = full,
-				FullPage = false,
-				Type = ScreenshotType.Png
+				FullPage = fullPage,
+				Type = ScreenshotType.Png,
+				Animations = ScreenshotAnimations.Disabled
 			});
 			AppendAutomationLog("INFO", rowIndex, null, "Screenshot lỗi: " + full);
 		}
@@ -633,169 +957,6 @@ public class Form1 : Form
 		}
 	}
 
-	private void UpdateGpmGroupControlsVisible()
-	{
-		bool on = cb_sudungproxy.Checked;
-		lbl_gpm_group.Visible = on;
-		cb_gpm_group.Visible = on;
-		int y = on ? 258 : 218;
-		cb_changeinfo.Location = new Point(14, y);
-		cb_taoform.Location = new Point(14, y + 26);
-		cb_offchrome.Location = new Point(14, y + 52);
-	}
-
-	private async Task RefreshGpmGroupComboAsync()
-	{
-		try
-		{
-			using HttpClient client = new HttpClient();
-			string groupsJson = await client.GetStringAsync("http://127.0.0.1:19995/api/v3/groups");
-			JObject groupsRoot = JObject.Parse(groupsJson);
-			if (groupsRoot["success"]?.Value<bool>() != true)
-			{
-				MessageBox.Show("GPM danh sách nhóm: " + (groupsRoot["message"]?.ToString() ?? groupsJson));
-				return;
-			}
-			JArray groupArr = groupsRoot["data"] as JArray;
-			if (groupArr == null || groupArr.Count == 0)
-			{
-				MessageBox.Show("GPM không có nhóm nào (API /api/v3/groups).");
-				return;
-			}
-			cb_gpm_group.Items.Clear();
-			foreach (JToken g in groupArr)
-			{
-				string id = g["id"]?.ToString();
-				if (string.IsNullOrEmpty(id))
-				{
-					continue;
-				}
-				string name = g["name"]?.Value<string>() ?? "";
-				cb_gpm_group.Items.Add(new GpmGroupListItem(id, name));
-			}
-			if (!string.IsNullOrEmpty(_savedGpmGroupId))
-			{
-				foreach (GpmGroupListItem it in cb_gpm_group.Items)
-				{
-					if (it.Id == _savedGpmGroupId)
-					{
-						cb_gpm_group.SelectedItem = it;
-						break;
-					}
-				}
-			}
-			if (cb_gpm_group.SelectedIndex < 0 && cb_gpm_group.Items.Count > 0)
-			{
-				cb_gpm_group.SelectedIndex = 0;
-			}
-		}
-		catch (Exception ex)
-		{
-			MessageBox.Show("Không tải được danh sách nhóm GPM (http://127.0.0.1:19995).\n" + ex.Message);
-		}
-	}
-
-	private async void cb_sudungproxy_CheckedChanged(object sender, EventArgs e)
-	{
-		UpdateGpmGroupControlsVisible();
-		if (cb_sudungproxy.Checked)
-		{
-			await RefreshGpmGroupComboAsync();
-		}
-	}
-
-	private async Task LoadProfiles()
-	{
-		HttpClient client = new HttpClient();
-		string url;
-		if (cb_sudungproxy.Checked)
-		{
-			string groupIdStr = GetSelectedGpmGroupId();
-			if (string.IsNullOrEmpty(groupIdStr))
-			{
-				throw new Exception("Bật Sử dụng Proxy: cần chọn nhóm GPM.");
-			}
-			string groupName = (cb_gpm_group.SelectedItem as GpmGroupListItem)?.Name ?? "";
-			_gpmLoadedGroupSummary = string.IsNullOrEmpty(groupName) ? "id=" + groupIdStr : $"{groupName} (id={groupIdStr})";
-			url = "http://127.0.0.1:19995/api/v3/profiles?group_id=" + Uri.EscapeDataString(groupIdStr) + "&sort=2&per_page=500";
-		}
-		else
-		{
-			_gpmLoadedGroupSummary = "tất cả nhóm";
-			url = "http://127.0.0.1:19995/api/v3/profiles?sort=2&per_page=500";
-		}
-		dynamic json = JsonConvert.DeserializeObject(await client.GetStringAsync(url));
-		_profileIds.Clear();
-		foreach (dynamic p in json.data)
-		{
-			_profileIds.Add((string)p.id);
-		}
-		if (_profileIds.Count == 0)
-		{
-			throw new Exception("Không có profile nào trong GPM" + (cb_sudungproxy.Checked ? " (nhóm: " + _gpmLoadedGroupSummary + ")" : "") + ".");
-		}
-		Console.WriteLine($"Loaded {_profileIds.Count} profiles — {_gpmLoadedGroupSummary}");
-	}
-
-	private static int GetLastFilledAccountRowIndex(DataGridView grid)
-	{
-		int last = -1;
-		for (int r = 0; r < grid.Rows.Count; r++)
-		{
-			if (grid.Rows[r].IsNewRow)
-			{
-				break;
-			}
-			string uid = grid.Rows[r].Cells["UID"].Value?.ToString();
-			if (!string.IsNullOrWhiteSpace(uid))
-			{
-				last = r;
-			}
-		}
-		return last;
-	}
-
-	private async Task ApplyProxiesToGpmProfilesAsync(HttpClient client)
-	{
-		int lastAcc = GetLastFilledAccountRowIndex(dataGridView1);
-		if (lastAcc < 0)
-		{
-			return;
-		}
-		int n = Math.Min(lastAcc + 1, Math.Min(_proxyList.Count, _profileIds.Count));
-		for (int i = 0; i < n; i++)
-		{
-			string profileId = _profileIds[i];
-			string raw = _proxyList[i].RawLineForGpm;
-			if (string.IsNullOrWhiteSpace(raw))
-			{
-				continue;
-			}
-			string body = JsonConvert.SerializeObject(new { raw_proxy = raw.Trim() });
-			using StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
-			using HttpResponseMessage resp = await client.PostAsync("http://127.0.0.1:19995/api/v3/profiles/update/" + profileId, content);
-			string respText = await resp.Content.ReadAsStringAsync();
-			if (!resp.IsSuccessStatusCode)
-			{
-				throw new Exception($"GPM cập nhật proxy profile #{i + 1} ({profileId}): HTTP {(int)resp.StatusCode} — {respText}");
-			}
-			JObject jo = JObject.Parse(respText);
-			if (jo["success"]?.Value<bool>() != true)
-			{
-				string msg = jo["message"]?.ToString() ?? respText;
-				throw new Exception($"GPM cập nhật proxy profile #{i + 1}: {msg}");
-			}
-		}
-		Console.WriteLine($"Đã gán raw_proxy cho {n} profile GPM trong nhóm {_gpmLoadedGroupSummary} (tên A-Z; dòng 1 = profile đầu danh sách).");
-	}
-
-	private string GetNextProfileId()
-	{
-		int num = Interlocked.Increment(ref _currentProfileIndex);
-		num %= _profileIds.Count;
-		return _profileIds[num];
-	}
-
 	/// <summary>Lấy account theo thứ tự hàng từ _startRow đến _endRow; nếu maxAccounts &gt; 0 chỉ lấy tối đa N dòng có UID.</summary>
 	private List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> BuildAccountProcessingQueue(int maxAccounts)
 	{
@@ -851,7 +1012,7 @@ public class Form1 : Form
 				return;
 			}
 		}
-		for (int offset = 0; offset < accountQueue.Count && _running; offset += luongPerBatch)
+		for (int offset = 0; offset < accountQueue.Count && _running && !_batchToken.IsCancellationRequested; offset += luongPerBatch)
 		{
 			int n = Math.Min(luongPerBatch, accountQueue.Count - offset);
 			List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> slice = accountQueue.GetRange(offset, n);
@@ -871,114 +1032,6 @@ public class Form1 : Form
 		}
 	}
 
-	/// <summary>GPM mặc định đôi khi mở cửa sổ ngoài vùng nhìn thấy; gắn win_pos/win_size theo lưới vừa màn hình.</summary>
-	private static void ComputeBrowserTileLayout(int countInBatch, out int cols, out int winW, out int winH, out int gapPx)
-	{
-		gapPx = 10;
-		if (countInBatch <= 0)
-		{
-			cols = 1;
-			winW = 400;
-			winH = 600;
-			return;
-		}
-		Rectangle wa = Screen.PrimaryScreen?.WorkingArea ?? new Rectangle(0, 0, 1920, 1040);
-		const int edge = 8;
-		const int minW = 280;
-		const int minH = 360;
-		int availW = Math.Max(640, wa.Width - 2 * edge);
-		int availH = Math.Max(400, wa.Height - 2 * edge);
-		cols = 1;
-		winW = minW;
-		winH = minH;
-		for (int tryCols = Math.Min(countInBatch, 6); tryCols >= 1; tryCols--)
-		{
-			int tryRows = (int)Math.Ceiling((double)countInBatch / tryCols);
-			int w = (availW - gapPx * (tryCols + 1)) / tryCols;
-			int h = (availH - gapPx * (tryRows + 1)) / tryRows;
-			if (w >= minW && h >= minH)
-			{
-				cols = tryCols;
-				winW = w;
-				winH = h;
-				return;
-			}
-		}
-		cols = Math.Min(countInBatch, 5);
-		int rows2 = (int)Math.Ceiling((double)countInBatch / cols);
-		winW = Math.Max(240, (availW - gapPx * (cols + 1)) / cols);
-		winH = Math.Max(300, (availH - gapPx * (rows2 + 1)) / rows2);
-	}
-
-	private string BuildGpmProfileStartUrl(string profileId, int slotIndexInBatch, int cols, int winW, int winH, int gapPx)
-	{
-		Rectangle wa = Screen.PrimaryScreen?.WorkingArea ?? new Rectangle(0, 0, 1920, 1040);
-		string path = "http://127.0.0.1:19995/api/v3/profiles/start/" + Uri.EscapeDataString(profileId);
-		int col = slotIndexInBatch % cols;
-		int row = slotIndexInBatch / cols;
-		int x = wa.Left + 8 + col * (winW + gapPx);
-		int y = wa.Top + 8 + row * (winH + gapPx);
-		return path + "?win_scale=1&win_pos=" + x + "," + y + "&win_size=" + winW + "," + winH;
-	}
-
-	/// <summary>Đóng profile qua GPM API (GET /api/v3/profiles/close/{id}) — cần để cửa sổ Chrome thật sự tắt khi chỉ ConnectOverCDP.</summary>
-	private async Task TryGpmCloseProfileByRowAsync(int rowIndex)
-	{
-		try
-		{
-			string profileId = null;
-			if (cb_sudungproxy.Checked && rowIndex >= 0 && rowIndex < _profileIds.Count)
-			{
-				profileId = (_profileIds[rowIndex] ?? "").Trim();
-			}
-			if (string.IsNullOrEmpty(profileId))
-			{
-				_gpmProfileIdOpenedForRow.TryGetValue(rowIndex, out string opened);
-				profileId = (opened ?? "").Trim();
-			}
-			if (string.IsNullOrEmpty(profileId))
-			{
-				return;
-			}
-			using HttpClient http = new HttpClient();
-			http.Timeout = TimeSpan.FromSeconds(25.0);
-			string url = "http://127.0.0.1:19995/api/v3/profiles/close/" + Uri.EscapeDataString(profileId);
-			await http.GetAsync(url);
-		}
-		catch
-		{
-		}
-	}
-
-	private async Task LaunchBrowserBatchAsync(HttpClient client, List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> slice)
-	{
-		ChromeWindowNativeHelper.MinimizeAllChromeMainWindowsIfOverThreshold(ChromeWindowNativeHelper.MinimizeWhenChromeWindowCountExceeds);
-		ComputeBrowserTileLayout(slice.Count, out int tileCols, out int tileW, out int tileH, out int tileGap);
-		_gpmProfileIdOpenedForRow.Clear();
-		for (int bi = 0; bi < slice.Count; bi++)
-		{
-			var item = slice[bi];
-			if (!_running)
-			{
-				break;
-			}
-			string profileId = cb_sudungproxy.Checked ? _profileIds[item.rowIndex] : GetNextProfileId();
-			_gpmProfileIdOpenedForRow[item.rowIndex] = profileId;
-			string startUrl = BuildGpmProfileStartUrl(profileId, bi, tileCols, tileW, tileH, tileGap);
-			dynamic json = JsonConvert.DeserializeObject(await client.GetStringAsync(startUrl));
-			string debugAddress = json.data.remote_debugging_address;
-			string versionJson = await client.GetStringAsync("http://" + debugAddress + "/json/version");
-			Console.WriteLine("VERSION JSON:");
-			Console.WriteLine(versionJson);
-			dynamic version = JsonConvert.DeserializeObject(versionJson);
-			string wsEndpoint = version.webSocketDebuggerUrl;
-			Console.WriteLine("WS ENDPOINT: " + wsEndpoint);
-			IBrowser browser = await _playwright.Chromium.ConnectOverCDPAsync(wsEndpoint);
-			_browsers.Add(browser);
-			Console.WriteLine("Opened profile: " + profileId);
-		}
-	}
-
 	private async Task RunBatchSliceAsync(List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> slice)
 	{
 		if (slice.Count == 0 || _browsers.Count != slice.Count)
@@ -989,17 +1042,27 @@ public class Form1 : Form
 		List<Task> tasks = new List<Task>();
 		for (int i = 0; i < slice.Count; i++)
 		{
-			if (!_running)
+			if (!_running || _batchToken.IsCancellationRequested)
 			{
 				break;
 			}
-			await semaphore.WaitAsync();
+			try
+			{
+				await semaphore.WaitAsync(_batchToken.CanBeCanceled ? _batchToken : CancellationToken.None);
+			}
+			catch (OperationCanceledException)
+			{
+				break;
+			}
 			var account = slice[i];
 			IBrowser browser = _browsers[i];
 			Task task = ProcessAccount(semaphore, browser, (account.uid, account.pass, account.ma2fa, account.mail2), account.rowIndex);
 			tasks.Add(task);
 		}
-		await Task.WhenAll(tasks);
+		if (tasks.Count > 0)
+		{
+			await Task.WhenAll(tasks);
+		}
 	}
 
 	private async Task ProcessAccount(SemaphoreSlim semaphore, IBrowser browser, (string uid, string pass, string ma2fa, string mail2) account, int currentRowIndex)
@@ -1010,8 +1073,13 @@ public class Form1 : Form
 		{
 			await RunOneCycle(browser, account.uid, account.pass, account.ma2fa, account.mail2, currentRowIndex);
 		}
-		catch (Exception)
+		catch (OperationCanceledException)
 		{
+			AppendAutomationLog("INFO", currentRowIndex, account.uid, "Đã dừng theo yêu cầu (hủy tác vụ).");
+		}
+		catch (Exception ex)
+		{
+			AppendAutomationLog("ERROR", currentRowIndex, account.uid, "ProcessAccount: " + ex.GetType().Name + " — " + ex.Message);
 		}
 		finally
 		{
@@ -1078,7 +1146,7 @@ public class Form1 : Form
 				AppendAutomationLog("WARN", rowIndex, email, "hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.");
 				try
 				{
-					await TryCaptureFailureScreenshotAsync(page2, rowIndex, "login_flow_fail");
+					await TryCaptureFailureScreenshotAsync(page2, rowIndex, "login_flow_fail", context);
 				}
 				catch
 				{
@@ -1086,6 +1154,10 @@ public class Form1 : Form
 				Interlocked.Increment(ref _batchFail);
 				UpdateStatus();
 			}
+		}
+		catch (OperationCanceledException)
+		{
+			AppendAutomationLog("INFO", rowIndex, email, "Đã dừng theo yêu cầu (Dừng).");
 		}
 		catch (Exception ex)
 		{
@@ -1096,12 +1168,7 @@ public class Form1 : Form
 			UpdateStatus();
 			try
 			{
-				IPage shotPage = page2;
-				if (shotPage == null && context != null && context.Pages.Count > 0)
-				{
-					shotPage = context.Pages[context.Pages.Count - 1];
-				}
-				await TryCaptureFailureScreenshotAsync(shotPage, rowIndex, "exception");
+				await TryCaptureFailureScreenshotAsync(page2, rowIndex, "exception", context);
 			}
 			catch
 			{
@@ -1117,9 +1184,10 @@ public class Form1 : Form
 			catch
 			{
 			}
+			bool closeChromeAfterAccount = cb_offchrome.Checked || forceCloseChrome;
 			try
 			{
-				if (context != null && !cb_offchrome.Checked && !forceCloseChrome)
+				if (context != null && !closeChromeAfterAccount)
 				{
 					IPage p = context.Pages.Count > 0 ? context.Pages[0] : null;
 					if (p != null)
@@ -1131,7 +1199,7 @@ public class Form1 : Form
 			catch
 			{
 			}
-			if (context != null && (cb_offchrome.Checked || forceCloseChrome))
+			if (context != null && closeChromeAfterAccount)
 			{
 				try
 				{
@@ -1141,7 +1209,7 @@ public class Form1 : Form
 				{
 				}
 			}
-			if (forceCloseChrome)
+			if (closeChromeAfterAccount)
 			{
 				try
 				{
@@ -1153,6 +1221,26 @@ public class Form1 : Form
 				try
 				{
 					await browser.CloseAsync();
+				}
+				catch
+				{
+				}
+			}
+			if (forceCloseChrome)
+			{
+				try
+				{
+					await DelayBatchAsync(600);
+				}
+				catch (OperationCanceledException)
+				{
+				}
+				catch
+				{
+				}
+				try
+				{
+					await TryGpmDeleteProfileByRowAsync(rowIndex);
 				}
 				catch
 				{
@@ -1277,6 +1365,48 @@ public class Form1 : Form
 				return true;
 			}
 			return false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Màn "Sign in with Google" lỗi tạm: Something went wrong / Try again — thường gặp khi OAuth Apps Script; có thể retry.</summary>
+	private static async Task<bool> PageShowsGoogleSignInSomethingWentWrongAsync(IPage page)
+	{
+		if (page == null)
+		{
+			return false;
+		}
+		try
+		{
+			string url = "";
+			try
+			{
+				url = page.Url ?? "";
+			}
+			catch
+			{
+			}
+			if (string.IsNullOrEmpty(url) || url.IndexOf("google.com", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			string html = await page.ContentAsync();
+			if (string.IsNullOrEmpty(html))
+			{
+				return false;
+			}
+			if (html.IndexOf("Something went wrong", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			if (html.IndexOf("Sign in with Google", StringComparison.OrdinalIgnoreCase) < 0 && url.IndexOf("accounts.google", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			return html.IndexOf("sorry, something went wrong there", StringComparison.OrdinalIgnoreCase) >= 0 || html.IndexOf("Try again", StringComparison.OrdinalIgnoreCase) >= 0;
 		}
 		catch
 		{
@@ -1426,6 +1556,86 @@ public class Form1 : Form
 		}
 	}
 
+	/// <summary>Execution log Apps Script: "This project requires access to your Google Account to run…"</summary>
+	private static async Task<bool> ScriptPageShowsExecutionLogAccountAccessWarningAsync(IPage scriptPage)
+	{
+		try
+		{
+			string html = await scriptPage.ContentAsync();
+			if (string.IsNullOrEmpty(html))
+			{
+				return false;
+			}
+			if (html.IndexOf("requires access to your Google Account", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			if (html.IndexOf("Please try again and allow it", StringComparison.OrdinalIgnoreCase) < 0 && html.IndexOf("allow it this time", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			string url = scriptPage.Url ?? "";
+			return url.IndexOf("script.google.com", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Khi Execution log báo thiếu quyền tài khoản: F5 (reload) trang editor rồi Run 2 lần; lặp tối đa maxAttempts.</summary>
+	private async Task RunScriptEditorTwiceWithReloadOnAccountAccessWarningAsync(IPage scriptPage, int vitri, string email, bool reloadImmediately = false, int maxAttempts = 4)
+	{
+		for (int attempt = 0; attempt < maxAttempts; attempt++)
+		{
+			if (attempt > 0 || reloadImmediately)
+			{
+				SetText(vitri, "STATUS", "[Script] Execution log: cần quyền Google Account — F5, chờ editor (" + (attempt + 1) + "/" + maxAttempts + ")...");
+				AppendAutomationLog("WARN", vitri, email, "[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.");
+				await scriptPage.ReloadAsync(new PageReloadOptions
+				{
+					WaitUntil = WaitUntilState.DOMContentLoaded,
+					Timeout = 120000f
+				});
+				await DelayBatchAsync(3500);
+				try
+				{
+					await scriptPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+					{
+						Timeout = 90000f
+					});
+				}
+				catch
+				{
+				}
+				await DelayBatchAsync(2000);
+				try
+				{
+					await scriptPage.SetViewportSizeAsync(1920, 1080);
+				}
+				catch
+				{
+				}
+				await scriptPage.WaitForSelectorAsync(".view-lines", new PageWaitForSelectorOptions
+				{
+					Timeout = 180000f
+				});
+				await DelayBatchAsync(1500);
+			}
+			SetText(vitri, "STATUS", "[Script] Editor sẵn sàng → Run function (lần 1)...");
+			await scriptPage.Locator("button[aria-label='Run the selected function']").ClickAsync();
+			await PageWaitCancellableAsync(scriptPage, _scriptRunPauseMs);
+			SetText(vitri, "STATUS", "[Script] Run function (lần 2)...");
+			await scriptPage.Locator("button[aria-label='Run the selected function']").ClickAsync();
+			await PageWaitCancellableAsync(scriptPage, _scriptRunPauseMs);
+			if (!await ScriptPageShowsExecutionLogAccountAccessWarningAsync(scriptPage))
+			{
+				return;
+			}
+		}
+		throw new InvalidOperationException("Apps Script: Execution log vẫn báo cần quyền Google Account sau " + maxAttempts + " lần (F5 + Run).");
+	}
+
 	/// <summary>Lỗi ở một bước: reload (F5), tùy chọn khôi phục; thử lại 1 lần. Nếu lỗi giống limit/throttle (message hoặc HTML trang) thì thử thêm 1 lần nữa (tối đa 3 lần chạy step).</summary>
 	private async Task RunStepWithReloadRetryAsync(IPage targetPage, int vitri, string stepLabel, Func<Task> step, Func<Task> afterReloadAsync = null)
 	{
@@ -1501,7 +1711,7 @@ public class Form1 : Form
 				try
 				{
 					int waitMs = LooksLikeRateLimitOrGoogleThrottle(ex) ? 5000 : 2000;
-					await Task.Delay(waitMs);
+					await DelayBatchAsync(waitMs);
 				}
 				catch
 				{
@@ -1686,7 +1896,7 @@ public class Form1 : Form
 				}
 				return false;
 			}
-			await Task.Delay(stepMs);
+			await DelayBatchAsync(stepMs);
 			elapsed += stepMs;
 		}
 		try
@@ -1708,6 +1918,181 @@ public class Form1 : Form
 		{
 		}
 		return true;
+	}
+
+	/// <summary>
+	/// Sau 2FA (hoặc verify xong): Google có thể đưa speedbump passkey &quot;Sign in faster&quot;.
+	/// Chờ tối đa vài giây rồi bấm &quot;Not now&quot; và chờ rời URL passkeyenrollment.
+	/// </summary>
+	private async Task TryDismissGooglePasskeyAfterVerifyAsync(IPage page, int vitri, string statusPrefix)
+	{
+		DateTime t0 = DateTime.Now;
+		bool onPasskey = false;
+		while ((DateTime.Now - t0).TotalSeconds < 22.0)
+		{
+			string u = "";
+			try
+			{
+				u = page.Url ?? "";
+			}
+			catch
+			{
+			}
+			if (!string.IsNullOrEmpty(u) && u.IndexOf("speedbump/passkeyenrollment", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				onPasskey = true;
+				break;
+			}
+			try
+			{
+				ILocator h1 = page.Locator("h1#headingText, h1[jsname='r4nke']");
+				if (await h1.CountAsync() > 0)
+				{
+					string tx = await h1.First.InnerTextAsync();
+					if (!string.IsNullOrEmpty(tx) && tx.Trim().IndexOf("Sign in faster", StringComparison.OrdinalIgnoreCase) >= 0)
+					{
+						onPasskey = true;
+						break;
+					}
+				}
+			}
+			catch
+			{
+			}
+			await DelayBatchAsync(400);
+		}
+		if (!onPasskey)
+		{
+			return;
+		}
+		try
+		{
+			SetText(vitri, "STATUS", statusPrefix + ": Gặp Sign in faster — bấm Not now...");
+		}
+		catch
+		{
+		}
+		try
+		{
+			await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+		}
+		catch
+		{
+		}
+		ILocator notNowBtn = page.Locator("[data-secondary-action-label='Not now'] div[jsname='eBSUOb'] button[jsname='LgbsSe']");
+		if (await notNowBtn.CountAsync() == 0)
+		{
+			notNowBtn = page.Locator("[data-secondary-action-label='Not now'] button[jsname='LgbsSe']:has(span[jsname='V67aGc']:has-text(\"Not now\"))");
+		}
+		if (await notNowBtn.CountAsync() == 0)
+		{
+			notNowBtn = page.Locator("[data-secondary-action-label='Not now'] button:has(span[jsname='V67aGc']:has-text(\"Not now\"))");
+		}
+		if (await notNowBtn.CountAsync() == 0)
+		{
+			notNowBtn = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+			{
+				Name = "Not now"
+			});
+		}
+		try
+		{
+			await notNowBtn.First.WaitForAsync(new LocatorWaitForOptions
+			{
+				State = WaitForSelectorState.Visible,
+				Timeout = 12000f
+			});
+		}
+		catch
+		{
+		}
+		bool clicked = false;
+		try
+		{
+			if (await notNowBtn.CountAsync() > 0)
+			{
+				try
+				{
+					await notNowBtn.First.ScrollIntoViewIfNeededAsync();
+				}
+				catch
+				{
+				}
+				await notNowBtn.First.ClickAsync(new LocatorClickOptions
+				{
+					Timeout = 15000f,
+					Force = true
+				});
+				clicked = true;
+			}
+		}
+		catch
+		{
+			try
+			{
+				var box3 = await notNowBtn.First.BoundingBoxAsync();
+				if (box3 != null)
+				{
+					float cx3 = (float)(box3.X + box3.Width / 2.0);
+					float cy3 = (float)(box3.Y + box3.Height / 2.0);
+					await page.Mouse.ClickAsync(cx3, cy3);
+					clicked = true;
+				}
+			}
+			catch
+			{
+			}
+		}
+		if (!clicked)
+		{
+			try
+			{
+				clicked = await page.EvaluateAsync<bool>(
+					@"() => {
+					  const spans = Array.from(document.querySelectorAll('span[jsname=""V67aGc""]'));
+					  const s = spans.find(x => (x.textContent || '').trim() === 'Not now');
+					  if (!s) return false;
+					  const btn = s.closest('button');
+					  if (!btn) return false;
+					  btn.click();
+					  return true;
+					}");
+			}
+			catch
+			{
+			}
+		}
+		try
+		{
+			await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+		}
+		catch
+		{
+		}
+		try
+		{
+			await page.WaitForURLAsync(new Regex("^(?!.*speedbump/passkeyenrollment).*$", RegexOptions.IgnoreCase), new PageWaitForURLOptions
+			{
+				Timeout = 15000f
+			});
+		}
+		catch
+		{
+		}
+		try
+		{
+			await DelayBatchAsync(800);
+		}
+		catch
+		{
+		}
+		try
+		{
+			SetText(vitri, "STATUS", statusPrefix + ": Đã bấm Not now (Sign in faster)");
+		}
+		catch
+		{
+		}
 	}
 
 	private static bool UrlLooksLikeGoogleMyAccountRestrictions(string url)
@@ -1759,7 +2144,7 @@ public class Form1 : Form
 			{
 				return false;
 			}
-			await Task.Delay(500);
+			await DelayBatchAsync(500);
 		}
 		try
 		{
@@ -1841,7 +2226,7 @@ public class Form1 : Form
 							catch
 							{
 							}
-							await Task.Delay(400);
+							await DelayBatchAsync(400);
 						}
 						if (await TryAbortIfGoogleSignInRecaptchaDeadEndAsync(page, vitri, email))
 						{
@@ -1862,7 +2247,7 @@ public class Form1 : Form
 					}
 					try
 					{
-						await Task.Delay(1000);
+						await DelayBatchAsync(1000);
 					}
 					catch
 					{
@@ -1915,7 +2300,7 @@ public class Form1 : Form
 									}
 								}
 								try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
-								try { await Task.Delay(1500); } catch { }
+								await DelayBatchAsync(1500);
 								try { SetText(vitri, "STATUS", "STEP 2.5: Đã bấm Not now"); } catch { }
 							}
 							else
@@ -2040,7 +2425,7 @@ public class Form1 : Form
 								if (dismissedPasskey)
 								{
 									try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
-									try { await Task.Delay(1500); } catch { }
+									await DelayBatchAsync(1500);
 									try { SetText(vitri, "STATUS", "STEP 3.0: Đã bấm Not now"); } catch { }
 									bypassVerifyByPasskey = true;
 								}
@@ -2069,7 +2454,7 @@ public class Form1 : Form
 							}
 							catch { }
 
-							await Task.Delay(500);
+							await DelayBatchAsync(500);
 						}
 					}
 					catch
@@ -2080,7 +2465,7 @@ public class Form1 : Form
 					if (bypassVerifyByPasskey)
 					{
 						try { SetText(vitri, "STATUS", "STEP 3: Bỏ qua 2FA/Recovery (Sign in faster) — qua bước tiếp theo..."); } catch { }
-						try { await Task.Delay(1500); } catch { }
+						await DelayBatchAsync(1500);
 						try
 						{
 							// cố gắng chờ thoát speedbump trước khi goto để tránh bị "kẹt" đúng URL passkeyenrollment
@@ -2287,11 +2672,11 @@ public class Form1 : Form
 					}
 					else
 					{
-						// Có 2FA nhưng không thấy ô totpPin: giữ logic fallback (trường hợp Google đưa danh sách lựa chọn)
-						// Chờ danh sách challenge render
+						// Có 2FA nhưng không thấy ô totpPin: có thể đang ở màn "2-Step Verification" / "Choose how you want to sign in"
+						// (chưa có input) — cần bấm "Get a verification code from the Google Authenticator app" (data-challengetype="6").
 						try
 						{
-							await page.WaitForSelectorAsync("div[jsname='EBHGs'][data-action='selectchallenge']", new PageWaitForSelectorOptions
+							await page.WaitForSelectorAsync("input[name='totpPin'], div[jsname='EBHGs'][data-action='selectchallenge']", new PageWaitForSelectorOptions
 							{
 								Timeout = 20000f
 							});
@@ -2300,39 +2685,124 @@ public class Form1 : Form
 						{
 						}
 
-						ILocator recovery = page.Locator("div.VV3oRb[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
-						if (await recovery.CountAsync() == 0)
-							recovery = page.Locator("div[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
-						if (await recovery.CountAsync() == 0)
-							recovery = page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Confirm your recovery email" });
-						if (await recovery.CountAsync() == 0)
-							recovery = page.Locator("div[jsname='EBHGs'][role='link']").Filter(new LocatorFilterOptions { HasTextString = "Confirm your recovery email" });
-						if (await recovery.CountAsync() > 0)
+						totpInput = page.Locator("input[name='totpPin']");
+						if (await totpInput.CountAsync() == 0)
 						{
-							SetText(vitri, "STATUS", "STEP 3: Chọn Confirm recovery email");
-							try { await recovery.First.ScrollIntoViewIfNeededAsync(); } catch { }
-							try
+							ILocator ga6 = page.Locator("div.VV3oRb[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='6']:not(.RDPZE)");
+							if (await ga6.CountAsync() == 0)
 							{
-								await recovery.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 15000f });
+								ga6 = page.Locator("div[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='6']:not(.RDPZE)");
 							}
-							catch
+							if (await ga6.CountAsync() > 0)
 							{
+								SetText(vitri, "STATUS", "STEP 3: Chọn Google Authenticator app (challenge type 6)...");
+								try { await ga6.First.ScrollIntoViewIfNeededAsync(); } catch { }
+								try
+								{
+									await ga6.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 15000f });
+								}
+								catch
+								{
+								}
+								try
+								{
+									await ga6.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f, Force = true });
+								}
+								catch
+								{
+									try
+									{
+										var boxGa = await ga6.First.BoundingBoxAsync();
+										if (boxGa != null)
+										{
+											float cxGa = (float)(boxGa.X + boxGa.Width / 2.0);
+											float cyGa = (float)(boxGa.Y + boxGa.Height / 2.0);
+											await page.Mouse.ClickAsync(cxGa, cyGa);
+										}
+									}
+									catch
+									{
+									}
+								}
+								try
+								{
+									await page.WaitForSelectorAsync("input[name='totpPin']", new PageWaitForSelectorOptions { Timeout = 20000f });
+								}
+								catch
+								{
+								}
 							}
-							await recovery.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f });
-							switchedToRecoveryEmail = true;
+						}
+
+						totpInput = page.Locator("input[name='totpPin']");
+						if (await totpInput.CountAsync() > 0)
+						{
+							SetText(vitri, "STATUS", "STEP 3: Nhập mã 2FA");
+							await RunStepWithReloadRetryAsync(page, vitri, "STEP 3 (2FA TOTP sau chọn Authenticator)", async delegate
+							{
+								token = await Get2FAToken(ma2faTrim);
+								await totpInput.First.WaitForAsync(new LocatorWaitForOptions
+								{
+									State = WaitForSelectorState.Visible,
+									Timeout = 15000f
+								});
+								await totpInput.First.FillAsync(token);
+								SetText(vitri, "STATUS", "STEP 3: Submit 2FA");
+								await page.ClickAsync("#totpNext");
+							});
+							verifyDone = await WaitForGoogleTotpSubmitOutcomeSuccessAsync(page, vitri);
+							if (!verifyDone)
+							{
+								AppendAutomationLog("WARN", vitri, email, "Dừng: mã 2FA không được chấp nhận hoặc vẫn kẹt màn TOTP.");
+								SetText(vitri, "STATUS", "Lỗi: Mã 2FA không đúng hoặc Google chưa chấp nhận — kết thúc đăng nhập.");
+								return false;
+							}
 						}
 						else
 						{
-							try { SetText(vitri, "STATUS", "STEP 3 [LOG]: Có 2FA nhưng không thấy challengetype=12 => BỎ QUA, QUA BƯỚC TIẾP THEO"); } catch { }
-							goto AFTER_VERIFY_STEP_3;
+							// Fallback: Confirm recovery email (challenge 12) nếu không mở được màn TOTP
+							ILocator recovery = page.Locator("div.VV3oRb[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
+							if (await recovery.CountAsync() == 0)
+								recovery = page.Locator("div[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
+							if (await recovery.CountAsync() == 0)
+								recovery = page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Confirm your recovery email" });
+							if (await recovery.CountAsync() == 0)
+								recovery = page.Locator("div[jsname='EBHGs'][role='link']").Filter(new LocatorFilterOptions { HasTextString = "Confirm your recovery email" });
+							if (await recovery.CountAsync() > 0)
+							{
+								SetText(vitri, "STATUS", "STEP 3: Chọn Confirm recovery email");
+								try { await recovery.First.ScrollIntoViewIfNeededAsync(); } catch { }
+								try
+								{
+									await recovery.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 15000f });
+								}
+								catch
+								{
+								}
+								await recovery.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f });
+								switchedToRecoveryEmail = true;
+							}
+							else
+							{
+								try { SetText(vitri, "STATUS", "STEP 3 [LOG]: Có 2FA nhưng không mở được TOTP và không thấy challengetype=12 => BỎ QUA"); } catch { }
+								goto AFTER_VERIFY_STEP_3;
+							}
+							verifyDone = false;
 						}
-						verifyDone = false;
 					}
 
 					// Chỉ điều hướng tiếp khi đã verify xong (2FA OK). Nếu đang ở flow recovery email thì dừng tại đó.
 					if (verifyDone)
 					{
-						await Task.Delay(5000);
+						// Sau TOTP, Google thường chuyển sang speedbump passkey "Sign in faster" — phải Not now trước khi Goto.
+						try
+						{
+							await TryDismissGooglePasskeyAfterVerifyAsync(page, vitri, "STEP 3.1");
+						}
+						catch
+						{
+						}
+						await DelayBatchAsync(5000);
 						await RunStepWithReloadRetryAsync(page, vitri, "Goto myaccount/language (sau 2FA)", async delegate
 						{
 							await page.GotoAsync("https://myaccount.google.com/language");
@@ -2364,12 +2834,19 @@ public class Form1 : Form
 									verifyDone = true;
 									break;
 								}
-								await Task.Delay(1000);
+								await DelayBatchAsync(1000);
 							}
 
 							if (verifyDone)
 							{
 								SetText(vitri, "STATUS", "STEP 3: Verify OK — tiếp tục...");
+								try
+								{
+									await TryDismissGooglePasskeyAfterVerifyAsync(page, vitri, "STEP 3.1");
+								}
+								catch
+								{
+								}
 								try
 								{
 									await RunStepWithReloadRetryAsync(page, vitri, "Goto myaccount/language (sau recovery)", async delegate
@@ -2451,11 +2928,11 @@ public class Form1 : Form
 					{
 						SetText(vitri, "STATUS", "STEP 4: Mở trang Personal Info");
 						await page.GotoAsync("https://myaccount.google.com/personal-info");
-						await Task.Delay(5000);
+						await DelayBatchAsync(5000);
 						SetText(vitri, "STATUS", "STEP 5: Click Change Avatar");
 						await page.GetByLabel("Change profile photo").ClickAsync();
 						SetText(vitri, "STATUS", "STEP 5: Chờ iframe avatar");
-						await Task.Delay(5000);
+						await DelayBatchAsync(5000);
 						await page.WaitForSelectorAsync("iframe[src*='profile-picture']", new PageWaitForSelectorOptions
 						{
 							Timeout = 30000f
@@ -2480,7 +2957,7 @@ public class Form1 : Form
 						Task<IFileChooser> chooserTask = page.WaitForFileChooserAsync();
 						await uploadBtn.ClickAsync();
 						await (await chooserTask).SetFilesAsync(avatarPath);
-						await Task.Delay(5000);
+						await DelayBatchAsync(5000);
 						SetText(vitri, "STATUS", "STEP 5: Click Next");
 						ILocator nextBtn = frame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
 						{
@@ -2503,7 +2980,7 @@ public class Form1 : Form
 							Timeout = 30000f
 						});
 						await saveBtn.ClickAsync();
-						await Task.Delay(7000);
+						await DelayBatchAsync(7000);
 					});
 				}
 				catch (Exception ex)
@@ -2515,7 +2992,7 @@ public class Form1 : Form
 			if (cb_taoform.Checked)
 			{
 				SetText(vitri, "STATUS", "[Form] Bước 1/3: Tab mới → tạo Google Form...");
-				await Task.Delay(3000);
+				await DelayBatchAsync(3000);
 				IPage formPage = await context.NewPageAsync();
 				await RunStepWithReloadRetryAsync(formPage, vitri, "[Form] Mở trang tạo Form", async delegate
 				{
@@ -2525,10 +3002,10 @@ public class Form1 : Form
 						Timeout = 120000f
 					});
 				});
-				await Task.Delay(3000);
+				await DelayBatchAsync(3000);
 				SetText(vitri, "STATUS", "[Form] Đóng popup quyền truy cập Forms (nếu có)...");
 				await DismissGoogleFormsAccessControlDialogIfPresentAsync(formPage);
-				await Task.Delay(500);
+				await DelayBatchAsync(500);
 				if (_noidung.Count == 0)
 				{
 					MessageBox.Show("Không có nội dung");
@@ -2544,7 +3021,7 @@ public class Form1 : Form
 					ILocator desc = formPage.Locator("div[aria-label='Form description']").First;
 					string titlePlain = ToPlainTextForGoogleForm(nd.tieude);
 					await formTitle.ClickAsync();
-					await formPage.WaitForTimeoutAsync(250f);
+					await PageWaitCancellableAsync(formPage, 250f);
 					if (!await TrySetGoogleFormEditablePlainAsync(formPage, "title", titlePlain))
 					{
 						SetText(vitri, "STATUS", "[Form] Tiêu đề: fallback clipboard (text/plain)...");
@@ -2555,10 +3032,10 @@ public class Form1 : Form
 							await formPage.Keyboard.PressAsync("Control+A");
 							await formPage.Keyboard.PressAsync("Backspace");
 							await ClipboardWritePlainAsync(formPage, titlePlain);
-							await formPage.WaitForTimeoutAsync(400f);
+							await PageWaitCancellableAsync(formPage, 400f);
 							await formTitle.ClickAsync();
 							await formPage.Keyboard.PressAsync("Control+V");
-							await formPage.WaitForTimeoutAsync(500f);
+							await PageWaitCancellableAsync(formPage, 500f);
 						}
 						finally
 						{
@@ -2566,11 +3043,11 @@ public class Form1 : Form
 						}
 					}
 					await formPage.EvaluateAsync("() => {\r\n  const el = document.querySelector('div[jsname=\"yrriRe\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[role=\"textbox\"][aria-label=\"Form title\"][contenteditable=\"true\"]')\r\n    || document.querySelector('div[aria-label=\"Form title\"][contenteditable=\"true\"]');\r\n  if (!el) {\r\n    return;\r\n  }\r\n  const strip = /^[\\s\\r\\n]*Untitled form[\\s\\r\\n]*/i;\r\n  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);\r\n  const textNodes = [];\r\n  let n;\r\n  while ((n = walker.nextNode())) {\r\n    textNodes.push(n);\r\n  }\r\n  for (let i = 0; i < textNodes.length; i++) {\r\n    const t = textNodes[i];\r\n    if (t.textContent && /Untitled form/i.test(t.textContent)) {\r\n      t.textContent = t.textContent.replace(strip, '');\r\n    }\r\n  }\r\n  while (el.firstChild && el.firstChild.nodeType === 3 && el.firstChild.textContent.trim() === '') {\r\n    el.removeChild(el.firstChild);\r\n  }\r\n  el.dispatchEvent(new InputEvent('input', { bubbles: true }));\r\n}");
-					await formPage.WaitForTimeoutAsync(250f);
+					await PageWaitCancellableAsync(formPage, 250f);
 					SetText(vitri, "STATUS", "[Form] Điền mô tả form (chữ thuần, không HTML)...");
 					string descPlain = ToPlainTextForGoogleForm(nd.noidungchinh);
 					await desc.ClickAsync();
-					await formPage.WaitForTimeoutAsync(500f);
+					await PageWaitCancellableAsync(formPage, 500f);
 					if (!await TrySetGoogleFormEditablePlainAsync(formPage, "description", descPlain))
 					{
 						SetText(vitri, "STATUS", "[Form] Mô tả: fallback clipboard (text/plain)...");
@@ -2580,9 +3057,9 @@ public class Form1 : Form
 							await formPage.Keyboard.PressAsync("Control+A");
 							await formPage.Keyboard.PressAsync("Delete");
 							await ClipboardWritePlainAsync(formPage, descPlain);
-							await formPage.WaitForTimeoutAsync(600f);
+							await PageWaitCancellableAsync(formPage, 600f);
 							await formPage.Keyboard.PressAsync("Control+V");
-							await formPage.WaitForTimeoutAsync(2000f);
+							await PageWaitCancellableAsync(formPage, 2000f);
 						}
 						finally
 						{
@@ -2591,9 +3068,9 @@ public class Form1 : Form
 					}
 					else
 					{
-						await formPage.WaitForTimeoutAsync(600f);
+						await PageWaitCancellableAsync(formPage, 600f);
 					}
-					await formPage.WaitForTimeoutAsync(1000f);
+					await PageWaitCancellableAsync(formPage, 1000f);
 					SetText(vitri, "STATUS", "[Form] Xóa câu hỏi mặc định (Question 1)...");
 					ILocator desc2 = formPage.Locator("div[aria-label='Question']").First;
 					await desc2.ClickAsync();
@@ -2601,10 +3078,10 @@ public class Form1 : Form
 					await desc3.ClickAsync();
 					try
 					{
-						await formPage.WaitForTimeoutAsync(1000f);
+						await PageWaitCancellableAsync(formPage, 1000f);
 						SetText(vitri, "STATUS", "[Form] Theme: mở Customize Theme...");
 						await formPage.Locator("[aria-label='Customize Theme']").ClickAsync();
-						await formPage.WaitForTimeoutAsync(1000f);
+						await PageWaitCancellableAsync(formPage, 1000f);
 						SetText(vitri, "STATUS", "[Form] Theme: chọn ảnh header (Upload → Browse)...");
 						string headerPath = ResolveBundledImagePath("header.jpg");
 						if (!File.Exists(headerPath))
@@ -2614,7 +3091,7 @@ public class Form1 : Form
 						}
 						SetText(vitri, "STATUS", "[Form] Theme: upload file " + headerPath);
 						await formPage.Locator("[aria-label='Choose image for header']").ClickAsync();
-						await formPage.WaitForTimeoutAsync(1000f);
+						await PageWaitCancellableAsync(formPage, 1000f);
 						await formPage.WaitForSelectorAsync("iframe[src*='picker']");
 						IFrameLocator frame2 = formPage.FrameLocator("iframe[src*='picker']");
 						await frame2.GetByRole(AriaRole.Tab, new FrameLocatorGetByRoleOptions
@@ -2632,24 +3109,14 @@ public class Form1 : Form
 						{
 							await frame2.GetByText("Browse").ClickAsync();
 						})).SetFilesAsync(headerPath);
-						await Task.Delay(3000);
-						await frame2.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
-						{
-							Name = "Done"
-						}).WaitForAsync(new LocatorWaitForOptions
-						{
-							Timeout = 20000f
-						});
-						await frame2.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
-						{
-							Name = "Done"
-						}).ClickAsync();
-						await Task.Delay(5000);
+						await DelayBatchAsync(2000);
+						await ClickGoogleFormsHeaderPickerDoneButtonAsync(formPage, frame2);
+						await DelayBatchAsync(2500);
 						SetText(vitri, "STATUS", "[Form] Theme: ảnh header đã áp dụng (Done)");
 						try
 						{
 							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn màu #509beb hoặc #4f9beb...");
-							await formPage.WaitForTimeoutAsync(2000f);
+							await PageWaitCancellableAsync(formPage, 2000f);
 							bool colorApplied = false;
 							LocatorFilterOptions hasThemeBlue = new LocatorFilterOptions
 							{
@@ -2670,13 +3137,13 @@ public class Form1 : Form
 									Timeout = 45000f
 								});
 								await colorSwatch.ScrollIntoViewIfNeededAsync();
-								await formPage.WaitForTimeoutAsync(200f);
+								await PageWaitCancellableAsync(formPage, 200f);
 								await colorSwatch.ClickAsync(new LocatorClickOptions
 								{
 									Timeout = 30000f,
 									Force = true
 								});
-								await formPage.WaitForTimeoutAsync(400f);
+								await PageWaitCancellableAsync(formPage, 400f);
 								ILocator applyInTheme = themeDialog.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
 								{
 									Name = "Apply"
@@ -2757,13 +3224,13 @@ public class Form1 : Form
 											Timeout = 30000f
 										});
 										await colorItem.ScrollIntoViewIfNeededAsync();
-										await formPage.WaitForTimeoutAsync(250f);
+										await PageWaitCancellableAsync(formPage, 250f);
 										await colorItem.ClickAsync(new LocatorClickOptions
 										{
 											Timeout = 30000f,
 											Force = true
 										});
-										await formPage.WaitForTimeoutAsync(500f);
+										await PageWaitCancellableAsync(formPage, 500f);
 										ILocator applyInPanel = themePanel.Locator("span.snByac").Filter(new LocatorFilterOptions
 										{
 											HasTextString = "Apply"
@@ -2859,7 +3326,7 @@ public class Form1 : Form
 							{
 								throw new Exception("Không tìm thấy ô màu #509beb / #4f9beb (dialog Theme hoặc sidebar lOsMle/kiQbk).");
 							}
-							await formPage.WaitForTimeoutAsync(1000f);
+							await PageWaitCancellableAsync(formPage, 1000f);
 							SetText(vitri, "STATUS", "[Form] Theme: đã Apply màu / hoàn tất tùy chỉnh");
 						}
 						catch (Exception exTheme)
@@ -2891,7 +3358,7 @@ public class Form1 : Form
 					}).ClickAsync();
 					SetText(vitri, "STATUS", "[Form] Publish: xác nhận trong dialog → copy link responder");
 					await formPage.GetByLabel("Click to copy responder link").ClickAsync();
-					await formPage.WaitForTimeoutAsync(500f);
+					await PageWaitCancellableAsync(formPage, 500f);
 					formLink = await formPage.EvaluateAsync<string>("() => navigator.clipboard.readText()");
 					SetText(vitri, "STATUS", "[Form] Xong: link phản hồi đã copy (clipboard); URL editor trên tab hiện tại");
 				}
@@ -2902,7 +3369,7 @@ public class Form1 : Form
 				try
 				{
 					SetText(vitri, "STATUS", "[Sheet] Bước 2/3: Tab mới → Google Sheets (tạo file)...");
-					await Task.Delay(5000);
+					await DelayBatchAsync(5000);
 					IPage sheetPage = await context.NewPageAsync();
 					await RunStepWithReloadRetryAsync(sheetPage, vitri, "[Sheet] Mở Sheets + chờ tab", async delegate
 					{
@@ -2911,7 +3378,7 @@ public class Form1 : Form
 							WaitUntil = WaitUntilState.DOMContentLoaded,
 							Timeout = 120000f
 						});
-						await Task.Delay(4500);
+						await DelayBatchAsync(4500);
 						SetText(vitri, "STATUS", "[Sheet] Chờ tab sheet (docs-sheet-tab-name)...");
 						await sheetPage.WaitForSelectorAsync(".docs-sheet-tab-name", new PageWaitForSelectorOptions
 						{
@@ -2933,7 +3400,7 @@ public class Form1 : Form
 							WaitUntil = WaitUntilState.DOMContentLoaded,
 							Timeout = 80000f
 						});
-						await Task.Delay(5000);
+						await DelayBatchAsync(5000);
 						try
 						{
 							await scriptPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
@@ -2944,7 +3411,7 @@ public class Form1 : Form
 						catch
 						{
 						}
-						await Task.Delay(2000);
+						await DelayBatchAsync(2000);
 						await scriptPage.SetViewportSizeAsync(1920, 1080);
 						SetText(vitri, "STATUS", "[Script] Chờ editor Monaco (.view-lines)...");
 						await scriptPage.WaitForSelectorAsync(".view-lines", new PageWaitForSelectorOptions
@@ -2975,14 +3442,14 @@ public class Form1 : Form
 					}
 					SetText(vitri, "STATUS", "[Script] Dán mã: thay [LINK_FORM] / [LINK_SHEET] / 123456...");
 					await scriptPage.EvaluateAsync("(code) => {\r\n                        let editor = window.monaco?.editor?.getModels?.()[0];\r\n                        if (editor) {\r\n                            editor.setValue(code); // \ud83d\udd25 cách chuẩn nhất\r\n                        }\r\n                         }", newCode);
-					await Task.Delay(5000);
+					await DelayBatchAsync(5000);
 					IElementHandle closeBtn = await scriptPage.QuerySelectorAsync("button[aria-label='close']");
 					if (closeBtn != null)
 					{
 						try
 						{
 							await closeBtn.ClickAsync();
-							await Task.Delay(500);
+							await DelayBatchAsync(500);
 						}
 						catch
 						{
@@ -2994,7 +3461,7 @@ public class Form1 : Form
 						Timeout = 60000f
 					});
 					await scriptPage.ClickAsync("[aria-label='Add a service']");
-					await Task.Delay(2500);
+					await DelayBatchAsync(2500);
 					await scriptPage.WaitForSelectorAsync("text=Add a service", new PageWaitForSelectorOptions
 					{
 						Timeout = 45000f
@@ -3006,13 +3473,16 @@ public class Form1 : Form
 					{
 						Name = "Add"
 					}).ClickAsync();
-					await Task.Delay(2500);
-					SetText(vitri, "STATUS", "[Script] Editor sẵn sàng → Run function (lần 1)...");
-					await scriptPage.Locator("button[aria-label='Run the selected function']").ClickAsync();
-					await scriptPage.WaitForTimeoutAsync(10000f);
-					SetText(vitri, "STATUS", "[Script] Run function (lần 2)...");
-					await scriptPage.Locator("button[aria-label='Run the selected function']").ClickAsync();
-					await scriptPage.WaitForTimeoutAsync(10000f);
+					await DelayBatchAsync(2500);
+					try
+					{
+						await RunScriptEditorTwiceWithReloadOnAccountAccessWarningAsync(scriptPage, vitri, email, reloadImmediately: false, maxAttempts: 4);
+					}
+					catch (InvalidOperationException exAccLog)
+					{
+						SetText(vitri, "STATUS", "[Script] " + exAccLog.Message);
+						throw;
+					}
 					try
 					{
 						SetText(vitri, "STATUS", "[Script] OAuth: chờ cấp quyền (Authorization required / Review permissions)...");
@@ -3042,120 +3512,190 @@ public class Form1 : Form
 								Timeout = 20000f
 							});
 						}
-						await oauthReviewBtn.ClickAsync();
-						IPage authPage = await context.WaitForPageAsync();
-						await authPage.WaitForLoadStateAsync();
-						try
+						IPage authPage = null;
+						const int maxOauthSomethingWrongAttempts = 3;
+						for (int oauthSw = 0; oauthSw < maxOauthSomethingWrongAttempts; oauthSw++)
 						{
-							await authPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+							if (oauthSw > 0)
 							{
-								Timeout = 60000f
-							});
-						}
-						catch
-						{
-						}
-						await Task.Delay(2500);
-						string ma2faOAuthTrim = ma2fa?.Trim() ?? "";
-						bool hasSecretForOAuth = ma2faOAuthTrim.Length > 0;
-						if (hasSecretForOAuth)
-						{
-							string oldToken = token;
-							string newToken = oldToken;
-							while (newToken == oldToken)
-							{
-								await Task.Delay(1000);
-								newToken = await Get2FAToken(ma2faOAuthTrim);
+								SetText(vitri, "STATUS", "[Script] OAuth: Google Something went wrong — đóng tab đăng nhập, thử lại (" + (oauthSw + 1) + "/" + maxOauthSomethingWrongAttempts + ")...");
+								AppendAutomationLog("WARN", vitri, email, "[Script] OAuth retry sau màn Something went wrong.");
+								try
+								{
+									if (authPage != null && !authPage.IsClosed)
+									{
+										await authPage.CloseAsync();
+									}
+								}
+								catch
+								{
+								}
+								try
+								{
+									await scriptPage.BringToFrontAsync();
+								}
+								catch
+								{
+								}
+								await DelayBatchAsync(2500);
 							}
-							token = newToken;
+							await oauthReviewBtn.ClickAsync();
+							authPage = await context.WaitForPageAsync();
+							await authPage.WaitForLoadStateAsync();
 							try
 							{
-								await authPage.WaitForSelectorAsync("input[name='totpPin']", new PageWaitForSelectorOptions
+								await authPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
 								{
-									Timeout = 25000f
+									Timeout = 60000f
 								});
-								await authPage.FillAsync("input[name='totpPin']", token);
-								await authPage.ClickAsync("#totpNext");
-								await scriptPage.WaitForTimeoutAsync(9000f);
-							}
-							catch
-							{
-								SetText(vitri, "STATUS", "[Script] OAuth: có secret 2FA nhưng không thấy ô TOTP — tiếp tục bước Continue / cấp quyền");
-								await Task.Delay(2000);
-							}
-						}
-						else
-						{
-							SetText(vitri, "STATUS", "[Script] OAuth: không có mã 2FA trong Account — bỏ qua TOTP, tiếp tục cấp quyền");
-							try
-							{
-								ILocator totpMaybe = authPage.Locator("input[name='totpPin']");
-								await totpMaybe.WaitForAsync(new LocatorWaitForOptions
-								{
-									State = WaitForSelectorState.Visible,
-									Timeout = 10000f
-								});
-								SetText(vitri, "STATUS", "[Script] OAuth: Google vẫn hiện TOTP — thiếu secret trong Account, bỏ qua điền → tiếp tục");
 							}
 							catch
 							{
 							}
-							await Task.Delay(2000);
-						}
-						ILocator advanced = authPage.Locator("a:has-text('Advanced')");
-						if (await advanced.CountAsync() > 0)
-						{
-							await advanced.ClickAsync();
-							await scriptPage.WaitForTimeoutAsync(2000f);
-						}
-						ILocator gotouniti = authPage.Locator("a:has-text('Go to Untitled project (unsafe)')");
-						if (await gotouniti.CountAsync() > 0)
-						{
-							await gotouniti.ClickAsync();
-							await scriptPage.WaitForTimeoutAsync(3500f);
-						}
-						else
-						{
-							await scriptPage.WaitForTimeoutAsync(2000f);
-						}
-						await authPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
-						{
-							Name = "Continue"
-						}).ClickAsync();
-						await scriptPage.WaitForTimeoutAsync(4500f);
-						try
-						{
-							await authPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+							await DelayBatchAsync(2500);
+							if (await PageShowsGoogleSignInSomethingWentWrongAsync(authPage))
 							{
-								Timeout = 30000f
+								if (oauthSw >= maxOauthSomethingWrongAttempts - 1)
+								{
+									throw new InvalidOperationException("Google OAuth: Something went wrong (đã thử " + maxOauthSomethingWrongAttempts + " lần).");
+								}
+								continue;
+							}
+							string ma2faOAuthTrim = ma2fa?.Trim() ?? "";
+							bool hasSecretForOAuth = ma2faOAuthTrim.Length > 0;
+							if (hasSecretForOAuth)
+							{
+								string oldToken = token;
+								string newToken = oldToken;
+								while (newToken == oldToken)
+								{
+									await DelayBatchAsync(1000);
+									newToken = await Get2FAToken(ma2faOAuthTrim);
+								}
+								token = newToken;
+								try
+								{
+									await authPage.WaitForSelectorAsync("input[name='totpPin']", new PageWaitForSelectorOptions
+									{
+										Timeout = 25000f
+									});
+									await authPage.FillAsync("input[name='totpPin']", token);
+									await authPage.ClickAsync("#totpNext");
+									await PageWaitCancellableAsync(scriptPage, 9000f);
+								}
+								catch
+								{
+									SetText(vitri, "STATUS", "[Script] OAuth: có secret 2FA nhưng không thấy ô TOTP — tiếp tục bước Continue / cấp quyền");
+									await DelayBatchAsync(2000);
+								}
+							}
+							else
+							{
+								SetText(vitri, "STATUS", "[Script] OAuth: không có mã 2FA trong Account — bỏ qua TOTP, tiếp tục cấp quyền");
+								try
+								{
+									ILocator totpMaybe = authPage.Locator("input[name='totpPin']");
+									await totpMaybe.WaitForAsync(new LocatorWaitForOptions
+									{
+										State = WaitForSelectorState.Visible,
+										Timeout = 10000f
+									});
+									SetText(vitri, "STATUS", "[Script] OAuth: Google vẫn hiện TOTP — thiếu secret trong Account, bỏ qua điền → tiếp tục");
+								}
+								catch
+								{
+								}
+								await DelayBatchAsync(2000);
+							}
+							if (await PageShowsGoogleSignInSomethingWentWrongAsync(authPage))
+							{
+								if (oauthSw >= maxOauthSomethingWrongAttempts - 1)
+								{
+									throw new InvalidOperationException("Google OAuth: Something went wrong sau bước 2FA (đã thử " + maxOauthSomethingWrongAttempts + " lần).");
+								}
+								continue;
+							}
+							ILocator advanced = authPage.Locator("a:has-text('Advanced')");
+							if (await advanced.CountAsync() > 0)
+							{
+								await advanced.ClickAsync();
+								await PageWaitCancellableAsync(scriptPage, 2000f);
+							}
+							ILocator gotouniti = authPage.Locator("a:has-text('Go to Untitled project (unsafe)')");
+							if (await gotouniti.CountAsync() > 0)
+							{
+								await gotouniti.ClickAsync();
+								await PageWaitCancellableAsync(scriptPage, 3500f);
+							}
+							else
+							{
+								await PageWaitCancellableAsync(scriptPage, 2000f);
+							}
+							await authPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+							{
+								Name = "Continue"
+							}).ClickAsync();
+							await PageWaitCancellableAsync(scriptPage, 4500f);
+							try
+							{
+								await authPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+								{
+									Timeout = 30000f
+								});
+							}
+							catch
+							{
+							}
+							await DelayBatchAsync(2000);
+							if (await PageShowsGoogleSignInSomethingWentWrongAsync(authPage))
+							{
+								if (oauthSw >= maxOauthSomethingWrongAttempts - 1)
+								{
+									throw new InvalidOperationException("Google OAuth: Something went wrong sau Continue (đã thử " + maxOauthSomethingWrongAttempts + " lần).");
+								}
+								continue;
+							}
+							ILocator consentCheckbox = authPage.Locator("input[type='checkbox'][jsname='YPqjbf']").Or(authPage.GetByRole(AriaRole.Checkbox)).First;
+							await consentCheckbox.WaitForAsync(new LocatorWaitForOptions
+							{
+								State = WaitForSelectorState.Visible,
+								Timeout = 45000f
 							});
+							await DelayBatchAsync(1500);
+							await consentCheckbox.CheckAsync(new LocatorCheckOptions
+							{
+								Timeout = 20000f
+							});
+							await PageWaitCancellableAsync(scriptPage, 4500f);
+							await authPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+							{
+								Name = "Continue"
+							}).ClickAsync();
+							await PageWaitCancellableAsync(scriptPage, 3000f);
+							SetText(vitri, "STATUS", "[Script] OAuth: cấp quyền / Continue / checkbox → xong");
+							break;
 						}
-						catch
-						{
-						}
-						await Task.Delay(2000);
-						ILocator consentCheckbox = authPage.Locator("input[type='checkbox'][jsname='YPqjbf']").Or(authPage.GetByRole(AriaRole.Checkbox)).First;
-						await consentCheckbox.WaitForAsync(new LocatorWaitForOptions
-						{
-							State = WaitForSelectorState.Visible,
-							Timeout = 45000f
-						});
-						await Task.Delay(1500);
-						await consentCheckbox.CheckAsync(new LocatorCheckOptions
-						{
-							Timeout = 20000f
-						});
-						await scriptPage.WaitForTimeoutAsync(4500f);
-						await authPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
-						{
-							Name = "Continue"
-						}).ClickAsync();
-						await scriptPage.WaitForTimeoutAsync(3000f);
-						SetText(vitri, "STATUS", "[Script] OAuth: cấp quyền / Continue / checkbox → xong");
 					}
 					catch (Exception ex7)
 					{
 						SetText(vitri, "STATUS", "[Script] Lỗi OAuth / cấp quyền Run: " + ex7.Message);
+					}
+					try
+					{
+						if (await ScriptPageShowsExecutionLogAccountAccessWarningAsync(scriptPage))
+						{
+							SetText(vitri, "STATUS", "[Script] Sau OAuth vẫn thấy cảnh báo Execution log — F5 và Run lại...");
+							AppendAutomationLog("WARN", vitri, email, "[Script] Cảnh báo account access còn sau OAuth — F5 + Run.");
+							await RunScriptEditorTwiceWithReloadOnAccountAccessWarningAsync(scriptPage, vitri, email, reloadImmediately: true, maxAttempts: 3);
+						}
+					}
+					catch (InvalidOperationException exAcc2)
+					{
+						SetText(vitri, "STATUS", "[Script] " + exAcc2.Message);
+					}
+					catch (Exception exAfterOauth)
+					{
+						SetText(vitri, "STATUS", "[Script] Lỗi khi F5 sau OAuth (Execution log): " + exAfterOauth.Message);
 					}
 				}
 				catch (Exception ex8)
@@ -3528,7 +4068,7 @@ public class Form1 : Form
 			}
 			ILocator last = target.Last;
 			await last.ScrollIntoViewIfNeededAsync();
-			await page.WaitForTimeoutAsync(120f);
+			await PlaywrightWaitHelpers.PageWaitAsync(page, 120f);
 			var box = await last.BoundingBoxAsync();
 			if (box == null)
 			{
@@ -3814,7 +4354,7 @@ public class Form1 : Form
 					}
 				}
 				await page.Keyboard.PressAsync("Enter");
-				await page.WaitForTimeoutAsync(800f);
+				await PlaywrightWaitHelpers.PageWaitAsync(page, 800f);
 				if (!await PageOrAnyFrameHasAlertDialogAsync(page))
 				{
 					return true;
@@ -3848,7 +4388,7 @@ public class Form1 : Form
 					await anyBtn.Last.FocusAsync();
 				}
 				await page.Keyboard.PressAsync("Enter");
-				await page.WaitForTimeoutAsync(800f);
+				await PlaywrightWaitHelpers.PageWaitAsync(page, 800f);
 				return !await PageOrAnyFrameHasAlertDialogAsync(page);
 			}
 			catch
@@ -3950,11 +4490,221 @@ public class Form1 : Form
 		return false;
 	}
 
+	/// <summary>Trong một document (iframe picker Google): tìm nút Done / KbvHGe và kích hoạt chuột đầy đủ — crop UI đôi khi không phản hồi Playwright Click thường.</summary>
+	private static async Task<bool> TryJsClickPickerDoneInFrameDocumentAsync(IFrame frame)
+	{
+		if (frame == null)
+		{
+			return false;
+		}
+		try
+		{
+			return await frame.EvaluateAsync<bool>(@"() => {
+				function visible(el) {
+					if (!el) return false;
+					const st = window.getComputedStyle(el);
+					if (st.display === 'none' || st.visibility === 'hidden' || parseFloat(st.opacity || '1') === 0) return false;
+					const r = el.getBoundingClientRect();
+					return r.width > 2 && r.height > 2;
+				}
+				function scrollAndFire(el) {
+					if (!el || !visible(el)) return false;
+					try { el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' }); } catch (e0) {}
+					const o = { bubbles: true, cancelable: true, view: window, composed: true };
+					try {
+						const r = el.getBoundingClientRect();
+						const cx = Math.floor(r.left + r.width / 2);
+						const cy = Math.floor(r.top + r.height / 2);
+						el.dispatchEvent(new PointerEvent('pointerdown', Object.assign({ pointerId: 1, pointerType: 'mouse', clientX: cx, clientY: cy, isPrimary: true }, o)));
+						el.dispatchEvent(new PointerEvent('pointerup', Object.assign({ pointerId: 1, pointerType: 'mouse', clientX: cx, clientY: cy, isPrimary: true }, o)));
+						el.dispatchEvent(new MouseEvent('mousedown', Object.assign({ clientX: cx, clientY: cy }, o)));
+						el.dispatchEvent(new MouseEvent('mouseup', Object.assign({ clientX: cx, clientY: cy }, o)));
+						el.dispatchEvent(new MouseEvent('click', Object.assign({ clientX: cx, clientY: cy }, o)));
+					} catch (e1) {}
+					if (typeof el.click === 'function') {
+						try { el.click(); } catch (e2) {}
+					}
+					return true;
+				}
+				const byJsname = document.querySelector('button[jsname=""KbvHGe""]')
+					|| document.querySelector('[jsname=""KbvHGe""]')
+					|| document.querySelector('div[jsname=""KbvHGe""]');
+				if (byJsname && scrollAndFire(byJsname)) return true;
+				const mat = document.querySelector('button.VfPpkd-LgbsSe, .VfPpkd-LgbsSe[role=""button""]');
+				if (mat) {
+					const t = (mat.innerText || mat.textContent || '').trim();
+					if (/^done\.?$/i.test(t) && scrollAndFire(mat)) return true;
+				}
+				const candidates = document.querySelectorAll('button, [role=""button""], div[role=""button""]');
+				for (const el of candidates) {
+					const raw = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+					if (!raw) continue;
+					const u = raw.toUpperCase();
+					if (u === 'DONE' || u === 'DONE.' || (u.startsWith('DONE') && raw.length <= 8)) {
+						if (scrollAndFire(el)) return true;
+					}
+				}
+				return false;
+			}").ConfigureAwait(false);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Duyệt mọi frame của trang (picker thường là docs.google.com/picker, có thể lồng iframe).</summary>
+	private static async Task<bool> TryJsClickPickerDoneInAnyFrameAsync(IPage formPage)
+	{
+		IFrame[] frames = formPage.Frames.ToArray();
+		Array.Sort(frames, (a, b) =>
+		{
+			bool ap = a.Url != null && a.Url.IndexOf("picker", StringComparison.OrdinalIgnoreCase) >= 0;
+			bool bp = b.Url != null && b.Url.IndexOf("picker", StringComparison.OrdinalIgnoreCase) >= 0;
+			if (ap == bp)
+			{
+				return 0;
+			}
+			return ap ? -1 : 1;
+		});
+		foreach (IFrame f in frames)
+		{
+			if (await TryJsClickPickerDoneInFrameDocumentAsync(f).ConfigureAwait(false))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/// <summary>Picker Google Forms "Select Header" sau khi upload: nút Done dùng jsname KbvHGe, aria-label thường là "Done." (có dấu chấm). Có thể nằm trong iframe picker hoặc dialog trên trang chính.</summary>
+	private static async Task ClickGoogleFormsHeaderPickerDoneButtonAsync(IPage formPage, IFrameLocator pickerFrame)
+	{
+		ILocator headerDialogMain = formPage.Locator("div[role='dialog'][aria-label='Select Header']").Or(formPage.Locator("div[jsname='BleNNd'][role='dialog']"));
+		ILocator doneInDialogMain = headerDialogMain.Locator("button[jsname='KbvHGe']");
+		ILocator doneInFrameByJsname = pickerFrame.Locator("button[jsname='KbvHGe']").Or(pickerFrame.Locator("[jsname='KbvHGe']"));
+		ILocator doneInFrameByRole = pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
+		{
+			Name = "Done."
+		}).Or(pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
+		{
+			Name = "Done"
+		})).Or(pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
+		{
+			Name = "DONE"
+		}));
+		ILocator doneInMainByRole = headerDialogMain.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
+		{
+			Name = "Done."
+		}).Or(headerDialogMain.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
+		{
+			Name = "Done"
+		}));
+		ILocator doneInFrameByText = pickerFrame.Locator("button").Filter(new LocatorFilterOptions
+		{
+			HasTextRegex = new Regex("^\\s*DONE\\.?\\s*$", RegexOptions.IgnoreCase)
+		});
+		ILocator[] tryOrder = new ILocator[5] { doneInFrameByJsname, doneInFrameByRole, doneInFrameByText, doneInDialogMain, doneInMainByRole };
+		for (int i = 0; i < 50; i++)
+		{
+			try
+			{
+				ILocator loadingBar = headerDialogMain.Locator("[jsname='aZ2wEe'][data-active='true']");
+				if (await loadingBar.CountAsync() > 0)
+				{
+					try
+					{
+						await loadingBar.First.WaitForAsync(new LocatorWaitForOptions
+						{
+							State = WaitForSelectorState.Hidden,
+							Timeout = 4000f
+						});
+					}
+					catch
+					{
+					}
+				}
+				ILocator loadingInFrame = pickerFrame.Locator("[jsname='aZ2wEe'][data-active='true']");
+				if (await loadingInFrame.CountAsync() > 0)
+				{
+					try
+					{
+						await loadingInFrame.First.WaitForAsync(new LocatorWaitForOptions
+						{
+							State = WaitForSelectorState.Hidden,
+							Timeout = 4000f
+						});
+					}
+					catch
+					{
+					}
+				}
+			}
+			catch
+			{
+			}
+			foreach (ILocator loc in tryOrder)
+			{
+				try
+				{
+					if (await loc.CountAsync() == 0)
+					{
+						continue;
+					}
+					ILocator first = loc.First;
+					if (!await first.IsVisibleAsync())
+					{
+						continue;
+					}
+					await first.ScrollIntoViewIfNeededAsync();
+					await PlaywrightWaitHelpers.PageWaitAsync(formPage, 200f);
+					await first.ClickAsync(new LocatorClickOptions
+					{
+						Timeout = 10000f,
+						Force = true
+					});
+					return;
+				}
+				catch
+				{
+				}
+			}
+			try
+			{
+				if (await TryJsClickPickerDoneInAnyFrameAsync(formPage).ConfigureAwait(false))
+				{
+					await PlaywrightWaitHelpers.PageWaitAsync(formPage, 500f);
+					return;
+				}
+			}
+			catch
+			{
+			}
+			await Task.Delay(400);
+		}
+		try
+		{
+			bool jsOk = await formPage.EvaluateAsync<bool>("() => {\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Select Header\"]') || document.querySelector('div[jsname=\"BleNNd\"][role=\"dialog\"]');\r\n  if (!dlg) return false;\r\n  const btn = dlg.querySelector('button[jsname=\"KbvHGe\"]');\r\n  if (!btn) return false;\r\n  btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));\r\n  return true;\r\n}");
+			if (jsOk)
+			{
+				return;
+			}
+		}
+		catch
+		{
+		}
+		if (await TryJsClickPickerDoneInAnyFrameAsync(formPage).ConfigureAwait(false))
+		{
+			return;
+		}
+		throw new TimeoutException("Không bấm được nút Done (Select Header / crop ảnh).");
+	}
+
 	private static async Task DismissGoogleFormsAccessControlDialogIfPresentAsync(IPage page, bool waitBeforeCheck = true)
 	{
 		if (waitBeforeCheck)
 		{
-			await page.WaitForTimeoutAsync(600f);
+			await PlaywrightWaitHelpers.PageWaitAsync(page, 600f);
 		}
 		for (int i = 0; i < 14; i++)
 		{
@@ -3966,7 +4716,7 @@ public class Form1 : Form
 			{
 				return;
 			}
-			await page.WaitForTimeoutAsync(350f);
+			await PlaywrightWaitHelpers.PageWaitAsync(page, 350f);
 		}
 		string[] buttonNames = new string[4] { "Got it", "Đã hiểu", "Tôi hiểu", "OK" };
 		for (int round = 0; round < 3; round++)
@@ -4016,7 +4766,7 @@ public class Form1 : Form
 			{
 				return;
 			}
-			await page.WaitForTimeoutAsync(900f);
+			await PlaywrightWaitHelpers.PageWaitAsync(page, 900f);
 		}
 	}
 
@@ -4306,7 +5056,7 @@ public class Form1 : Form
 		_uiToolTip.SetToolTip(cb_gpm_group, "Nhóm chứa profile A, B, C… khớp thứ tự dòng trong lưới.");
 		_uiToolTip.SetToolTip(cb_changeinfo, "Sau khi đăng nhập: mở myaccount và đổi ảnh đại diện (cần avatar.jpg).");
 		_uiToolTip.SetToolTip(cb_taoform, "Pipeline: tạo Google Form, Sheet, Apps Script và gắn mã (cần nội dung trong Data\\).");
-		_uiToolTip.SetToolTip(cb_offchrome, "Đóng context Chrome sau mỗi account (tiết kiệm RAM; bỏ tick để xem lại tab).");
+		_uiToolTip.SetToolTip(cb_offchrome, "Sau mỗi account: đóng context Playwright + gọi GPM đóng profile + ngắt CDP (tắt cửa sổ Chrome thật; tiết kiệm RAM). Bỏ tick để giữ tab xem lại.");
 	}
 
 	private void Form1_Shown(object sender, EventArgs e)
@@ -4329,7 +5079,23 @@ public class Form1 : Form
 		int fail = Volatile.Read(ref _batchFail);
 		if (_running)
 		{
-			lbl_status.Text = $"Chạy: {_runningThreads} luồng | OK {ok} | Lỗi {fail}";
+			int done = ok + fail;
+			string progress = _batchTotalPlanned > 0 ? $" | {done}/{_batchTotalPlanned}" : "";
+			string eta = "";
+			if (_batchTotalPlanned > 0 && done > 0 && done < _batchTotalPlanned)
+			{
+				double elapsed = (DateTime.UtcNow - _batchStartedUtc).TotalSeconds;
+				if (elapsed >= 4.0)
+				{
+					double rate = (double)done / elapsed;
+					if (rate > 0.0001)
+					{
+						int remainSec = (int)Math.Ceiling((_batchTotalPlanned - done) / rate);
+						eta = $" | ~{remainSec / 60}p{remainSec % 60:D2}s";
+					}
+				}
+			}
+			lbl_status.Text = $"Chạy: {_runningThreads} luồng | OK {ok} | Lỗi {fail}{progress}{eta}";
 		}
 		else if (_lastBatchOk > 0 || _lastBatchFail > 0)
 		{
@@ -4423,6 +5189,14 @@ public class Form1 : Form
 			{
 				cb_offchrome.Checked = result4;
 			}
+			if (dictionary.ContainsKey("wait_slice_ms") && int.TryParse(dictionary["wait_slice_ms"], out int wsm) && wsm >= 50 && wsm <= 2000)
+			{
+				_waitSliceMs = wsm;
+			}
+			if (dictionary.ContainsKey("script_run_pause_ms") && int.TryParse(dictionary["script_run_pause_ms"], out int srpm) && srpm >= 1000 && srpm <= 120000)
+			{
+				_scriptRunPauseMs = srpm;
+			}
 			ApplySavedWindowPlacement(dictionary);
 		}
 		catch (Exception)
@@ -4514,6 +5288,8 @@ public class Form1 : Form
 		d["changeinfo"] = cb_changeinfo.Checked.ToString();
 		d["taoform"] = cb_taoform.Checked.ToString();
 		d["offchrome"] = cb_offchrome.Checked.ToString();
+		d["wait_slice_ms"] = _waitSliceMs.ToString();
+		d["script_run_pause_ms"] = _scriptRunPauseMs.ToString();
 		try
 		{
 			if (WindowState == FormWindowState.Normal)
@@ -4646,6 +5422,7 @@ public class Form1 : Form
 	{
 		try
 		{
+			ShutdownAutomationLogWriter();
 			Validate();
 			SaveAccount();
 			SaveSettings();
@@ -4952,6 +5729,8 @@ public class Form1 : Form
 		this.cb_gpm_group = new System.Windows.Forms.ComboBox();
 		this.topbar = new System.Windows.Forms.Panel();
 		this.lbl_app_tagline = new System.Windows.Forms.Label();
+		this.btn_export_diagnostics = new System.Windows.Forms.Button();
+		this.btn_open_data_folder = new System.Windows.Forms.Button();
 		this.btn_start = new System.Windows.Forms.Button();
 		this.btn_stop = new System.Windows.Forms.Button();
 		this.dataGridView1 = new System.Windows.Forms.DataGridView();
@@ -5082,6 +5861,8 @@ public class Form1 : Form
 		this.cb_gpm_group.Visible = false;
 		this.topbar.BackColor = System.Drawing.Color.FromArgb(45, 45, 48);
 		this.topbar.Controls.Add(this.lbl_app_tagline);
+		this.topbar.Controls.Add(this.btn_export_diagnostics);
+		this.topbar.Controls.Add(this.btn_open_data_folder);
 		this.topbar.Controls.Add(this.btn_start);
 		this.topbar.Controls.Add(this.btn_stop);
 		this.topbar.Dock = System.Windows.Forms.DockStyle.Top;
@@ -5091,9 +5872,9 @@ public class Form1 : Form
 		this.lbl_app_tagline.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
 		this.lbl_app_tagline.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
 		this.lbl_app_tagline.ForeColor = System.Drawing.Color.FromArgb(140, 140, 150);
-		this.lbl_app_tagline.Location = new System.Drawing.Point(252, 14);
+		this.lbl_app_tagline.Location = new System.Drawing.Point(520, 14);
 		this.lbl_app_tagline.Name = "lbl_app_tagline";
-		this.lbl_app_tagline.Size = new System.Drawing.Size(920, 22);
+		this.lbl_app_tagline.Size = new System.Drawing.Size(652, 22);
 		this.lbl_app_tagline.TabIndex = 2;
 		this.lbl_app_tagline.Text = "Tự động đăng nhập Gmail · GPM Login (API 19995) · Playwright";
 		this.lbl_app_tagline.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -5125,6 +5906,34 @@ public class Form1 : Form
 		this.btn_stop.Text = "■  Dừng";
 		this.btn_stop.UseVisualStyleBackColor = false;
 		this.btn_stop.Click += new System.EventHandler(btnStop_Click);
+		this.btn_open_data_folder.BackColor = System.Drawing.Color.FromArgb(63, 63, 70);
+		this.btn_open_data_folder.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.btn_open_data_folder.FlatAppearance.BorderSize = 0;
+		this.btn_open_data_folder.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(80, 80, 88);
+		this.btn_open_data_folder.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.btn_open_data_folder.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+		this.btn_open_data_folder.ForeColor = System.Drawing.Color.FromArgb(220, 220, 225);
+		this.btn_open_data_folder.Location = new System.Drawing.Point(240, 10);
+		this.btn_open_data_folder.Name = "btn_open_data_folder";
+		this.btn_open_data_folder.Size = new System.Drawing.Size(130, 34);
+		this.btn_open_data_folder.TabIndex = 3;
+		this.btn_open_data_folder.Text = "Thư mục Data";
+		this.btn_open_data_folder.UseVisualStyleBackColor = false;
+		this.btn_open_data_folder.Click += new System.EventHandler(btn_open_data_folder_Click);
+		this.btn_export_diagnostics.BackColor = System.Drawing.Color.FromArgb(63, 63, 70);
+		this.btn_export_diagnostics.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.btn_export_diagnostics.FlatAppearance.BorderSize = 0;
+		this.btn_export_diagnostics.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(80, 80, 88);
+		this.btn_export_diagnostics.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.btn_export_diagnostics.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+		this.btn_export_diagnostics.ForeColor = System.Drawing.Color.FromArgb(220, 220, 225);
+		this.btn_export_diagnostics.Location = new System.Drawing.Point(376, 10);
+		this.btn_export_diagnostics.Name = "btn_export_diagnostics";
+		this.btn_export_diagnostics.Size = new System.Drawing.Size(132, 34);
+		this.btn_export_diagnostics.TabIndex = 4;
+		this.btn_export_diagnostics.Text = "ZIP chẩn đoán";
+		this.btn_export_diagnostics.UseVisualStyleBackColor = false;
+		this.btn_export_diagnostics.Click += new System.EventHandler(btn_export_diagnostics_Click);
 		this.dataGridView1.AllowUserToResizeRows = false;
 		this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 32);
 		this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;

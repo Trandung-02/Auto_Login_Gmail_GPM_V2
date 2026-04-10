@@ -1,0 +1,35 @@
+# Secrets & dữ liệu nhạy cảm (không commit)
+Data/Account.txt
+Data/proxy.txt
+**/Account.txt
+**/proxy.txt
+
+# Log & ảnh lỗi
+Data/automation.log
+Data/automation.log.*.bak
+Data/login_success.log
+Data/dead_recaptcha_verify.log
+Data/dead_google_restrictions.log
+Data/*.log
+Data/screenshots/
+
+# Cookie / checkpoint / datafile runtime
+Checkpoint/*.txt
+datafile/input/*
+datafile/used/*
+
+# Build
+**/bin/
+**/obj/
+**/*.user
+**/*.suo
+**/.vs/
+
+# OS / IDE
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+
+# NuGet / Playwright cache (nếu có trong thư mục project)
+packages/

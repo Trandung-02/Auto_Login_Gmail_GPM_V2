@@ -1,153 +1,140 @@
-# Auto Login Gmail GPM V2 — Hướng dẫn sử dụng
+# Auto Login Gmail GPM V2
 
-Ứng dụng desktop **PlayAPP** (`.NET 8` + **Microsoft.Playwright**) tự động hóa trình duyệt. Trong thư mục này **không có mã nguồn**, chỉ bản build: `PlayAPP.exe`, `PlayAPP.dll` và file cấu hình trong `Data\`.
+Ứng dụng desktop **PlayAPP** (**.NET 8** + **WinForms** + **Microsoft.Playwright**) tự động đăng nhập Gmail, tích hợp **GPM Login API** (cổng **19995**), proxy, và (tùy chọn) pipeline **Google Form + Sheets + Apps Script**.
+
+---
+
+## Mã nguồn & build
+
+- **Project chính:** `PlayAPP_decompiled_proj/PlayAPP.csproj` (mã C# trong `PlayAPP/`, gồm `Form1.cs`, `GpmApi.cs`, `DiagnosticsExport.cs`, …).
+- **Giải pháp Visual Studio / `dotnet sln`:** `PlayAPP_decompiled_proj/PlayAPP.sln`.
+- **Build Release:**
+
+  ```powershell
+  dotnet build PlayAPP_decompiled_proj\PlayAPP.csproj -c Release
+  ```
+
+- Output: `PlayAPP_decompiled_proj\bin\Release\net8.0-windows\PlayAPP.dll` (và `PlayAPP.exe` nếu cấu hình xuất exe). Chạy từ thư mục có `Data\`, `.playwright\` (nếu dùng) đúng như bản phân phối.
+
+---
+
+## Kiểm thử (`dotnet test`)
+
+Project **xUnit:** `PlayAPP_decompiled_proj/PlayAPP.Tests/` (kiểm tra URL/helper `GpmApi`).
+
+```powershell
+dotnet test PlayAPP_decompiled_proj\PlayAPP.Tests\PlayAPP.Tests.csproj -c Release
+```
+
+---
+
+## Git — `.gitignore`
+
+Ở gốc repo có **`.gitignore`**: loại trừ `Data/Account.txt`, `Data/proxy.txt`, log, `Data/screenshots/`, nội dung `datafile/input|used`, thư mục `bin/obj`. Trước khi `git add`, vẫn nên rà soát — không commit dữ liệu thật.
 
 ---
 
 ## Yêu cầu hệ thống
 
-- **Windows** (ứng dụng dùng `Microsoft.WindowsDesktop.App`).
-- **.NET Runtime 8.0** (Desktop) — khớp với `PlayAPP.runtimeconfig.json`.
-- Thư mục **`.playwright`** (đi kèm project): Node/CLI Playwright dùng khi cần cài hoặc quản lý browser cho Playwright.
-- Chạy **`PlayAPP.exe`** từ thư mục gốc project để đường dẫn tới `Data\`, `Checkpoint\`, `datafile\` và DLL đồng bộ đúng.
+- **Windows**, **.NET 8 Desktop Runtime**.
+- **GPM Login / GPM Browser** mở sẵn để API `http://127.0.0.1:19995` phản hồi.
+- Thư mục **`.playwright`** (nếu kèm bản phân phối) cho CLI Playwright khi cần.
 
 ---
 
-## Cấu trúc thư mục (quan trọng)
+## Giao diện chính (thanh trên)
 
-| Đường dẫn | Mô tả |
-|-----------|--------|
-| `PlayAPP.exe` | Chương trình chính |
-| `Data\` | File cấu hình và nội dung (xem chi tiết bên dưới) |
-| `Checkpoint\CheckPoint.txt` | Danh sách tài khoản dạng `UID\|mật_khẩu\|chuỗi_cookie` (Facebook) |
-| `datafile\input\` | File cookie đưa vào xử lý (ví dụ tên `Cookie_*.txt`) |
-| `datafile\used\` | File đã xử lý xong (ứng dụng có thể chuyển/ghi lại tại đây) |
-| `playwright.ps1` | Script PowerShell nạp `Microsoft.Playwright.dll` và gọi CLI Playwright (hỗ trợ lệnh `playwright` tương đương) |
-| `.playwright\` | Gói Playwright (Node) kèm theo |
+| Điều khiển | Ý nghĩa |
+|------------|---------|
+| **Bắt đầu / Dừng** | Chạy hoặc dừng batch (hủy token chờ, đóng browser). |
+| **Thư mục Data** | Mở Explorer tới `Data\`. |
+| **ZIP chẩn đoán** | Xuất file ZIP: log (`automation.log`, `login_success.log`, …), `Setting.txt`, tối đa **15** ảnh PNG mới nhất trong `Data/screenshots/`. **Không** gồm `Account.txt` / `proxy.txt`. |
+| Trạng thái sidebar | Luồng chạy, OK/Lỗi, tiến độ batch, ước lượng thời gian còn lại (khi đủ dữ liệu). |
 
 ---
 
-## Cấu hình `Data\Setting.txt`
+## `Data\Setting.txt`
 
-Định dạng `key=value` (mỗi dòng một tham số), ví dụ:
+Định dạng `key=value` (mỗi dòng). Ứng dụng **merge** key cũ khi lưu; một số khóa chính:
 
-- **`filedata=`** — thường là đường dẫn hoặc tham chiếu tới nguồn dữ liệu (để trống hoặc giá trị do phần mềm quy định).
-- **`username=`** — mã định danh/người dùng hoặc profile (số trong bản mẫu: `11`).
-- **`luong=`** — số luồng / số tác vụ song song (ví dụ `1`).
-- **`sudungproxy=`** — `True` hoặc `False`: có dùng proxy trong `proxy.txt` hay không.
-- **`hide=`** — `True` hoặc `False`: thường tương ứng chế độ ẩn cửa sổ / headless (tùy bản build).
+| Khóa | Mô tả |
+|------|--------|
+| `so_account_log` | Giới hạn số account mỗi lần chạy (**0** = tất cả trong phạm vi đã chọn). |
+| `luong` | Số profile chạy song song mỗi lô: **2**, **5** hoặc **10** (tối đa 10 browser/lô). |
+| `sudungproxy` | `True` / `False` — dùng `Data\proxy.txt`. |
+| `gpm_proxy_group_id` | Id nhóm GPM khi bật proxy (khớp combo trong UI). |
+| `changeinfo` | Đổi ảnh / thông tin Gmail (pipeline chỉnh theme). |
+| `taoform` | Tạo Form + Sheet + Script (cần URL trong `Account.txt` và nội dung `Data\`). |
+| `offchrome` | Đóng Chrome sau mỗi account (và các trường hợp bắt buộc đóng khi tài khoản “chết”). |
+| `wait_slice_ms` | Lát chờ nội bộ khi dùng Playwright (50–2000, mặc định **250**) — giúp nút **Dừng** có tác dụng giữa các bước `WaitForTimeout` dài. |
+| `script_run_pause_ms` | Thời gian chờ sau mỗi lần bấm **Run** trong editor Apps Script (1000–120000, mặc định **10000**). |
+| `form_x`, `form_y`, `form_w`, `form_h`, `form_maximized` | Vị trí / kích thước cửa sổ. |
 
-Chỉnh sửa bằng Notepad, lưu file UTF-8 nếu có ký tự đặc biệt.
+Lưu UTF-8 nếu có ký tự đặc biệt.
 
 ---
 
-## Cấu hình `Data\Account.txt`
+## `Data\Account.txt`
 
-Mỗi dòng **một tài khoản**, các trường **phân tách bằng ký tự `|`**:
+Mỗi dòng một tài khoản, phân tách **`|`**:
 
 1. Email Gmail  
 2. Mật khẩu  
-3. Mật khẩu ứng dụng / mã ứng dụng (App Password) — nếu dùng  
-4. Chuỗi khôi phục / mã dự phòng — nếu có  
-5. Email (có thể trùng cột 1 — tùy luồng)  
-6. URL **Google Form** (chỉnh sửa form)  
-7. URL **Google Apps Script** (dự án script)  
-8. URL **Google Sheets** (bảng tính liên kết)
-
-Ví dụ minh họa (dùng dữ liệu giả):
-
-```text
-email@example.com|MatKhau|AppPassword|Recovery|email@example.com|https://docs.google.com/forms/.../edit|https://script.google.com/.../edit|https://docs.google.com/spreadsheets/d/.../edit
-```
+3. Secret TOTP / App Password (tùy luồng)  
+4. Khôi phục / dự phòng  
+5. Email phụ (tùy luồng)  
+6. URL Google Form (edit)  
+7. URL Apps Script  
+8. URL Google Sheets  
 
 ---
 
-## `Data\proxy.txt`
+## Luồng nghiệp vụ (tóm tắt)
 
-Mỗi dòng một proxy, định dạng thường gặp:
+- **GPM:** Tải profile theo nhóm (khi proxy), gán proxy lên profile, mở Chrome qua CDP, Playwright điều khiển.
+- **Login:** `accounts.google.com`, xử lý thách thức, reCAPTCHA/restrictions được log và screenshot theo quy tắc hiện tại.
+- **Trùng nhóm:** `Data\login_success.log` — bỏ qua UID đã thành công cùng “nhóm GPM log”.
+- **Apps Script:** Sau **Run**, nếu Execution log báo *requires access to your Google Account…* → **F5 (reload)** editor và **Run lại** (có giới hạn số lần); sau OAuth vẫn có thể F5 + Run thêm.
+- **Log:** `Data\automation.log` (hàng đợi ghi bất đồng bộ, rotate kích thước).
 
-```text
-host:port:username:password
-```
-
-Bật `sudungproxy=True` trong `Setting.txt` khi cần dùng danh sách này.
-
----
-
-## `Data\linkmain.txt`
-
-Danh sách URL (một dòng một link). Trong bản mẫu là các placeholder `https://your-link.com1` … — thay bằng link thật theo nhu cầu.
+Chi tiết OAuth, Form/Theme, picker “Select Header” nằm trong mã `Form1.cs` (pipeline dài).
 
 ---
 
-## `Data\tieude.txt` và `Data\noidung.txt`
+## `Fill2faLive`
 
-- **`tieude.txt`**: Tiêu đề email / nội dung ngắn (một khối văn bản).  
-- **`noidung.txt`**: Nội dung email đầy đủ (có thể nhiều dòng).
-
-Ứng dụng hoặc luồng Google Apps Script có thể dùng các file này làm mẫu gửi mail / điền form — cần khớp với cách bạn cấu hình trên Google Sheet và script.
+Tool CLI hỗ trợ điền 2FA qua CDP (xem `Fill2faLive/Program.cs`, `--help`). PlayAPP có thể gọi khi cần.
 
 ---
 
-## `Data\codesc.txt` (Google Apps Script)
+## Cấu trúc thư mục khác
 
-Đây là mã **Google Apps Script** (hàm `shareSingleFormToList`, v.v.) dùng với **Google Sheets** + **MailApp**:
-
-- Trong script có `CONFIG` (FORM_URL, SHEET_NAME, BATCH_LIMIT, thời gian nghỉ, …).  
-- Cần **dán script vào** dự án Apps Script** trùng URL đã ghi trong `Account.txt`.  
-- **`FORM_URL`** trong script phải khớp form thật (thay `"123456"` / placeholder bằng ID hoặc URL form đúng).  
-- Sheet cần có tên trùng **`SHEET_NAME`** (mặc định mẫu: `Sheet1`).  
-- Script đọc dữ liệu từ sheet (cột email, tên trang, tiêu đề, nội dung, …) và gửi mail theo lô; có placeholder `[Name]` trong tiêu đề và nội dung.
-
-**Lưu ý:** Quyền gửi mail, trigger thời gian và hạn mức của Google Apps Script do Google quản lý — cần cấp quyền khi chạy lần đầu.
+| Đường dẫn | Ghi chú |
+|-----------|---------|
+| `Data\proxy.txt` | Mỗi dòng một proxy (`host:port:user:pass` …). |
+| `Data\codesc.txt`, `tieude.txt`, `noidung.txt` | Nội dung cho script / mail / form. |
+| `Checkpoint\`, `datafile\` | Luồng cookie / file input–used (tùy cấu hình). |
+| `playwright.ps1` | Gọi CLI Playwright khi cần. |
 
 ---
 
-## `Checkpoint\CheckPoint.txt`
+## Bảo mật & điều khoản
 
-Mỗi dòng một bản ghi dạng:
-
-```text
-Facebook_UID|MatKhau|chuỗi_cookie_day_du
-```
-
-Cookie thường là chuỗi dài gồm nhiều cặp `tên=giá trị` phân tách bằng `; `. Dùng cho luồng đăng nhập / duy trì phiên bằng cookie (tùy chức năng bản build).
+- **Account**, **proxy**, **cookie**, **log** là dữ liệu nhạy cảm — không chia sẻ công khai; kiểm tra ZIP trước khi gửi hỗ trợ.
+- Chỉ tự động hóa với **tài khoản bạn sở hữu hoặc được ủy quyền**. Vi phạm điều khoản nhà cung cấp (Google, …) là rủi ro pháp lý / khóa tài khoản — bạn tự chịu trách nhiệm.
 
 ---
 
-## Thư mục `datafile\`
+## Lộ trình kỹ thuật (còn việc)
 
-- Đặt file cookie (định dạng tương tự `UID|pass|cookie`) vào **`input\`** để xử lý.  
-- File đã chạy có thể nằm trong **`used\`** (tránh chạy trùng tùy logic ứng dụng).
+Đã có phần: chờ Playwright theo lát + token batch (`PlaywrightWaitHelpers`, `PageWaitCancellableAsync`), khóa `wait_slice_ms` / `script_run_pause_ms`, và file `Form1.Gpm.cs` (khối GPM). Các hướng tiếp:
 
----
-
-## Chạy chương trình
-
-1. Cài **.NET 8 Desktop Runtime** nếu chưa có.  
-2. Kiểm tra / chỉnh `Data\Setting.txt`, `Account.txt`, và các file liên quan.  
-3. Mở **`PlayAPP.exe`** (nên chạy với quyền thường; chỉ “Run as administrator” nếu thực sự cần).  
-4. Nếu Playwright báo thiếu browser, có thể dùng CLI qua `playwright.ps1` (tham khảo tài liệu Microsoft Playwright cho .NET: `pwsh .\playwright.ps1 install` hoặc lệnh tương đương mà bản build yêu cầu).
-
----
-
-## Bảo mật và sao lưu
-
-- `Account.txt`, `Checkpoint\CheckPoint.txt`, `proxy.txt` và file trong `datafile\` chứa **thông tin nhạy cảm**. Không chia sẻ công khai; nên sao lưu riêng và giới hạn quyền truy cập thư mục.  
-- Trước khi commit lên Git, thêm các file trên vào `.gitignore` hoặc xóa dữ liệu thật khỏi bản sao.
+1. **Playwright + hủy sâu hơn:** Bọc thêm `WaitFor*` / `GotoAsync` bằng `Task.WhenAny` + token nơi Playwright .NET không hỗ trợ hủy trực tiếp.
+2. **Tách `Form1` tiếp:** Gmail, Form/Script, logging thành partial hoặc service riêng.
+3. **Timeout / retry:** Mở rộng thêm hằng số chờ (network, reload) trong `Setting.txt` hoặc JSON nếu cần tinh chỉnh từng bước.
 
 ---
 
 ## Phụ thuộc (tham khảo)
 
-Theo `PlayAPP.deps.json`:
-
-- **Microsoft.Playwright** 1.58.0  
-- **Newtonsoft.Json** 13.0.4  
-
----
-
-## Ghi chú
-
-- Tên thư mục **GPM** thường gợi ý tích hợp với công cụ quản lý profile trình duyệt (ví dụ GoLogin Profile Manager). Chi tiết kết nối phụ thuộc phiên bản tool và cài đặt trên máy bạn.  
-- Không có source C# trong repo: muốn sửa logic phải có project gốc hoặc liên hệ tác giả bản build.
+Theo bản build thường gặp: **Microsoft.Playwright**, **Newtonsoft.Json** (phiên bản xem `PlayAPP.deps.json` nếu có trong thư mục chạy).

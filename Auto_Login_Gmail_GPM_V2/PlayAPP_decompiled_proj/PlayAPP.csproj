@@ -25,4 +25,7 @@
       <HintPath>..\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="PlayAPP.Tests\**" />
+  </ItemGroup>
 </Project>
