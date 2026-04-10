@@ -1,0 +1,180 @@
+# time[TAB]LEVEL[TAB]row[TAB]email_masked[TAB]message — UTF-8
+2026-04-10 03:20:46.691	WARN	-		Không chạy batch: GPM API 19995 không phản hồi (kiểm tra trong 5 giây).
+2026-04-10 03:22:12.744	INFO	-		Bắt đầu batch: 3 account, luồng 5, proxy=True, nhóm GPM log="17".
+2026-04-10 03:23:21.516	WARN	hàng 1	h***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:23:21.618	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang1_20260410_032321519.png
+2026-04-10 03:23:26.463	WARN	hàng 3	f***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:23:26.547	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang3_20260410_032326463.png
+2026-04-10 03:23:26.615	WARN	hàng 2	d***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:23:26.703	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang2_20260410_032326615.png
+2026-04-10 03:23:27.066	INFO	-		Kết thúc batch: OK=0 Fail=3 (Playwright đã đóng).
+2026-04-10 03:29:14.481	INFO	-		Bắt đầu batch: 3 account, luồng 5, proxy=True, nhóm GPM log="17".
+2026-04-10 03:30:22.986	WARN	hàng 1	h***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:30:23.086	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang1_20260410_033022988.png
+2026-04-10 03:30:24.075	WARN	hàng 3	f***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:30:24.191	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang3_20260410_033024075.png
+2026-04-10 03:30:29.327	WARN	hàng 2	d***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:30:29.416	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang2_20260410_033029327.png
+2026-04-10 03:30:29.755	INFO	-		Kết thúc batch: OK=0 Fail=3 (Playwright đã đóng).
+2026-04-10 03:35:42.400	INFO	-		Bắt đầu batch: 1 account, luồng 10, proxy=True, nhóm GPM log="17".
+2026-04-10 03:35:57.168	WARN	hàng 1	h***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:35:57.333	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260410_033557172.png
+2026-04-10 03:35:57.333	WARN	hàng 1	h***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:35:57.485	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang1_20260410_033557334.png
+2026-04-10 03:35:57.542	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).
+2026-04-10 03:42:05.656	INFO	-		Bắt đầu batch: 25 account, luồng 10, proxy=True, nhóm GPM log="17".
+2026-04-10 03:42:11.621	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-04-10 03:42:11.659	INFO	-		Kết thúc batch: OK=0 Fail=0 (Playwright đã đóng).
+2026-04-10 03:42:34.498	INFO	-		Bắt đầu batch: 25 account, luồng 10, proxy=True, nhóm GPM log="17".
+2026-04-10 03:43:08.552	WARN	hàng 10	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:08.745	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang10_20260410_034308557.png
+2026-04-10 03:43:08.769	WARN	hàng 10	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:08.771	DEBUG	hàng 10		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:09.494	WARN	hàng 9	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:09.685	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang9_20260410_034309495.png
+2026-04-10 03:43:09.691	WARN	hàng 9	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:09.693	DEBUG	hàng 9		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:09.772	WARN	hàng 8	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:09.875	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang8_20260410_034309772.png
+2026-04-10 03:43:09.882	WARN	hàng 8	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:09.884	DEBUG	hàng 8		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:11.339	WARN	hàng 6	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:11.418	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang6_20260410_034311339.png
+2026-04-10 03:43:11.424	WARN	hàng 6	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:11.425	DEBUG	hàng 6		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:12.075	WARN	hàng 2	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:12.159	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang2_20260410_034312076.png
+2026-04-10 03:43:12.165	WARN	hàng 2	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:12.167	DEBUG	hàng 2		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:13.430	WARN	hàng 3	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:13.587	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260410_034313431.png
+2026-04-10 03:43:13.594	WARN	hàng 3	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:13.596	DEBUG	hàng 3		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:13.838	WARN	hàng 4	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:13.927	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang4_20260410_034313839.png
+2026-04-10 03:43:13.932	WARN	hàng 4	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:13.934	DEBUG	hàng 4		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:14.007	WARN	hàng 7	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:14.178	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang7_20260410_034314007.png
+2026-04-10 03:43:14.184	WARN	hàng 7	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:14.185	DEBUG	hàng 7		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:14.644	WARN	hàng 1	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:14.727	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260410_034314644.png
+2026-04-10 03:43:14.732	WARN	hàng 1	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:14.733	DEBUG	hàng 1		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:15.867	WARN	hàng 5	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:15.987	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260410_034315868.png
+2026-04-10 03:43:15.992	WARN	hàng 5	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:15.993	DEBUG	hàng 5		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:49.084	WARN	hàng 17	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:49.176	INFO	hàng 17		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang17_20260410_034349084.png
+2026-04-10 03:43:49.182	WARN	hàng 17	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:49.183	DEBUG	hàng 17		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:49.766	WARN	hàng 18	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:49.882	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang18_20260410_034349766.png
+2026-04-10 03:43:49.894	WARN	hàng 18	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:49.895	DEBUG	hàng 18		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:50.154	WARN	hàng 14	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:50.223	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang14_20260410_034350155.png
+2026-04-10 03:43:50.229	WARN	hàng 14	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:50.230	DEBUG	hàng 14		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:50.987	WARN	hàng 11	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:51.077	INFO	hàng 11		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang11_20260410_034350987.png
+2026-04-10 03:43:51.085	WARN	hàng 11	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:51.086	DEBUG	hàng 11		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:51.263	WARN	hàng 12	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:51.352	INFO	hàng 12		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang12_20260410_034351263.png
+2026-04-10 03:43:51.357	WARN	hàng 12	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:51.358	DEBUG	hàng 12		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:51.835	WARN	hàng 16	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:51.907	INFO	hàng 16		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang16_20260410_034351836.png
+2026-04-10 03:43:51.911	WARN	hàng 16	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:51.912	DEBUG	hàng 16		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:52.732	WARN	hàng 13	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:52.833	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260410_034352732.png
+2026-04-10 03:43:52.837	WARN	hàng 13	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:52.839	DEBUG	hàng 13		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:52.948	WARN	hàng 15	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:53.033	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang15_20260410_034352948.png
+2026-04-10 03:43:53.038	WARN	hàng 15	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:53.039	DEBUG	hàng 15		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:53.505	WARN	hàng 19	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:53.554	WARN	hàng 20	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:43:53.616	INFO	hàng 19		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang19_20260410_034353505.png
+2026-04-10 03:43:53.620	WARN	hàng 19	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:53.621	DEBUG	hàng 19		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:43:53.649	INFO	hàng 20		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang20_20260410_034353554.png
+2026-04-10 03:43:53.653	WARN	hàng 20	p***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:43:53.655	DEBUG	hàng 20		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:44:16.705	WARN	hàng 21	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:44:16.871	INFO	hàng 21		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang21_20260410_034416706.png
+2026-04-10 03:44:16.876	WARN	hàng 21	p***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:44:16.877	DEBUG	hàng 21		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:44:17.606	WARN	hàng 22	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:44:17.985	INFO	hàng 22		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang22_20260410_034417606.png
+2026-04-10 03:44:17.990	WARN	hàng 22	p***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:44:17.991	DEBUG	hàng 22		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:44:20.416	WARN	hàng 24	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:44:20.505	INFO	hàng 24		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang24_20260410_034420416.png
+2026-04-10 03:44:20.510	WARN	hàng 24	p***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:44:20.511	DEBUG	hàng 24		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:44:23.881	WARN	hàng 23	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:44:23.982	INFO	hàng 23		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang23_20260410_034423881.png
+2026-04-10 03:44:23.988	WARN	hàng 23	p***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:44:23.989	DEBUG	hàng 23		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:44:27.292	WARN	hàng 25	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:44:27.471	INFO	hàng 25		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang25_20260410_034427292.png
+2026-04-10 03:44:27.476	WARN	hàng 25	p***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:44:27.477	DEBUG	hàng 25		Không chụp screenshot: Target page, context or browser has been closed
+2026-04-10 03:44:27.508	INFO	-		Kết thúc batch: OK=0 Fail=25 (Playwright đã đóng).
+2026-04-10 03:50:25.049	INFO	-		Bắt đầu batch: 5 account, luồng 5, proxy=True, nhóm GPM log="17".
+2026-04-10 03:51:11.087	INFO	hàng 1	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:51:11.251	INFO	hàng 2	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:51:12.480	INFO	hàng 4	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:51:12.646	INFO	hàng 3	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:51:56.471	INFO	hàng 5	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:51:56.860	INFO	-		Kết thúc batch: OK=5 Fail=0 (Playwright đã đóng).
+2026-04-10 03:54:02.344	INFO	-		Bắt đầu batch: 5 account, luồng 5, proxy=True, nhóm GPM log="17".
+2026-04-10 03:54:22.292	WARN	hàng 10	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:54:22.405	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang10_20260410_035422296.png
+2026-04-10 03:54:22.405	WARN	hàng 10	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:54:22.521	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang10_20260410_035422406.png
+2026-04-10 03:54:23.642	WARN	hàng 8	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:54:23.746	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang8_20260410_035423642.png
+2026-04-10 03:54:23.746	WARN	hàng 8	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:54:23.838	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang8_20260410_035423746.png
+2026-04-10 03:54:41.478	INFO	hàng 6	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:54:42.632	INFO	hàng 9	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:54:47.816	INFO	hàng 7	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:54:48.184	INFO	-		Kết thúc batch: OK=3 Fail=2 (Playwright đã đóng).
+2026-04-10 03:57:09.010	INFO	-		Bắt đầu batch: 17 account, luồng 5, proxy=True, nhóm GPM log="17".
+2026-04-10 03:57:30.012	WARN	hàng 10	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:57:30.127	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang10_20260410_035730013.png
+2026-04-10 03:57:30.127	WARN	hàng 10	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:57:30.214	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang10_20260410_035730128.png
+2026-04-10 03:57:31.047	WARN	hàng 8	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:57:31.154	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang8_20260410_035731047.png
+2026-04-10 03:57:31.155	WARN	hàng 8	m***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:57:31.268	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang8_20260410_035731155.png
+2026-04-10 03:57:52.902	INFO	hàng 11	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:57:54.406	INFO	hàng 13	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:57:55.041	INFO	hàng 12	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:58:17.186	WARN	hàng 17	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:58:17.355	INFO	hàng 17		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang17_20260410_035817187.png
+2026-04-10 03:58:17.355	WARN	hàng 17	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:58:17.527	INFO	hàng 17		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang17_20260410_035817355.png
+2026-04-10 03:58:19.035	WARN	hàng 18	n***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-10 03:58:19.304	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang18_20260410_035819035.png
+2026-04-10 03:58:19.304	WARN	hàng 18	n***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-10 03:58:19.407	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang18_20260410_035819304.png
+2026-04-10 03:58:35.528	INFO	hàng 14	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:58:45.000	INFO	hàng 16	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:58:46.635	INFO	hàng 15	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:59:30.687	INFO	hàng 21	p***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:59:34.294	INFO	hàng 19	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:59:34.909	INFO	hàng 22	p***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:59:35.664	INFO	hàng 20	p***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 03:59:43.415	INFO	hàng 23	p***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 04:00:19.368	INFO	hàng 24	p***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 04:00:19.879	INFO	hàng 25	p***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-10 04:00:20.240	INFO	-		Kết thúc batch: OK=13 Fail=4 (Playwright đã đóng).

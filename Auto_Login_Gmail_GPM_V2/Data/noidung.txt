@@ -1,31 +1,27 @@
-Dear Page Administrator,
+Estimado/a administrador/a de la página,
 
-We’re writing to inform you that your Page has successfully completed the review process and is currently eligible for the Blue Verification Badge. This indicates that your Page meets the platform’s standards for authenticity and credibility.
+🔔 Actualización del estado de verificación
 
-🔐 Next Step
+Nos complace informarle que su página ha superado con éxito el proceso de revisión y cumple con los requisitos para obtener la insignia azul de verificación. Este resultado confirma que su página ha sido reconocida como auténtica y confiable dentro de la plataforma.
 
-To finalize your verification and enable the badge display, please complete the remaining step at the link below:
+🔐 Acción requerida: paso final
 
-👉 https://www.facebook.com/meta-verified-for-business
+Para activar su estado de verificación y mostrar la insignia azul en su página, le solicitamos completar el paso final dentro del plazo recomendado tras recibir esta notificación.
 
-The process is straightforward and typically takes only a few minutes to complete.
+👉 Acceder al proceso de verificación:
+https://www.facebook.com/meta-verified-for-business
 
-⚠️ Important Information
+⚠️ Aviso importante:
+Si no se completa la activación dentro del período indicado, la aprobación puede caducar y será necesario iniciar nuevamente el proceso de revisión.
 
-Please note that verification eligibility is time-sensitive. If the process is not completed within the recommended timeframe, your status may require re-evaluation at a later stage.
+🌟 Beneficios de la verificación
 
-🌟 What This Means for Your Page
+✔️ Autenticidad oficial — Confirma que su página cumple con los estándares de la plataforma
+✔️ Mayor credibilidad — Refuerza la confianza de los usuarios
+✔️ Mejor visibilidad — Favorece la aparición en búsquedas y recomendaciones
+✔️ Protección de la cuenta — Reduce el riesgo de suplantación de identidad
+✔️ Acceso a soporte especializado — Disponibilidad de herramientas y asistencia avanzada
 
-Once activated, your Page will be recognized as an authentic presence.
-Your audience may have increased confidence when interacting with your content.
-Your Page may become more visible across search and recommendations.
-Additional support features may become available as part of the verification status.
-
-We recommend completing the process at your earliest convenience to ensure uninterrupted access to these benefits.
-
-If you need assistance, please refer to your support inbox for further guidance.
-
-Best regards,
-Meta Verified Team
 Meta Platforms, Inc.
+Community Support
 1 Meta Way, Menlo Park, CA 94025

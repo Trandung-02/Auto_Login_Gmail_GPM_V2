@@ -1,4 +1,12 @@
-so_account_log=5
-luong=10
+changeinfo=False
+form_h=700
+form_maximized=False
+form_w=1200
+form_x=319
+form_y=193
+gpm_proxy_group_id=17
+luong=5
+offchrome=False
+so_account_log=25
 sudungproxy=True
-gpm_proxy_group_id=13
+taoform=False
