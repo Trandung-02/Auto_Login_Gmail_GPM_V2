@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PlayAPP;
 
-/// <summary>Gói ZIP chẩn đoán: log + screenshot gần đây — không gồm Account.txt / proxy.txt.</summary>
+/// <summary>Gói ZIP chẩn đoán: log + screenshot gần đây — không gồm Account.txt (UID / proxy trong file).</summary>
 internal static class DiagnosticsExport
 {
 	private static readonly string[] LogNames =
@@ -13,7 +13,8 @@ internal static class DiagnosticsExport
 		"automation.log",
 		"login_success.log",
 		"dead_recaptcha_verify.log",
-		"dead_google_restrictions.log"
+		"dead_google_restrictions.log",
+		"dead_google_account_disabled.log"
 	};
 
 	private const int MaxScreenshots = 15;
@@ -62,7 +63,7 @@ internal static class DiagnosticsExport
 				string readme = "PlayAPP — gói chẩn đoán\r\n"
 					+ "Thời gian: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + "\r\n"
 					+ "Gồm: các file log (nếu có), Setting.txt, tối đa " + MaxScreenshots + " ảnh PNG mới nhất trong Data/screenshots.\r\n"
-					+ "KHÔNG gồm: Account.txt, proxy.txt (thông tin nhạy cảm).\r\n"
+					+ "KHÔNG gồm: Account.txt (chứa UID, mật khẩu, proxy).\r\n"
 					+ "Khi gửi hỗ trợ, kiểm tra lại ZIP trước khi đính kèm.\r\n";
 				ZipArchiveEntry entry = zip.CreateEntry("readme_diagnostics.txt");
 				using (Stream s = entry.Open())

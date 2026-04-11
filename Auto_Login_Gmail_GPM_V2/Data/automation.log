@@ -566,3 +566,541 @@
 2026-04-11 03:42:32.570	WARN	hàng 21	T***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
 2026-04-11 03:43:05.120	INFO	hàng 21	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
 2026-04-11 03:43:05.221	INFO	-		Kết thúc batch: OK=20 Fail=5 (Playwright đã đóng).
+2026-04-11 10:41:37.106	INFO	-		Bắt đầu batch: 25 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 10:42:10.470	WARN	hàng 9	A***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:42:10.696	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang9_20260411_104210492.png
+2026-04-11 10:42:10.696	WARN	hàng 9	A***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:10.813	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang9_20260411_104210698.png
+2026-04-11 10:42:11.016	WARN	hàng 10	W***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:42:11.079	WARN	hàng 5	H***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:42:11.177	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang10_20260411_104211018.png
+2026-04-11 10:42:11.178	WARN	hàng 10	W***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:11.251	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260411_104211080.png
+2026-04-11 10:42:11.252	WARN	hàng 5	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:11.345	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang10_20260411_104211179.png
+2026-04-11 10:42:11.370	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang5_20260411_104211253.png
+2026-04-11 10:42:11.521	INFO	hàng 9		GPM: đã xóa profile (tài khoản chết) id=c1798af9-7472-4b65-9d00-47581450bdd3
+2026-04-11 10:42:11.543	WARN	hàng 1	B***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:42:11.693	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260411_104211545.png
+2026-04-11 10:42:11.693	WARN	hàng 1	B***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:11.830	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang1_20260411_104211695.png
+2026-04-11 10:42:12.000	WARN	hàng 8	I***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:42:12.010	INFO	hàng 10		GPM: đã xóa profile (tài khoản chết) id=7cdacb5b-fc41-4b19-80d7-8d043161a70e
+2026-04-11 10:42:12.039	INFO	hàng 5		GPM: đã xóa profile (tài khoản chết) id=8de2b929-5bc9-435a-8492-b5b8979d7190
+2026-04-11 10:42:12.101	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang8_20260411_104212001.png
+2026-04-11 10:42:12.101	WARN	hàng 8	I***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:12.165	WARN	hàng 6	C***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:42:12.210	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang8_20260411_104212102.png
+2026-04-11 10:42:12.323	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang6_20260411_104212166.png
+2026-04-11 10:42:12.323	WARN	hàng 6	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:12.420	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang6_20260411_104212324.png
+2026-04-11 10:42:12.496	INFO	hàng 1		GPM: đã xóa profile (tài khoản chết) id=f5641605-f6c0-4898-bfa4-8aa3776bcdca
+2026-04-11 10:42:12.869	INFO	hàng 8		GPM: đã xóa profile (tài khoản chết) id=11aa0509-1ef3-4e62-82a5-632892f6744e
+2026-04-11 10:42:13.073	INFO	hàng 6		GPM: đã xóa profile (tài khoản chết) id=ec2c22f2-1ee7-49bc-a059-42da3ffbe982
+2026-04-11 10:42:13.336	WARN	hàng 3	R***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:42:13.437	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260411_104213337.png
+2026-04-11 10:42:13.438	WARN	hàng 3	R***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:13.512	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang3_20260411_104213439.png
+2026-04-11 10:42:14.163	WARN	hàng 7	B***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:42:14.182	INFO	hàng 3		GPM: đã xóa profile (tài khoản chết) id=7fce2db9-41e9-426c-aac1-008e7e6fa37b
+2026-04-11 10:42:14.271	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang7_20260411_104214173.png
+2026-04-11 10:42:14.271	WARN	hàng 7	B***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:14.386	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang7_20260411_104214272.png
+2026-04-11 10:42:15.039	INFO	hàng 7		GPM: đã xóa profile (tài khoản chết) id=068e376d-fe5b-4652-863b-e6d9dfc8068e
+2026-04-11 10:42:48.021	WARN	hàng 2	O***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:48.107	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang2_20260411_104248022.png
+2026-04-11 10:42:49.053	WARN	hàng 4	L***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:42:49.139	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang4_20260411_104249055.png
+2026-04-11 10:43:17.774	WARN	hàng 14	B***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:43:17.875	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang14_20260411_104317775.png
+2026-04-11 10:43:17.875	WARN	hàng 14	B***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:43:18.063	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang14_20260411_104317877.png
+2026-04-11 10:43:18.619	WARN	hàng 18	K***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:43:18.721	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang18_20260411_104318620.png
+2026-04-11 10:43:18.721	WARN	hàng 18	K***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:43:18.743	INFO	hàng 14		GPM: đã xóa profile (tài khoản chết) id=5d5caf36-64a4-45c1-a171-3a00c2e24347
+2026-04-11 10:43:18.826	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang18_20260411_104318722.png
+2026-04-11 10:43:19.478	INFO	hàng 18		GPM: đã xóa profile (tài khoản chết) id=a4cee5cf-c44f-4d64-ae3f-dabd146ee489
+2026-04-11 10:43:21.156	WARN	hàng 12	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:43:21.301	INFO	hàng 12		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang12_20260411_104321157.png
+2026-04-11 10:43:21.301	WARN	hàng 12	M***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:43:21.451	INFO	hàng 12		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang12_20260411_104321302.png
+2026-04-11 10:43:22.124	INFO	hàng 12		GPM: đã xóa profile (tài khoản chết) id=0edec2ce-2792-4cf8-911e-3f09a3d57b4a
+2026-04-11 10:43:26.446	WARN	hàng 13	G***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:43:26.608	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260411_104326447.png
+2026-04-11 10:43:26.608	WARN	hàng 13	G***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:43:26.702	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang13_20260411_104326610.png
+2026-04-11 10:43:27.368	INFO	hàng 13		GPM: đã xóa profile (tài khoản chết) id=d7470ee8-128f-432c-aeaf-34c6cc426fc7
+2026-04-11 10:43:52.890	WARN	hàng 11	P***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:43:52.985	INFO	hàng 11		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang11_20260411_104352891.png
+2026-04-11 10:43:57.542	WARN	hàng 15	Y***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:43:57.651	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang15_20260411_104357543.png
+2026-04-11 10:43:58.707	WARN	hàng 16	A***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:43:58.793	INFO	hàng 16		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang16_20260411_104358708.png
+2026-04-11 10:44:10.882	WARN	hàng 17	L***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:44:10.997	INFO	hàng 17		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang17_20260411_104410883.png
+2026-04-11 10:44:20.109	WARN	hàng 19	L***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:44:20.205	INFO	hàng 19		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang19_20260411_104420110.png
+2026-04-11 10:44:40.355	WARN	hàng 20	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:44:40.450	INFO	hàng 20		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang20_20260411_104440356.png
+2026-04-11 10:44:57.827	WARN	hàng 21	T***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:44:57.957	INFO	hàng 21		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang21_20260411_104457829.png
+2026-04-11 10:44:57.957	WARN	hàng 21	T***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:44:58.029	INFO	hàng 21		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang21_20260411_104457958.png
+2026-04-11 10:44:58.678	INFO	hàng 21		GPM: đã xóa profile (tài khoản chết) id=ff1f8318-88c0-4fb4-b7d8-d732f26418e7
+2026-04-11 10:44:58.854	WARN	hàng 22	S***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:44:58.958	INFO	hàng 22		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang22_20260411_104458855.png
+2026-04-11 10:44:58.958	WARN	hàng 22	S***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:44:59.038	INFO	hàng 22		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang22_20260411_104458959.png
+2026-04-11 10:44:59.069	WARN	hàng 24	D***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:44:59.163	INFO	hàng 24		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang24_20260411_104459070.png
+2026-04-11 10:44:59.163	WARN	hàng 24	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:44:59.259	INFO	hàng 24		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang24_20260411_104459164.png
+2026-04-11 10:44:59.499	WARN	hàng 23	D***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:44:59.593	INFO	hàng 23		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang23_20260411_104459500.png
+2026-04-11 10:44:59.593	WARN	hàng 23	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:44:59.675	INFO	hàng 23		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang23_20260411_104459594.png
+2026-04-11 10:44:59.698	INFO	hàng 22		GPM: đã xóa profile (tài khoản chết) id=5ed9f0aa-7275-461f-839c-9370f662a958
+2026-04-11 10:44:59.915	INFO	hàng 24		GPM: đã xóa profile (tài khoản chết) id=16659c46-e2c4-4c15-9fa5-8ec6d22d8a00
+2026-04-11 10:45:00.337	INFO	hàng 23		GPM: đã xóa profile (tài khoản chết) id=01e0f529-9caa-4035-8271-48bb94364f1e
+2026-04-11 10:45:00.953	WARN	hàng 25	R***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:45:01.045	INFO	hàng 25		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang25_20260411_104500954.png
+2026-04-11 10:45:01.045	WARN	hàng 25	R***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:45:01.169	INFO	hàng 25		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang25_20260411_104501047.png
+2026-04-11 10:45:01.821	INFO	hàng 25		GPM: đã xóa profile (tài khoản chết) id=b2b5adff-fa45-4453-af5e-279b4ddcf477
+2026-04-11 10:45:01.865	INFO	-		Kết thúc batch: OK=0 Fail=25 (Playwright đã đóng).
+2026-04-11 10:51:12.970	INFO	-		Bắt đầu batch: 5 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 10:51:32.460	WARN	hàng 5	H***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:51:32.489	WARN	hàng 1	B***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:51:32.586	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260411_105132477.png
+2026-04-11 10:51:32.586	WARN	hàng 5	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:51:32.588	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260411_105132491.png
+2026-04-11 10:51:32.588	WARN	hàng 1	B***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:51:32.660	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang5_20260411_105132588.png
+2026-04-11 10:51:32.705	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang1_20260411_105132589.png
+2026-04-11 10:51:32.889	WARN	hàng 3	R***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 10:51:33.007	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260411_105132891.png
+2026-04-11 10:51:33.007	WARN	hàng 3	R***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:51:33.134	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang3_20260411_105133008.png
+2026-04-11 10:51:33.345	INFO	hàng 5		GPM: đã xóa profile (tài khoản chết) id=2f0da334-824c-4507-8d67-ba9fab6d4190
+2026-04-11 10:51:33.373	INFO	hàng 1		GPM: đã xóa profile (tài khoản chết) id=547957a0-1dcf-4883-a366-d592a4871e53
+2026-04-11 10:51:33.792	INFO	hàng 3		GPM: đã xóa profile (tài khoản chết) id=0b3a12e6-ae05-4cd4-a772-e08d5883677f
+2026-04-11 10:52:11.017	WARN	hàng 2	O***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:52:11.099	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang2_20260411_105211018.png
+2026-04-11 10:52:11.270	WARN	hàng 4	L***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 10:52:11.360	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang4_20260411_105211272.png
+2026-04-11 10:52:11.397	INFO	-		Kết thúc batch: OK=0 Fail=5 (Playwright đã đóng).
+2026-04-11 11:04:07.571	INFO	-		Bắt đầu batch: 5 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 11:04:28.630	WARN	hàng 4	E***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:04:28.799	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang4_20260411_110428648.png
+2026-04-11 11:04:28.800	WARN	hàng 4	E***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:04:28.846	WARN	hàng 3	T***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:04:28.905	WARN	hàng 5	E***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:04:28.950	WARN	hàng 2	D***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:04:28.952	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang4_20260411_110428802.png
+2026-04-11 11:04:28.980	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260411_110428847.png
+2026-04-11 11:04:28.980	WARN	hàng 3	T***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:04:29.032	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260411_110428906.png
+2026-04-11 11:04:29.032	WARN	hàng 5	E***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:04:29.063	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang3_20260411_110428981.png
+2026-04-11 11:04:29.096	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang2_20260411_110428951.png
+2026-04-11 11:04:29.097	WARN	hàng 2	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:04:29.110	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang5_20260411_110429033.png
+2026-04-11 11:04:29.207	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang2_20260411_110429098.png
+2026-04-11 11:04:29.621	INFO	hàng 4		GPM: đã xóa profile (tài khoản chết) id=55c34ab1-288b-4d9f-a498-9b61991e2b82
+2026-04-11 11:04:29.711	INFO	hàng 3		GPM: đã xóa profile (tài khoản chết) id=0d6b0eba-f6e5-4f12-8c20-1406d3ab44dc
+2026-04-11 11:04:29.778	INFO	hàng 5		GPM: đã xóa profile (tài khoản chết) id=0a9ce1f6-0b2a-4f52-9537-e04608a6ccc5
+2026-04-11 11:04:29.868	INFO	hàng 2		GPM: đã xóa profile (tài khoản chết) id=01b7d72a-1ec3-432d-8f99-3b3cefb13d25
+2026-04-11 11:04:46.662	WARN	hàng 1	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:04:46.758	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260411_110446663.png
+2026-04-11 11:04:46.758	WARN	hàng 1	M***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:04:46.843	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang1_20260411_110446759.png
+2026-04-11 11:04:47.508	INFO	hàng 1		GPM: đã xóa profile (tài khoản chết) id=eae4c363-ae47-46c2-a7f4-fcf7f36f0e8e
+2026-04-11 11:04:47.549	INFO	-		Kết thúc batch: OK=0 Fail=5 (Playwright đã đóng).
+2026-04-11 11:38:44.412	INFO	-		Bắt đầu batch: 25 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 11:38:50.726	INFO	-		Kết thúc batch: OK=0 Fail=0 (Playwright đã đóng).
+2026-04-11 11:38:57.553	INFO	-		Bắt đầu batch: 20 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 11:38:58.602	INFO	-		Kết thúc batch: OK=0 Fail=0 (Playwright đã đóng).
+2026-04-11 11:39:17.819	INFO	-		Bắt đầu batch: 20 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 11:39:19.107	INFO	-		Kết thúc batch: OK=0 Fail=0 (Playwright đã đóng).
+2026-04-11 11:39:35.308	INFO	-		Bắt đầu batch: 20 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 11:40:07.272	WARN	hàng 1	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:40:07.402	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260411_114007291.png
+2026-04-11 11:40:07.402	WARN	hàng 1	M***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:07.497	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang1_20260411_114007405.png
+2026-04-11 11:40:08.223	INFO	hàng 1		GPM: đã xóa profile (tài khoản chết) id=1b092ab5-ec64-421a-ac41-5e4ccadc7d36
+2026-04-11 11:40:10.071	WARN	hàng 7	H***@gmail.com	Dừng: màn Account disabled — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:40:10.201	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_account_disabled_hang7_20260411_114010073.png
+2026-04-11 11:40:10.202	WARN	hàng 7	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:10.288	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang7_20260411_114010204.png
+2026-04-11 11:40:10.961	INFO	hàng 7		GPM: đã xóa profile (tài khoản chết) id=62b43d9c-5020-40ff-affc-d5ee8f83f1d5
+2026-04-11 11:40:11.777	WARN	hàng 6	R***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:40:11.954	WARN	hàng 4	E***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:40:11.983	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang6_20260411_114011779.png
+2026-04-11 11:40:11.983	WARN	hàng 6	R***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:12.071	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang4_20260411_114011955.png
+2026-04-11 11:40:12.072	WARN	hàng 4	E***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:12.075	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang6_20260411_114011986.png
+2026-04-11 11:40:12.202	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang4_20260411_114012073.png
+2026-04-11 11:40:12.548	WARN	hàng 3	T***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:40:12.659	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260411_114012549.png
+2026-04-11 11:40:12.659	WARN	hàng 3	T***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:12.744	INFO	hàng 6		GPM: đã xóa profile (tài khoản chết) id=fe35f787-10f8-4af7-9c9c-36fcc1d9bd5b
+2026-04-11 11:40:12.749	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang3_20260411_114012660.png
+2026-04-11 11:40:12.863	WARN	hàng 8	C***@gmail.com	Dừng: màn Account disabled — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:40:12.872	INFO	hàng 4		GPM: đã xóa profile (tài khoản chết) id=47c13056-092f-47cb-838d-4f7c320bc06a
+2026-04-11 11:40:12.962	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_account_disabled_hang8_20260411_114012864.png
+2026-04-11 11:40:12.962	WARN	hàng 8	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:13.017	WARN	hàng 5	E***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:40:13.094	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang8_20260411_114012965.png
+2026-04-11 11:40:13.142	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260411_114013018.png
+2026-04-11 11:40:13.143	WARN	hàng 5	E***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:13.247	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang5_20260411_114013144.png
+2026-04-11 11:40:13.401	INFO	hàng 3		GPM: đã xóa profile (tài khoản chết) id=a12d52a4-b235-4299-8a83-a0fa3fc24fb9
+2026-04-11 11:40:13.612	WARN	hàng 9	C***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:40:13.720	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang9_20260411_114013613.png
+2026-04-11 11:40:13.720	WARN	hàng 9	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:13.760	INFO	hàng 8		GPM: đã xóa profile (tài khoản chết) id=1ea3903f-be38-48fd-a90a-6f90cf3b9722
+2026-04-11 11:40:13.805	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang9_20260411_114013721.png
+2026-04-11 11:40:13.915	INFO	hàng 5		GPM: đã xóa profile (tài khoản chết) id=05ba145d-724a-4205-99ab-14de0c23355a
+2026-04-11 11:40:14.463	INFO	hàng 9		GPM: đã xóa profile (tài khoản chết) id=5f19e09e-4115-4781-96c9-f4a6c5052fc8
+2026-04-11 11:40:14.484	WARN	hàng 10	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:40:14.587	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang10_20260411_114014485.png
+2026-04-11 11:40:14.587	WARN	hàng 10	M***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:14.685	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang10_20260411_114014589.png
+2026-04-11 11:40:15.354	INFO	hàng 10		GPM: đã xóa profile (tài khoản chết) id=f3d7fa41-919f-440a-b6af-7df1e11b4d87
+2026-04-11 11:40:56.886	WARN	hàng 2	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:40:56.972	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang2_20260411_114056887.png
+2026-04-11 11:41:26.613	WARN	hàng 11	R***@gmail.com	Dừng: màn Account disabled — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:26.823	INFO	hàng 11		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_account_disabled_hang11_20260411_114126614.png
+2026-04-11 11:41:26.824	WARN	hàng 11	R***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:26.953	WARN	hàng 14	Z***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:26.955	INFO	hàng 11		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang11_20260411_114126825.png
+2026-04-11 11:41:27.083	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang14_20260411_114126954.png
+2026-04-11 11:41:27.084	WARN	hàng 14	Z***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:27.299	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang14_20260411_114127085.png
+2026-04-11 11:41:27.359	WARN	hàng 18	S***@gmail.com	Dừng: màn Account disabled — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:27.521	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_account_disabled_hang18_20260411_114127360.png
+2026-04-11 11:41:27.521	WARN	hàng 18	S***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:27.619	INFO	hàng 11		GPM: đã xóa profile (tài khoản chết) id=37e8deae-f731-4575-8d44-86b9b5b54821
+2026-04-11 11:41:27.651	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang18_20260411_114127522.png
+2026-04-11 11:41:27.947	INFO	hàng 14		GPM: đã xóa profile (tài khoản chết) id=7c9537c7-26da-41c7-8811-abf4a9e31753
+2026-04-11 11:41:28.321	INFO	hàng 18		GPM: đã xóa profile (tài khoản chết) id=96a873ec-5bdb-4b93-86cc-e4033788e6b7
+2026-04-11 11:41:28.470	WARN	hàng 13	P***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:28.631	WARN	hàng 12	N***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:28.633	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260411_114128471.png
+2026-04-11 11:41:28.633	WARN	hàng 13	P***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:28.693	WARN	hàng 17	B***@gmail.com	Dừng: màn Account disabled — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:28.728	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang13_20260411_114128635.png
+2026-04-11 11:41:28.795	WARN	hàng 16	J***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:28.797	INFO	hàng 12		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang12_20260411_114128631.png
+2026-04-11 11:41:28.797	WARN	hàng 12	N***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:28.811	INFO	hàng 17		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_account_disabled_hang17_20260411_114128694.png
+2026-04-11 11:41:28.811	WARN	hàng 17	B***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:28.897	INFO	hàng 12		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang12_20260411_114128798.png
+2026-04-11 11:41:28.900	INFO	hàng 17		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang17_20260411_114128812.png
+2026-04-11 11:41:28.934	INFO	hàng 16		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang16_20260411_114128796.png
+2026-04-11 11:41:28.934	WARN	hàng 16	J***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:29.054	INFO	hàng 16		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang16_20260411_114128935.png
+2026-04-11 11:41:29.385	INFO	hàng 13		GPM: đã xóa profile (tài khoản chết) id=13fe891c-21e1-452b-bcbf-772835ab3b47
+2026-04-11 11:41:29.559	INFO	hàng 12		GPM: đã xóa profile (tài khoản chết) id=1af9a4a1-4a49-4a84-afd4-e20caf394370
+2026-04-11 11:41:29.560	INFO	hàng 17		GPM: đã xóa profile (tài khoản chết) id=6cfcf3af-ea2b-40f3-9f38-4b2e7584675b
+2026-04-11 11:41:29.686	WARN	hàng 19	L***@gmail.com	Dừng: màn Account disabled — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:29.727	INFO	hàng 16		GPM: đã xóa profile (tài khoản chết) id=d05ee516-503d-4c25-ab58-d46e7415f08e
+2026-04-11 11:41:29.796	INFO	hàng 19		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_account_disabled_hang19_20260411_114129687.png
+2026-04-11 11:41:29.796	WARN	hàng 19	L***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:29.883	INFO	hàng 19		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang19_20260411_114129797.png
+2026-04-11 11:41:30.286	WARN	hàng 15	C***@gmail.com	Dừng: màn Account disabled — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:30.409	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_account_disabled_hang15_20260411_114130287.png
+2026-04-11 11:41:30.409	WARN	hàng 15	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:30.492	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang15_20260411_114130410.png
+2026-04-11 11:41:30.540	INFO	hàng 19		GPM: đã xóa profile (tài khoản chết) id=c19c391f-bacc-4476-a677-52f51be74695
+2026-04-11 11:41:31.149	INFO	hàng 15		GPM: đã xóa profile (tài khoản chết) id=5b7bede9-0749-4282-adf9-adaebfb54439
+2026-04-11 11:41:34.037	WARN	hàng 20	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.
+2026-04-11 11:41:34.146	INFO	hàng 20		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang20_20260411_114134039.png
+2026-04-11 11:41:34.146	WARN	hàng 20	M***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:41:34.225	INFO	hàng 20		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang20_20260411_114134148.png
+2026-04-11 11:41:34.883	INFO	hàng 20		GPM: đã xóa profile (tài khoản chết) id=50f51973-61a1-409d-8854-103e3e5c9851
+2026-04-11 11:41:34.931	INFO	-		Kết thúc batch: OK=0 Fail=20 (Playwright đã đóng).
+2026-04-11 11:44:00.185	INFO	hàng 1	M***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:00.196	INFO	hàng 2	D***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:00.196	INFO	hàng 3	T***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:00.196	INFO	hàng 4	E***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:00.196	INFO	hàng 5	E***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:00.196	INFO	-		Đã bỏ qua 5 account (đã ghi trong Data/dead_recaptcha_verify.log, dead_google_restrictions.log hoặc dead_google_account_disabled.log).
+2026-04-11 11:44:07.121	INFO	hàng 1	M***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 2	D***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 3	T***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 4	E***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 5	E***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 6	R***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 7	H***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 8	C***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 9	C***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 10	M***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.121	INFO	hàng 11	R***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	hàng 12	N***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	hàng 13	P***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	hàng 14	Z***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	hàng 15	C***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	hàng 16	J***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	hàng 17	B***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	hàng 18	S***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	hàng 19	L***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	hàng 20	M***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:07.122	INFO	-		Đã bỏ qua 20 account (đã ghi trong Data/dead_recaptcha_verify.log, dead_google_restrictions.log hoặc dead_google_account_disabled.log).
+2026-04-11 11:44:07.135	INFO	-		Bắt đầu batch: 5 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 11:44:10.820	INFO	-		Kết thúc batch: OK=0 Fail=0 (Playwright đã đóng).
+2026-04-11 11:44:13.216	INFO	hàng 1	M***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.216	INFO	hàng 2	D***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.216	INFO	hàng 3	T***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.216	INFO	hàng 4	E***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.216	INFO	hàng 5	E***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.216	INFO	hàng 6	R***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.216	INFO	hàng 7	H***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 8	C***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 9	C***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 10	M***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 11	R***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 12	N***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 13	P***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 14	Z***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 15	C***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 16	J***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 17	B***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 18	S***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 19	L***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	hàng 20	M***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 11:44:13.217	INFO	-		Đã bỏ qua 20 account (đã ghi trong Data/dead_recaptcha_verify.log, dead_google_restrictions.log hoặc dead_google_account_disabled.log).
+2026-04-11 11:44:13.220	INFO	-		Bắt đầu batch: 5 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 11:44:16.028	INFO	-		Kết thúc batch: OK=0 Fail=0 (Playwright đã đóng).
+2026-04-11 11:46:56.269	INFO	-		Bắt đầu batch: 25 account, luồng 10, proxy=True, nhóm GPM log="24".
+2026-04-11 11:53:15.676	INFO	hàng 4	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:53:23.672	WARN	hàng 1	T***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 11:53:45.907	WARN	hàng 5	O***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 11:53:50.098	WARN	hàng 3	H***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 11:53:56.446	WARN	hàng 1	T***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 11:53:56.446	WARN	hàng 1	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 11:53:57.949	WARN	hàng 8	H***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 11:54:00.906	WARN	hàng 7	M***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 11:54:01.776	WARN	hàng 9	H***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 11:54:01.958	WARN	hàng 6	D***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 11:54:02.113	WARN	hàng 2	B***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 11:54:02.676	WARN	hàng 10	D***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 11:54:18.678	WARN	hàng 5	O***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 11:54:18.679	WARN	hàng 5	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 11:54:22.845	WARN	hàng 3	H***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 11:54:22.845	WARN	hàng 3	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 11:54:30.709	WARN	hàng 8	H***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 11:54:30.709	WARN	hàng 8	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 11:54:33.646	WARN	hàng 7	M***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 11:54:33.646	WARN	hàng 7	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 11:54:34.518	WARN	hàng 9	H***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 11:54:34.518	WARN	hàng 9	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 11:54:34.828	WARN	hàng 6	D***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 11:54:34.828	WARN	hàng 6	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 11:54:34.901	WARN	hàng 2	B***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 11:54:34.901	WARN	hàng 2	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 11:54:35.426	WARN	hàng 10	D***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 11:54:35.426	WARN	hàng 10	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 11:56:15.580	INFO	hàng 1	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:56:40.417	INFO	hàng 5	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:56:42.149	INFO	hàng 3	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:56:50.600	INFO	hàng 8	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:56:53.257	INFO	hàng 7	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:56:54.872	INFO	hàng 6	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:56:55.221	INFO	hàng 2	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:56:55.547	INFO	hàng 9	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:56:56.764	INFO	hàng 10	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 11:57:48.481	ERROR	hàng 20	G***@gmail.com	Exception: TimeoutException — Timeout 30000ms exceeded. Call log:   - navigating to "https://accounts.google.com/", waiting until "networkidle"
+2026-04-11 11:57:51.637	INFO	hàng 20		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\exception_hang20_20260411_115751498.png
+2026-04-11 11:58:15.511	WARN	hàng 11	H***@gmail.com	Dừng: mở Gmail chuyển sang myaccount.google.com/.../restrictions — coi tài khoản chết.
+2026-04-11 11:58:17.906	INFO	hàng 11		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_myaccount_restrictions_hang11_20260411_115815513.png
+2026-04-11 11:58:17.907	WARN	hàng 11	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:58:26.390	WARN	hàng 13	D***@gmail.com	Dừng: mở Gmail chuyển sang myaccount.google.com/.../restrictions — coi tài khoản chết.
+2026-04-11 11:58:26.847	WARN	hàng 19	O***@gmail.com	Dừng: mở Gmail chuyển sang myaccount.google.com/.../restrictions — coi tài khoản chết.
+2026-04-11 11:58:27.596	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_myaccount_restrictions_hang13_20260411_115826391.png
+2026-04-11 11:58:27.597	WARN	hàng 13	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:58:28.501	INFO	hàng 19		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_myaccount_restrictions_hang19_20260411_115826847.png
+2026-04-11 11:58:28.501	WARN	hàng 19	O***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 11:58:47.919	DEBUG	hàng 11		Không chụp screenshot: Timeout 30000ms exceeded. Call log:   - taking page screenshot     - disabled all CSS animations   - waiting for fonts to load...   - fonts loaded
+2026-04-11 11:58:48.632	INFO	hàng 11		GPM: đã xóa profile (tài khoản chết) id=80427074-f6ca-46f8-8fdb-4938bae0ef2d
+2026-04-11 11:58:57.600	DEBUG	hàng 13		Không chụp screenshot: Timeout 30000ms exceeded. Call log:   - taking page screenshot     - disabled all CSS animations   - waiting for fonts to load...   - fonts loaded
+2026-04-11 11:58:58.289	INFO	hàng 13		GPM: đã xóa profile (tài khoản chết) id=be76433a-4de3-4ffb-bc85-d385cad40914
+2026-04-11 11:58:58.508	DEBUG	hàng 19		Không chụp screenshot: Timeout 30000ms exceeded. Call log:   - taking page screenshot     - disabled all CSS animations   - waiting for fonts to load...   - fonts loaded
+2026-04-11 11:58:59.185	INFO	hàng 19		GPM: đã xóa profile (tài khoản chết) id=ef611907-0953-4cc5-8d2d-241afd62e06e
+2026-04-11 12:03:34.165	WARN	hàng 14	K***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:03:34.992	WARN	hàng 15	L***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:03:39.694	WARN	hàng 16	N***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:03:41.613	WARN	hàng 18	O***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:03:56.042	WARN	hàng 17	S***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:03:59.507	WARN	hàng 12	O***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:04:06.928	WARN	hàng 14	K***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:04:06.928	WARN	hàng 14	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:04:07.726	WARN	hàng 15	L***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:04:07.726	WARN	hàng 15	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:04:12.448	WARN	hàng 16	N***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:04:12.448	WARN	hàng 16	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:04:14.379	WARN	hàng 18	O***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:04:14.379	WARN	hàng 18	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:04:28.802	WARN	hàng 17	S***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:04:28.802	WARN	hàng 17	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:04:32.276	WARN	hàng 12	O***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:04:32.276	WARN	hàng 12	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:06:26.232	INFO	hàng 14	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:06:28.609	INFO	hàng 15	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:06:33.613	INFO	hàng 18	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:06:33.865	INFO	hàng 16	N***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:06:48.232	INFO	hàng 17	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:06:51.671	INFO	hàng 12	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:13:06.047	WARN	hàng 24	K***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:13:17.520	WARN	hàng 25	R***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:13:25.316	WARN	hàng 23	C***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:13:29.888	WARN	hàng 21	K***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:13:38.803	WARN	hàng 24	K***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:13:38.803	WARN	hàng 24	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:13:40.159	WARN	hàng 22	A***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:13:50.271	WARN	hàng 25	R***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:13:50.271	WARN	hàng 25	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:13:58.059	WARN	hàng 23	C***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:13:58.059	WARN	hàng 23	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:14:02.631	WARN	hàng 21	K***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:14:02.631	WARN	hàng 21	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:14:12.909	WARN	hàng 22	A***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:14:12.909	WARN	hàng 22	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:15:58.864	INFO	hàng 24	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:16:09.508	INFO	hàng 25	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:16:17.333	INFO	hàng 23	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:16:21.757	INFO	hàng 21	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:16:32.203	INFO	hàng 22	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:16:32.273	INFO	-		Kết thúc batch: OK=21 Fail=4 (Playwright đã đóng).
+2026-04-11 12:32:46.669	INFO	-		Bắt đầu batch: 5 account, luồng 10, proxy=True, nhóm GPM log="25".
+2026-04-11 12:37:00.702	INFO	hàng 9	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:37:37.158	WARN	hàng 5	O***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:37:42.556	WARN	hàng 6	D***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:37:48.557	WARN	hàng 8	H***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:37:57.227	WARN	hàng 7	M***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:38:09.903	WARN	hàng 5	O***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:38:09.903	WARN	hàng 5	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:38:15.274	WARN	hàng 6	D***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:38:15.275	WARN	hàng 6	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:38:21.291	WARN	hàng 8	H***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:38:21.291	WARN	hàng 8	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:38:29.967	WARN	hàng 7	M***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:38:29.967	WARN	hàng 7	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:40:29.269	INFO	hàng 5	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:40:37.655	INFO	hàng 6	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:40:41.365	INFO	hàng 8	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:40:50.102	INFO	hàng 7	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:40:50.158	INFO	-		Kết thúc batch: OK=5 Fail=0 (Playwright đã đóng).
+2026-04-11 12:41:02.609	INFO	hàng 11	H***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 12:41:02.609	INFO	hàng 13	D***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 12:41:02.609	INFO	hàng 19	O***@gmail.com	Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).
+2026-04-11 12:41:02.609	INFO	-		Đã bỏ qua 3 account (đã ghi trong Data/dead_recaptcha_verify.log, dead_google_restrictions.log hoặc dead_google_account_disabled.log).
+2026-04-11 12:41:02.614	INFO	-		Bắt đầu batch: 17 account, luồng 10, proxy=True, nhóm GPM log="25".
+2026-04-11 12:46:07.954	WARN	hàng 4	C***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:46:12.600	WARN	hàng 15	L***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:46:15.260	WARN	hàng 16	N***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:46:18.798	WARN	hàng 1	T***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:46:21.656	INFO	hàng 3	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:46:22.282	WARN	hàng 2	B***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:46:23.485	WARN	hàng 14	K***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:46:30.927	WARN	hàng 10	D***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:46:31.029	WARN	hàng 17	S***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:46:37.371	WARN	hàng 12	O***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:46:40.715	WARN	hàng 4	C***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:46:40.715	WARN	hàng 4	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:46:45.426	WARN	hàng 15	L***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:46:45.426	WARN	hàng 15	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:46:48.023	WARN	hàng 16	N***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:46:48.023	WARN	hàng 16	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:46:51.557	WARN	hàng 1	T***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:46:51.557	WARN	hàng 1	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:46:55.025	WARN	hàng 2	B***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:46:55.025	WARN	hàng 2	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:46:56.232	WARN	hàng 14	K***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:46:56.233	WARN	hàng 14	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:47:03.763	WARN	hàng 10	D***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:47:03.763	WARN	hàng 10	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:47:03.819	WARN	hàng 17	S***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:47:03.819	WARN	hàng 17	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:47:10.097	WARN	hàng 12	O***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:47:10.097	WARN	hàng 12	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:49:00.022	INFO	hàng 4	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:49:04.743	INFO	hàng 15	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:49:10.099	INFO	hàng 16	N***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:49:12.562	INFO	hàng 1	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:49:14.358	INFO	hàng 2	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:49:17.373	INFO	hàng 14	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:49:24.617	INFO	hàng 17	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:49:24.771	INFO	hàng 10	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:49:30.406	INFO	hàng 12	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:54:07.835	INFO	hàng 18	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:54:27.017	WARN	hàng 22	A***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:54:34.307	WARN	hàng 24	K***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:54:38.564	WARN	hàng 25	R***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:54:42.099	WARN	hàng 20	G***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:54:42.345	WARN	hàng 21	K***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:54:59.758	WARN	hàng 22	A***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:54:59.758	WARN	hàng 22	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:55:07.046	WARN	hàng 24	K***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:55:07.046	WARN	hàng 24	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:55:11.318	WARN	hàng 25	R***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:55:11.318	WARN	hàng 25	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:55:14.836	WARN	hàng 20	G***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:55:14.836	WARN	hàng 20	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:55:15.098	WARN	hàng 21	K***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:55:15.098	WARN	hàng 21	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 12:57:19.108	INFO	hàng 22	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:57:26.027	INFO	hàng 24	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:57:31.157	INFO	hàng 25	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:57:34.617	INFO	hàng 20	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:57:34.923	INFO	hàng 21	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 12:58:17.378	WARN	hàng 23	C***@gmail.com	[Script] OAuth retry sau màn Something went wrong.
+2026-04-11 12:58:50.131	WARN	hàng 23	C***@gmail.com	[Script] Cảnh báo account access còn sau OAuth — F5 + Run.
+2026-04-11 12:58:50.131	WARN	hàng 23	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-04-11 13:01:09.535	INFO	hàng 23	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 13:01:09.581	INFO	-		Kết thúc batch: OK=17 Fail=0 (Playwright đã đóng).
+2026-04-11 13:06:59.963	INFO	hàng 1	B***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-04-11 13:08:03.669	INFO	-		Bắt đầu batch: 1 account, luồng 10, proxy=True, nhóm GPM log="26".
+2026-04-11 13:08:28.393	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-04-11 13:08:28.424	WARN	hàng 1	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 13:08:28.436	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).
+2026-04-11 13:14:08.673	INFO	-		Bắt đầu batch: 1 account, luồng 10, proxy=True, nhóm GPM log="26".
+2026-04-11 13:14:14.575	ERROR	hàng 1	H***@gmail.com	Exception: TargetClosedException — Target page, context or browser has been closed Call log:   - navigating to "https://accounts.google.com/", waiting until "networkidle"
+2026-04-11 13:14:14.638	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).
+2026-04-11 13:15:07.479	INFO	-		Bắt đầu batch: 1 account, luồng 10, proxy=True, nhóm GPM log="26".
+2026-04-11 13:15:20.097	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-04-11 13:15:20.137	WARN	hàng 1	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 13:15:20.148	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).
+2026-04-11 13:19:06.408	INFO	-		Bắt đầu batch: 1 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="26".
+2026-04-11 13:19:17.409	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-04-11 13:19:17.466	WARN	hàng 1	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 13:19:17.478	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).
+2026-04-11 13:21:15.415	INFO	-		Bắt đầu batch: 1 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="26".
+2026-04-11 13:21:21.247	ERROR	hàng 1	H***@gmail.com	Exception: TargetClosedException — Target page, context or browser has been closed Call log:   - navigating to "https://accounts.google.com/", waiting until "networkidle"
+2026-04-11 13:21:21.303	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).
+2026-04-11 13:22:55.486	INFO	-		Bắt đầu batch: 1 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="26".
+2026-04-11 13:23:02.345	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-04-11 13:23:02.366	ERROR	hàng 1	H***@gmail.com	Exception: TargetClosedException — Target page, context or browser has been closed Call log:   - navigating to "https://accounts.google.com/", waiting until "networkidle"
+2026-04-11 13:23:02.402	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).
+2026-04-11 13:28:37.590	INFO	-		Bắt đầu batch: 1 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="26".
+2026-04-11 13:28:49.825	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-04-11 13:28:49.861	WARN	hàng 1	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 13:28:49.873	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).
+2026-04-11 13:40:41.783	INFO	-		Bắt đầu batch: 1 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="26".
+2026-04-11 13:41:30.081	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-04-11 13:41:30.117	WARN	hàng 1	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-04-11 13:41:30.128	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).
+2026-04-11 13:47:33.968	INFO	-		Bắt đầu batch: 1 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="26".
+2026-04-11 13:48:06.426	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-04-11 13:48:06.467	INFO	hàng 1	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 13:48:06.476	INFO	-		Kết thúc batch: OK=1 Fail=0 (Playwright đã đóng).
+2026-04-11 13:52:08.387	INFO	-		Bắt đầu batch: 1 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="26".
+2026-04-11 13:52:31.865	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-04-11 13:52:31.893	INFO	hàng 1	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-04-11 13:52:31.902	INFO	-		Kết thúc batch: OK=1 Fail=0 (Playwright đã đóng).
+2026-04-11 14:02:57.845	INFO	-		Bắt đầu batch: 1 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="26".
+2026-04-11 14:03:31.000	ERROR	hàng 1	H***@gmail.com	Exception: TimeoutException — Timeout 30000ms exceeded. Call log:   - navigating to "https://accounts.google.com/", waiting until "networkidle"
+2026-04-11 14:03:31.629	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\exception_hang1_20260411_140331018.png
+2026-04-11 14:03:31.677	INFO	-		Kết thúc batch: OK=0 Fail=1 (Playwright đã đóng).

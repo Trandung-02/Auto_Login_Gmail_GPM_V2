@@ -39,9 +39,10 @@ public partial class Form1 : Form
 
 	private int BrowserCount = 1;
 
-	private List<ProxyInfo> _proxyList = new List<ProxyInfo>();
-
 	private List<noidung> _noidung = new List<noidung>();
+
+	/// <summary>Hàng bắt đầu hàng đợi chạy (0-based) khi không chọn nhiều dòng; cập nhật khi click/chọn một dòng trên lưới.</summary>
+	private int _runQueueStartRowIndex;
 
 	private int _runningThreads = 0;
 
@@ -88,6 +89,8 @@ public partial class Form1 : Form
 
 	private static readonly object DeadGoogleRestrictionsLogSync = new object();
 
+	private static readonly object DeadGoogleAccountDisabledLogSync = new object();
+
 	private const long AutomationLogMaxBytesBeforeRotate = 5242880L;
 
 	private static readonly UTF8Encoding Utf8NoBomEnc = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
@@ -116,18 +119,19 @@ public partial class Form1 : Form
 	/// <summary>Sau mỗi lần bấm Run trong editor Apps Script (chờ execution log).</summary>
 	private int _scriptRunPauseMs = 10000;
 
-	/// <summary>Hàng nào cần đóng Chrome ngay cả khi tắt "Đóng Chrome sau mỗi account" (tài khoản chết: reCAPTCHA/Verify, myaccount/restrictions). Sau finally còn gọi GPM xóa profile.</summary>
+	/// <summary>Hàng nào cần đóng Chrome ngay cả khi tắt "Đóng Chrome sau mỗi account" (tài khoản chết: Account disabled, reCAPTCHA/Verify, myaccount/restrictions). Sau finally còn gọi GPM xóa/ghi chú profile.</summary>
 	private readonly ConcurrentDictionary<int, bool> _forceCloseChromeAfterCycle = new ConcurrentDictionary<int, bool>();
 
 	/// <summary>Profile GPM vừa mở theo chỉ số hàng lưới trong batch hiện tại (để gọi API đóng profile).</summary>
 	private readonly ConcurrentDictionary<int, string> _gpmProfileIdOpenedForRow = new ConcurrentDictionary<int, string>();
 
+	/// <summary>Khi coi tài khoản chết: lưu id profile GPM tại thời điểm phát hiện (đảm bảo xóa đúng profile đã mở CDP, không nhầm chỉ số _profileIds).</summary>
+	private readonly ConcurrentDictionary<int, string> _deadAccountGpmProfileIdByRow = new ConcurrentDictionary<int, string>();
+
 	private List<string> _profileIds = new List<string>();
 
 	/// <summary>Nhóm GPM vừa load (mới tạo nhất), để log / thông báo.</summary>
 	private string _gpmLoadedGroupSummary = "";
-
-	private int _currentProfileIndex = -1;
 
 	private IContainer components = null;
 
@@ -173,8 +177,6 @@ public partial class Form1 : Form
 
 	private ToolStripMenuItem xuatCookieToolStripMenuItem;
 
-	private ToolStripMenuItem proxyToolStripMenuItem;
-
 	private ToolStripMenuItem tieudeToolStripMenuItem;
 
 	private ToolStripMenuItem noidungToolStripMenuItem;
@@ -187,7 +189,9 @@ public partial class Form1 : Form
 
 	private ToolStripMenuItem xuatCsvLuoiToolStripMenuItem;
 
-	private CheckBox cb_taoform;
+	private CheckBox cb_tao_form;
+
+	private CheckBox cb_tao_sheet_script;
 
 	private DataGridViewTextBoxColumn STT;
 
@@ -218,6 +222,13 @@ public partial class Form1 : Form
 	public Form1()
 	{
 		InitializeComponent();
+		try
+		{
+			typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, this, new object[1] { true });
+		}
+		catch
+		{
+		}
 	}
 
 	private async void btnStart_Click(object sender, EventArgs e)
@@ -226,7 +237,13 @@ public partial class Form1 : Form
 		{
 			return;
 		}
-		if (dataGridView1.SelectedRows.Count > 0)
+		int lastGridRow = GetLastGridDataRowIndex();
+		if (lastGridRow < 0)
+		{
+			MessageBox.Show("Lưới account trống.");
+			return;
+		}
+		if (dataGridView1.SelectedRows.Count > 1)
 		{
 			List<int> selected = (from DataGridViewRow r in dataGridView1.SelectedRows
 				select r.Index into i
@@ -235,10 +252,27 @@ public partial class Form1 : Form
 			_startRow = selected.First();
 			_endRow = selected.Last();
 		}
+		else if (dataGridView1.SelectedRows.Count == 1)
+		{
+			_startRow = dataGridView1.SelectedRows[0].Index;
+			if (_startRow < 0 || dataGridView1.Rows[_startRow].IsNewRow)
+			{
+				_startRow = Math.Min(Math.Max(0, _runQueueStartRowIndex), lastGridRow);
+			}
+			_endRow = lastGridRow;
+		}
 		else
 		{
-			_startRow = 0;
-			_endRow = dataGridView1.Rows.Count - 1;
+			_startRow = Math.Min(Math.Max(0, _runQueueStartRowIndex), lastGridRow);
+			_endRow = lastGridRow;
+		}
+		_startRow = Math.Min(Math.Max(0, _startRow), lastGridRow);
+		_endRow = Math.Min(Math.Max(0, _endRow), lastGridRow);
+		if (_endRow < _startRow)
+		{
+			int t = _startRow;
+			_startRow = _endRow;
+			_endRow = t;
 		}
 		int luong = GetSelectedLuong();
 		if (luong < 1)
@@ -259,13 +293,20 @@ public partial class Form1 : Form
 			return;
 		}
 		string logGroupId = GetGpmGroupIdForLoginLog();
-		HashSet<string> alreadyOkForGroup = LoadEmailsLoggedForGpmGroup(logGroupId);
+		LoadLoginSuccessEmailSets(logGroupId, out HashSet<string> alreadyOkForGroup, out HashSet<string> alreadyOkOtherGroups);
 		List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> pending = new List<(string, string, string, string, int)>();
 		foreach (var acc in accountQueue)
 		{
-			if (alreadyOkForGroup.Contains((acc.uid ?? "").Trim()))
+			string uidTrim = (acc.uid ?? "").Trim();
+			if (alreadyOkForGroup.Contains(uidTrim))
 			{
 				SetText(acc.rowIndex, "STATUS", "Bỏ qua — đã login (log nhóm này)");
+				continue;
+			}
+			if (alreadyOkOtherGroups.Contains(uidTrim))
+			{
+				SetText(acc.rowIndex, "STATUS", "Bỏ qua — tài khoản trùng với nhóm khác trước đó (login_success.log)");
+				AppendAutomationLog("INFO", acc.rowIndex, acc.uid, "Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.");
 				continue;
 			}
 			pending.Add(acc);
@@ -273,29 +314,51 @@ public partial class Form1 : Form
 		accountQueue = pending;
 		if (accountQueue.Count == 0)
 		{
-			MessageBox.Show("Tất cả account trong hàng đợi đã được ghi thành công trước đó cho nhóm GPM hiện tại (xem Data/login_success.log).");
+			MessageBox.Show("Tất cả account trong hàng đợi đã bị bỏ qua: đã login cùng nhóm GPM hiện tại hoặc đã thành công ở nhóm khác (xem Data/login_success.log).");
+			return;
+		}
+		HashSet<string> deadEmails = LoadEmailsMarkedDeadInAnyDeadLog();
+		if (deadEmails.Count > 0)
+		{
+			int beforeDeadSkip = accountQueue.Count;
+			List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> notDead = new List<(string, string, string, string, int)>();
+			foreach (var acc in accountQueue)
+			{
+				string uidTrim = (acc.uid ?? "").Trim();
+				if (deadEmails.Contains(uidTrim))
+				{
+					SetText(acc.rowIndex, "STATUS", "Bỏ qua — tài khoản chết (Data/dead_*.log)");
+					AppendAutomationLog("INFO", acc.rowIndex, acc.uid, "Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).");
+					continue;
+				}
+				notDead.Add(acc);
+			}
+			accountQueue = notDead;
+			int skippedDead = beforeDeadSkip - accountQueue.Count;
+			if (skippedDead > 0)
+			{
+				AppendAutomationLog("INFO", null, null, "Đã bỏ qua " + skippedDead + " account (đã ghi trong Data/dead_recaptcha_verify.log, dead_google_restrictions.log hoặc dead_google_account_disabled.log).");
+			}
+		}
+		if (accountQueue.Count == 0)
+		{
+			MessageBox.Show("Sau khi bỏ qua account đã login và account trong log tài khoản chết, không còn hàng nào để chạy.\r\nXóa dòng tương ứng trong các file Data/dead_*.log nếu muốn thử lại.");
+			return;
+		}
+		if (cb_gpm_group.Items.Count == 0 || GetSelectedGpmGroupId() == null)
+		{
+			MessageBox.Show("Cần chọn nhóm GPM (profile trong nhóm khớp thứ tự hàng 1…N trên lưới). Mở GPM Login (API 19995); nếu combo trống, khởi động lại form hoặc bật/tắt \"Proxy…\" để tải lại danh sách nhóm.");
 			return;
 		}
 		if (cb_sudungproxy.Checked)
 		{
-			LoadProxiesFromFile();
-			if (_proxyList.Count == 0)
-			{
-				MessageBox.Show("Không có proxy nào trong file!");
-				return;
-			}
 			foreach (var acc in accountQueue)
 			{
-				if (acc.rowIndex >= _proxyList.Count)
+				if (GetProxyForAccountRowOnUi(acc.rowIndex) == null)
 				{
-					MessageBox.Show($"Thiếu proxy cho hàng {acc.rowIndex + 1}: cần ít nhất {acc.rowIndex + 1} dòng trong Data/proxy.txt (chỉ có {_proxyList.Count} dòng).");
+					MessageBox.Show($"Hàng {acc.rowIndex + 1}: cột PROXY trống hoặc sai định dạng (host:port hoặc host:port:user:pass). Nhập proxy trên lưới hoặc trong Data\\Account.txt (cột thứ 5).");
 					return;
 				}
-			}
-			if (cb_gpm_group.Items.Count == 0 || GetSelectedGpmGroupId() == null)
-			{
-				MessageBox.Show("Bật Sử dụng Proxy: cần chọn nhóm GPM. Nếu danh sách trống, bật GPM Login (API 19995) rồi tích lại \"Sử dụng Proxy\".");
-				return;
 			}
 		}
 		if (!await TryPingGpmApiAsync().ConfigureAwait(true))
@@ -307,14 +370,13 @@ public partial class Form1 : Form
 		Interlocked.Exchange(ref _batchOk, 0);
 		Interlocked.Exchange(ref _batchFail, 0);
 		LoadNoiDung();
-		AppendAutomationLog("INFO", null, null, "Bắt đầu batch: " + accountQueue.Count + " account, luồng " + luong + ", proxy=" + cb_sudungproxy.Checked + ", nhóm GPM log=\"" + GetGpmGroupIdForLoginLog() + "\".");
+		AppendAutomationLog("INFO", null, null, "Bắt đầu batch: " + accountQueue.Count + " account, luồng " + luong + ", bắt buộc PROXY mỗi hàng=" + cb_sudungproxy.Checked + ", nhóm GPM log=\"" + GetGpmGroupIdForLoginLog() + "\".");
 		_batchCts?.Dispose();
 		_batchCts = new CancellationTokenSource();
 		_batchToken = _batchCts.Token;
 		_batchStartedUtc = DateTime.UtcNow;
 		_batchTotalPlanned = accountQueue.Count;
 		_running = true;
-		Interlocked.Exchange(ref _currentProfileIndex, -1);
 		try
 		{
 			_playwright = await Playwright.CreateAsync();
@@ -422,14 +484,10 @@ public partial class Form1 : Form
 		return null;
 	}
 
-	/// <summary>Id nhóm dùng cho log / bỏ qua: khi không dùng proxy, mọi lần chạy chung một khóa.</summary>
+	/// <summary>Id nhóm GPM đang chọn — dùng cho login_success và bỏ qua trùng nhóm.</summary>
 	private string GetGpmGroupIdForLoginLog()
 	{
-		if (cb_sudungproxy.Checked)
-		{
-			return GetSelectedGpmGroupId() ?? "";
-		}
-		return "_no_proxy_group_";
+		return GetSelectedGpmGroupId() ?? "_no_proxy_group_";
 	}
 
 	/// <summary>Kiểm tra GPM Login API trước khi batch (tránh mở Playwright khi GPM tắt).</summary>
@@ -454,6 +512,8 @@ public partial class Form1 : Form
 	private static string DeadRecaptchaVerifyLogPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "dead_recaptcha_verify.log");
 
 	private static string DeadGoogleRestrictionsLogPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "dead_google_restrictions.log");
+
+	private static string DeadGoogleAccountDisabledLogPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "dead_google_account_disabled.log");
 
 	private static string GetAppVersionLabel()
 	{
@@ -835,42 +895,111 @@ public partial class Form1 : Form
 		return Path.GetFullPath(Path.Combine(baseDir, fileName));
 	}
 
-	private static HashSet<string> LoadEmailsLoggedForGpmGroup(string gpmGroupId)
+	private static bool TryParseLoginSuccessLogDataLine(string raw, out string email, out string gpmGroupId)
 	{
-		HashSet<string> set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		email = null;
+		gpmGroupId = null;
+		string line = (raw ?? "").Trim();
+		if (line.Length == 0 || line[0] == '#')
+		{
+			return false;
+		}
+		int tab1 = line.IndexOf('\t');
+		if (tab1 < 0)
+		{
+			return false;
+		}
+		int tab2 = line.IndexOf('\t', tab1 + 1);
+		if (tab2 < 0)
+		{
+			return false;
+		}
+		email = line.Substring(0, tab1).Trim();
+		gpmGroupId = line.Substring(tab1 + 1, tab2 - tab1 - 1).Trim();
+		return !string.IsNullOrEmpty(email);
+	}
+
+	/// <summary>Đọc Data/login_success.log: email đã OK cùng <paramref name="currentGroupId"/> và email đã OK ở nhóm GPM khác (gid khác).</summary>
+	private static void LoadLoginSuccessEmailSets(string currentGroupId, out HashSet<string> sameGroupEmails, out HashSet<string> otherGroupEmails)
+	{
+		sameGroupEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		otherGroupEmails = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 		try
 		{
-			if (string.IsNullOrEmpty(gpmGroupId) || !File.Exists(LoginSuccessLogPath))
+			if (string.IsNullOrEmpty(currentGroupId) || !File.Exists(LoginSuccessLogPath))
 			{
-				return set;
+				return;
 			}
 			foreach (string raw in File.ReadAllLines(LoginSuccessLogPath, Encoding.UTF8))
 			{
-				string line = raw.Trim();
-				if (line.Length == 0 || line[0] == '#')
+				if (!TryParseLoginSuccessLogDataLine(raw, out string email, out string gid))
 				{
 					continue;
 				}
-				int tab1 = line.IndexOf('\t');
-				if (tab1 < 0)
+				if (string.IsNullOrEmpty(gid))
 				{
 					continue;
 				}
-				int tab2 = line.IndexOf('\t', tab1 + 1);
-				if (tab2 < 0)
+				if (string.Equals(gid, currentGroupId, StringComparison.Ordinal))
 				{
-					continue;
+					sameGroupEmails.Add(email);
 				}
-				string email = line.Substring(0, tab1).Trim();
-				string gid = line.Substring(tab1 + 1, tab2 - tab1 - 1).Trim();
-				if (string.Equals(gid, gpmGroupId, StringComparison.Ordinal) && !string.IsNullOrEmpty(email))
+				else
 				{
-					set.Add(email);
+					otherGroupEmails.Add(email);
 				}
 			}
 		}
 		catch
 		{
+		}
+	}
+
+	/// <summary>Email (cột 2 trong dòng time[TAB]email[TAB]reason) đã có trong bất kỳ log tài khoản chết nào — khi Bắt đầu sẽ bỏ qua.</summary>
+	private static HashSet<string> LoadEmailsMarkedDeadInAnyDeadLog()
+	{
+		HashSet<string> set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+		string[] paths = new string[3]
+		{
+			DeadRecaptchaVerifyLogPath,
+			DeadGoogleRestrictionsLogPath,
+			DeadGoogleAccountDisabledLogPath
+		};
+		for (int pi = 0; pi < paths.Length; pi++)
+		{
+			try
+			{
+				if (!File.Exists(paths[pi]))
+				{
+					continue;
+				}
+				foreach (string raw in File.ReadAllLines(paths[pi], Encoding.UTF8))
+				{
+					string line = raw.Trim();
+					if (line.Length == 0 || line[0] == '#')
+					{
+						continue;
+					}
+					int tab1 = line.IndexOf('\t');
+					if (tab1 < 0)
+					{
+						continue;
+					}
+					int tab2 = line.IndexOf('\t', tab1 + 1);
+					if (tab2 < 0)
+					{
+						continue;
+					}
+					string email = line.Substring(tab1 + 1, tab2 - tab1 - 1).Trim();
+					if (!string.IsNullOrEmpty(email))
+					{
+						set.Add(email);
+					}
+				}
+			}
+			catch
+			{
+			}
 		}
 		return set;
 	}
@@ -929,6 +1058,33 @@ public partial class Form1 : Form
 		}
 	}
 
+	/// <summary>Ghi email khi Google hiện màn «Account disabled» (tài khoản bị khóa).</summary>
+	private static void AppendGoogleAccountDisabledDeadLine(string email)
+	{
+		try
+		{
+			string dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+			Directory.CreateDirectory(dataDir);
+			string e = (email ?? "").Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ').Trim();
+			if (string.IsNullOrEmpty(e))
+			{
+				return;
+			}
+			string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\t" + e + "\tGoogle Account disabled — tài khoản chết";
+			lock (DeadGoogleAccountDisabledLogSync)
+			{
+				if (!File.Exists(DeadGoogleAccountDisabledLogPath))
+				{
+					File.WriteAllText(DeadGoogleAccountDisabledLogPath, "# time[TAB]email[TAB]reason — UTF-8" + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+				}
+				File.AppendAllText(DeadGoogleAccountDisabledLogPath, line + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+			}
+		}
+		catch
+		{
+		}
+	}
+
 	private static void AppendLoginSuccessLine(string email, string gpmGroupId, string proxyRaw)
 	{
 		try
@@ -947,7 +1103,7 @@ public partial class Form1 : Form
 			{
 				if (!File.Exists(LoginSuccessLogPath))
 				{
-					File.WriteAllText(LoginSuccessLogPath, "# account[TAB]gpm_group_id[TAB]proxy_raw — bỏ qua UID trùng khi chạy lại cùng nhóm GPM" + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+					File.WriteAllText(LoginSuccessLogPath, "# account[TAB]gpm_group_id[TAB]proxy_raw — bỏ qua UID trùng khi chạy lại cùng nhóm; bỏ qua nếu đã OK ở nhóm khác" + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 				}
 				File.AppendAllText(LoginSuccessLogPath, line + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 			}
@@ -992,32 +1148,36 @@ public partial class Form1 : Form
 		{
 			return;
 		}
-		await LoadProfiles();
-		HttpClient client = new HttpClient();
-		if (cb_sudungproxy.Checked)
+		using HttpClient client = new HttpClient();
+		await LoadProfiles(client);
+		int maxRow = accountQueue.Max(a => a.rowIndex);
+		if (maxRow >= _profileIds.Count)
 		{
-			int maxRow = accountQueue.Max(a => a.rowIndex);
-			if (maxRow >= _profileIds.Count)
-			{
-				MessageBox.Show($"Không đủ profile GPM: hàng account lớn nhất là {maxRow + 1}, cần ít nhất {maxRow + 1} profile trong nhóm, hiện có {_profileIds.Count}.\r\nNhóm đang dùng: {_gpmLoadedGroupSummary}\r\nĐặt tên profile A-Z để thứ tự khớp Account.txt (API sort=2).");
-				return;
-			}
-			try
-			{
-				await ApplyProxiesToGpmProfilesAsync(client);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show("Lỗi đồng bộ proxy lên GPM:\n" + ex.Message);
-				return;
-			}
+			MessageBox.Show($"Không đủ profile GPM trong nhóm đã chọn: hàng account lớn nhất là {maxRow + 1}, cần ít nhất {maxRow + 1} profile, hiện có {_profileIds.Count}.\r\nNhóm: {_gpmLoadedGroupSummary}\r\nĐặt tên profile A–Z trong GPM để thứ tự API khớp hàng trên lưới (sort=2).");
+			return;
+		}
+		// Luôn gán raw_proxy từ cột PROXY lên profile GPM (theo thứ tự hàng); ô trống thì bỏ qua — không phụ thuộc checkbox.
+		// Checkbox chỉ bắt buộc mỗi account trong hàng đợi phải có PROXY hợp lệ (btnStart).
+		try
+		{
+			await ApplyProxiesToGpmProfilesAsync(client);
+		}
+		catch (Exception ex)
+		{
+			MessageBox.Show("Lỗi đồng bộ proxy lên GPM:\n" + ex.Message);
+			return;
 		}
 		for (int offset = 0; offset < accountQueue.Count && _running && !_batchToken.IsCancellationRequested; offset += luongPerBatch)
 		{
 			int n = Math.Min(luongPerBatch, accountQueue.Count - offset);
 			List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> slice = accountQueue.GetRange(offset, n);
-			await LaunchBrowserBatchAsync(client, slice);
-			await RunBatchSliceAsync(slice);
+			List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> runSlice = await LaunchBrowserBatchAsync(client, slice);
+			if (runSlice.Count == 0)
+			{
+				AppendAutomationLog("WARN", null, null, "Batch " + (offset + 1) + "–" + (offset + slice.Count) + ": không profile nào vượt kiểm tra chrome://version (proxy khớp lưới).");
+				continue;
+			}
+			await RunBatchSliceAsync(runSlice);
 			foreach (IBrowser browser in _browsers)
 			{
 				try
@@ -1099,11 +1259,7 @@ public partial class Form1 : Form
 			{
 				dataGridView1.Rows[rowIndex].DefaultCellStyle.BackColor = Color.DarkRed;
 			});
-			ProxyInfo proxyInfo = (cb_sudungproxy.Checked ? GetProxyForAccountRow(rowIndex) : null);
-			if (cb_sudungproxy.Checked && proxyInfo != null)
-			{
-				SetText(msg: (proxyInfo.Username == null) ? proxyInfo.Server : $"{proxyInfo.Server}:{proxyInfo.Username}:{proxyInfo.Password}", index: rowIndex, colName: "PROXY");
-			}
+			ProxyInfo proxyInfo = GetProxyForAccountRowOnUi(rowIndex);
 			context = browser.Contexts.First();
 			IPage page = ((context.Pages.Count <= 0) ? (await context.NewPageAsync()) : context.Pages.First());
 			page2 = page;
@@ -1238,12 +1394,30 @@ public partial class Form1 : Form
 				catch
 				{
 				}
+				string deadProfileSnap = null;
 				try
 				{
-					await TryGpmDeleteProfileByRowAsync(rowIndex);
+					_deadAccountGpmProfileIdByRow.TryGetValue(rowIndex, out deadProfileSnap);
 				}
 				catch
 				{
+				}
+				try
+				{
+					await TryGpmDeleteProfileByRowAsync(rowIndex, deadProfileSnap);
+				}
+				catch
+				{
+				}
+				finally
+				{
+					try
+					{
+						_deadAccountGpmProfileIdByRow.TryRemove(rowIndex, out _);
+					}
+					catch
+					{
+					}
 				}
 			}
 		}
@@ -1414,6 +1588,95 @@ public partial class Form1 : Form
 		}
 	}
 
+	/// <summary>Màn đăng nhập Google «Account disabled» (bị khóa / unusual activity, nút Try to restore).</summary>
+	private static async Task<bool> PageShowsGoogleAccountDisabledAsync(IPage page)
+	{
+		if (page == null)
+		{
+			return false;
+		}
+		try
+		{
+			string url = "";
+			try
+			{
+				url = page.Url ?? "";
+			}
+			catch
+			{
+			}
+			if (string.IsNullOrEmpty(url) || url.IndexOf("accounts.google.com", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			string html = await page.ContentAsync();
+			if (string.IsNullOrEmpty(html))
+			{
+				return false;
+			}
+			if (html.IndexOf("Account disabled", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			if (html.IndexOf("Try to restore", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+			if (html.IndexOf("unusual activity", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+			if (html.IndexOf("locked it to protect", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+			if (html.IndexOf("Your Google Account", StringComparison.OrdinalIgnoreCase) >= 0 && html.IndexOf("disabled", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+			return false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private async Task<bool> TryAbortIfGoogleAccountDisabledAsync(IPage page, int vitri, string email)
+	{
+		if (!await PageShowsGoogleAccountDisabledAsync(page))
+		{
+			return false;
+		}
+		SetText(vitri, "STATUS", "Tài khoản chết — Google: Account disabled (tài khoản bị khóa)");
+		AppendAutomationLog("WARN", vitri, email, "Dừng: màn Account disabled — coi tài khoản chết, đóng Chrome.");
+		_forceCloseChromeAfterCycle[vitri] = true;
+		RememberGpmProfileIdForDeadAccountRow(vitri);
+		AppendGoogleAccountDisabledDeadLine(email);
+		try
+		{
+			await TryCaptureFailureScreenshotAsync(page, vitri, "google_signin_account_disabled");
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
+	/// <summary>reCAPTCHA/Verify chết hoặc Account disabled — dừng luồng đăng nhập.</summary>
+	private async Task<bool> TryAbortIfGoogleSignInDeadAccountBlockingAsync(IPage page, int vitri, string email)
+	{
+		if (await TryAbortIfGoogleAccountDisabledAsync(page, vitri, email))
+		{
+			return true;
+		}
+		if (await TryAbortIfGoogleSignInRecaptchaDeadEndAsync(page, vitri, email))
+		{
+			return true;
+		}
+		return false;
+	}
+
 	private async Task<bool> TryAbortIfGoogleSignInRecaptchaDeadEndAsync(IPage page, int vitri, string email)
 	{
 		if (!await PageShowsGoogleSignInRecaptchaDeadEndAsync(page))
@@ -1423,6 +1686,7 @@ public partial class Form1 : Form
 		SetText(vitri, "STATUS", "Tài khoản chết — Google: reCAPTCHA / Verify (không tự động được)");
 		AppendAutomationLog("WARN", vitri, email, "Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.");
 		_forceCloseChromeAfterCycle[vitri] = true;
+		RememberGpmProfileIdForDeadAccountRow(vitri);
 		AppendDeadRecaptchaVerifyAccountLine(email);
 		try
 		{
@@ -2130,6 +2394,7 @@ public partial class Form1 : Form
 				SetText(vitri, "STATUS", "Tài khoản chết — Google Restrictions (myaccount…/restrictions)");
 				AppendAutomationLog("WARN", vitri, email, "Dừng: mở Gmail chuyển sang myaccount.google.com/.../restrictions — coi tài khoản chết.");
 				_forceCloseChromeAfterCycle[vitri] = true;
+				RememberGpmProfileIdForDeadAccountRow(vitri);
 				AppendGoogleRestrictionsAccountDeadLine(email);
 				try
 				{
@@ -2154,6 +2419,7 @@ public partial class Form1 : Form
 				SetText(vitri, "STATUS", "Tài khoản chết — Google Restrictions (myaccount…/restrictions)");
 				AppendAutomationLog("WARN", vitri, email, "Dừng: mở Gmail chuyển sang myaccount.google.com/.../restrictions — coi tài khoản chết.");
 				_forceCloseChromeAfterCycle[vitri] = true;
+				RememberGpmProfileIdForDeadAccountRow(vitri);
 				AppendGoogleRestrictionsAccountDeadLine(email);
 				try
 				{
@@ -2202,7 +2468,7 @@ public partial class Form1 : Form
 						DateTime deadline = DateTime.UtcNow.AddMilliseconds(15500.0);
 						while (DateTime.UtcNow < deadline)
 						{
-							if (await TryAbortIfGoogleSignInRecaptchaDeadEndAsync(page, vitri, email))
+							if (await TryAbortIfGoogleSignInDeadAccountBlockingAsync(page, vitri, email))
 							{
 								throw new GoogleSignInDeadAccountException();
 							}
@@ -2228,7 +2494,7 @@ public partial class Form1 : Form
 							}
 							await DelayBatchAsync(400);
 						}
-						if (await TryAbortIfGoogleSignInRecaptchaDeadEndAsync(page, vitri, email))
+						if (await TryAbortIfGoogleSignInDeadAccountBlockingAsync(page, vitri, email))
 						{
 							throw new GoogleSignInDeadAccountException();
 						}
@@ -2252,7 +2518,7 @@ public partial class Form1 : Form
 					catch
 					{
 					}
-					if (await TryAbortIfGoogleSignInRecaptchaDeadEndAsync(page, vitri, email))
+					if (await TryAbortIfGoogleSignInDeadAccountBlockingAsync(page, vitri, email))
 					{
 						return false;
 					}
@@ -2323,7 +2589,7 @@ public partial class Form1 : Form
 					{
 					}
 
-					if (await TryAbortIfGoogleSignInRecaptchaDeadEndAsync(page, vitri, email))
+					if (await TryAbortIfGoogleSignInDeadAccountBlockingAsync(page, vitri, email))
 					{
 						return false;
 					}
@@ -2989,33 +3255,41 @@ public partial class Form1 : Form
 					SetText(vitri, "STATUS", "Lỗi đổi Avatar " + ex3.Message);
 				}
 			}
-			if (cb_taoform.Checked)
+			bool wantTaoForm = cb_tao_form.Checked;
+			bool wantTaoSheetScript = cb_tao_sheet_script.Checked;
+			if (!wantTaoForm && !wantTaoSheetScript)
 			{
-				SetText(vitri, "STATUS", "[Form] Bước 1/3: Tab mới → tạo Google Form...");
-				await DelayBatchAsync(3000);
-				IPage formPage = await context.NewPageAsync();
-				await RunStepWithReloadRetryAsync(formPage, vitri, "[Form] Mở trang tạo Form", async delegate
-				{
-					await formPage.GotoAsync("https://docs.google.com/forms/u/0/create?usp=forms_home&ths=true", new PageGotoOptions
-					{
-						WaitUntil = WaitUntilState.DOMContentLoaded,
-						Timeout = 120000f
-					});
-				});
-				await DelayBatchAsync(3000);
-				SetText(vitri, "STATUS", "[Form] Đóng popup quyền truy cập Forms (nếu có)...");
-				await DismissGoogleFormsAccessControlDialogIfPresentAsync(formPage);
-				await DelayBatchAsync(500);
+				SetText(vitri, "STATUS", "[Link] Không bật ‘Tạo Form’ hoặc ‘Tạo Sheet + Script’ — bỏ qua pipeline.");
+			}
+			else
+			{
 				if (_noidung.Count == 0)
 				{
-					MessageBox.Show("Không có nội dung");
+					MessageBox.Show("Không có nội dung (Data: tieude.txt, noidung.txt, codesc.txt…).");
 					return false;
 				}
 				noidung nd = _noidung[0];
 				string formLink = "";
-				try
+				if (wantTaoForm)
 				{
-					await DismissGoogleFormsAccessControlDialogIfPresentAsync(formPage, waitBeforeCheck: false);
+					SetText(vitri, "STATUS", "[Form] Bước 1/3: Tab mới → tạo Google Form...");
+					await DelayBatchAsync(3000);
+					IPage formPage = await context.NewPageAsync();
+					await RunStepWithReloadRetryAsync(formPage, vitri, "[Form] Mở trang tạo Form", async delegate
+					{
+						await formPage.GotoAsync("https://docs.google.com/forms/u/0/create?usp=forms_home&ths=true", new PageGotoOptions
+						{
+							WaitUntil = WaitUntilState.DOMContentLoaded,
+							Timeout = 120000f
+						});
+					});
+					await DelayBatchAsync(3000);
+					SetText(vitri, "STATUS", "[Form] Đóng popup quyền truy cập Forms (nếu có)...");
+					await DismissGoogleFormsAccessControlDialogIfPresentAsync(formPage);
+					await DelayBatchAsync(500);
+					try
+					{
+						await DismissGoogleFormsAccessControlDialogIfPresentAsync(formPage, waitBeforeCheck: false);
 					SetText(vitri, "STATUS", "[Form] Điền tiêu đề form (chữ thuần, không HTML)...");
 					ILocator formTitle = formPage.Locator("div[jsname='yrriRe'][contenteditable='true']").Or(formPage.Locator("div[role='textbox'][aria-label='Form title'][contenteditable='true']")).Or(formPage.Locator("div[aria-label='Form title'][contenteditable='true']")).First;
 					ILocator desc = formPage.Locator("div[aria-label='Form description']").First;
@@ -3362,13 +3636,16 @@ public partial class Form1 : Form
 					formLink = await formPage.EvaluateAsync<string>("() => navigator.clipboard.readText()");
 					SetText(vitri, "STATUS", "[Form] Xong: link phản hồi đã copy (clipboard); URL editor trên tab hiện tại");
 				}
-				catch (Exception ex6)
-				{
-					SetText(vitri, "STATUS", "[Form] Lỗi tạo / chỉnh / publish Form: " + ex6.Message);
+					catch (Exception ex6)
+					{
+						SetText(vitri, "STATUS", "[Form] Lỗi tạo / chỉnh / publish Form: " + ex6.Message);
+					}
 				}
+				if (wantTaoSheetScript)
+				{
 				try
 				{
-					SetText(vitri, "STATUS", "[Sheet] Bước 2/3: Tab mới → Google Sheets (tạo file)...");
+					SetText(vitri, "STATUS", wantTaoForm ? "[Sheet] Bước 2/3: Tab mới → Google Sheets (tạo file)..." : "[Sheet] Tạo Google Sheets (không tạo Form)…");
 					await DelayBatchAsync(5000);
 					IPage sheetPage = await context.NewPageAsync();
 					await RunStepWithReloadRetryAsync(sheetPage, vitri, "[Sheet] Mở Sheets + chờ tab", async delegate
@@ -3702,11 +3979,19 @@ public partial class Form1 : Form
 				{
 					SetText(vitri, "STATUS", "[Sheet/Script] Lỗi (Sheets, editor, API hoặc Run): " + ex8.Message);
 				}
-				SetText(vitri, "STATUS", "[Form+Sheet+Script] Hoàn tất pipeline — sẵn sàng DONE");
-			}
-			else
-			{
-				SetText(vitri, "STATUS", "[Link] Không bật ‘Tạo Form + Sheet + Script’ — bỏ qua mở Doc/Sheet/Script (URL không còn lưu trên lưới).");
+				}
+				if (wantTaoForm && wantTaoSheetScript)
+				{
+					SetText(vitri, "STATUS", "[Form+Sheet+Script] Hoàn tất pipeline — sẵn sàng DONE");
+				}
+				else if (wantTaoForm)
+				{
+					SetText(vitri, "STATUS", "[Form] Hoàn tất — đã bỏ qua Sheet/Script (chỉ tạo Form).");
+				}
+				else if (wantTaoSheetScript)
+				{
+					SetText(vitri, "STATUS", "[Sheet+Script] Hoàn tất — không tạo Form ([LINK_FORM] để trống nếu chưa có link).");
+				}
 			}
 			SetText(vitri, "STATUS", "[Xong] DONE");
 			return true;
@@ -3735,14 +4020,15 @@ public partial class Form1 : Form
 			string text;
 			while ((text = streamReader.ReadLine()) != null)
 			{
-				string[] array = text.Split('|', '\t', ' ');
+				string[] array = text.Split(new[] { '|', '\t' }, StringSplitOptions.None);
 				if (array.Length >= 3)
 				{
 					string text2 = array[0];
 					string text3 = array[1];
 					string text4 = array[2];
 					string text5 = (array.Length > 3) ? array[3] : "";
-					dataGridView_0.Rows.Add(num++, text2, text3, text4, text5, "", "");
+					string text6 = (array.Length > 4) ? array[4] : "";
+					dataGridView_0.Rows.Add(num++, text2, text3, text4, text5, "", text6);
 				}
 			}
 		}
@@ -3805,53 +4091,63 @@ public partial class Form1 : Form
 		return array[new Random().Next(array.Length)];
 	}
 
-	private void LoadProxiesFromFile()
+	private static bool TryParseProxyRawLine(string trimmed, out ProxyInfo info)
 	{
-		_proxyList.Clear();
-		string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-		string fullPath = Path.GetFullPath(Path.Combine(baseDir, "Data", "proxy.txt"));
-		if (!File.Exists(fullPath))
+		info = null;
+		if (string.IsNullOrWhiteSpace(trimmed))
 		{
-			string fallback = Path.GetFullPath(Path.Combine(baseDir, "data", "proxy.txt"));
-			if (File.Exists(fallback))
+			return false;
+		}
+		trimmed = trimmed.Trim();
+		string[] array3 = trimmed.Split(':');
+		if (array3.Length < 2)
+		{
+			return false;
+		}
+		string text2 = array3[0];
+		string text3 = array3[1];
+		string username = null;
+		string password = null;
+		if (array3.Length >= 4)
+		{
+			username = array3[2];
+			password = array3[3];
+		}
+		info = new ProxyInfo
+		{
+			Server = "http://" + text2 + ":" + text3,
+			Username = username,
+			Password = password,
+			RawLineForGpm = trimmed
+		};
+		return true;
+	}
+
+	private int GetLastGridDataRowIndex()
+	{
+		if (dataGridView1.Rows.Count == 0)
+		{
+			return -1;
+		}
+		return dataGridView1.Rows.Count - 1;
+	}
+
+	private void DataGridView1_SelectionChanged(object sender, EventArgs e)
+	{
+		try
+		{
+			if (dataGridView1.CurrentRow == null || dataGridView1.CurrentRow.IsNewRow)
 			{
-				fullPath = fallback;
-			}
-			else
-			{
-				MessageBox.Show("Không tìm thấy file:\n" + fullPath);
 				return;
 			}
+			int idx = dataGridView1.CurrentRow.Index;
+			if (idx >= 0)
+			{
+				_runQueueStartRowIndex = idx;
+			}
 		}
-		string[] array = File.ReadAllLines(fullPath);
-		string[] array2 = array;
-		foreach (string text in array2)
+		catch
 		{
-			if (string.IsNullOrWhiteSpace(text))
-			{
-				continue;
-			}
-			string trimmed = text.Trim();
-			string[] array3 = trimmed.Split(':');
-			if (array3.Length >= 2)
-			{
-				string text2 = array3[0];
-				string text3 = array3[1];
-				string username = null;
-				string password = null;
-				if (array3.Length >= 4)
-				{
-					username = array3[2];
-					password = array3[3];
-				}
-				_proxyList.Add(new ProxyInfo
-				{
-					Server = "http://" + text2 + ":" + text3,
-					Username = username,
-					Password = password,
-					RawLineForGpm = trimmed
-				});
-			}
 		}
 	}
 
@@ -4807,18 +5103,134 @@ public partial class Form1 : Form
 		}
 	}
 
-	/// <summary>Proxy dòng (rowIndex+1) khớp Account.txt / lưới; dòng proxy thừa bỏ qua.</summary>
+	/// <summary>Proxy cho hàng: lưới hoặc fallback <c>Data/Account.txt</c> cột 5 — cùng nguồn với đồng bộ GPM / chrome://version.</summary>
 	private ProxyInfo GetProxyForAccountRow(int rowIndex)
 	{
-		if (_proxyList.Count == 0 || rowIndex < 0)
+		if (rowIndex < 0 || rowIndex >= dataGridView1.Rows.Count)
 		{
 			return null;
 		}
-		if (rowIndex >= _proxyList.Count)
+		DataGridViewRow row = dataGridView1.Rows[rowIndex];
+		if (row.IsNewRow)
 		{
 			return null;
 		}
-		return _proxyList[rowIndex];
+		string raw = GetProxyRawForRunRow(rowIndex);
+		if (string.IsNullOrEmpty(raw))
+		{
+			return null;
+		}
+		return TryParseProxyRawLine(raw, out ProxyInfo info) ? info : null;
+	}
+
+	/// <summary>Đọc PROXY sau các <c>await</c> có thể không còn trên UI thread — bắt buộc marshal qua <c>Invoke</c>.</summary>
+	private ProxyInfo GetProxyForAccountRowOnUi(int rowIndex)
+	{
+		try
+		{
+			if (!IsHandleCreated)
+			{
+				return GetProxyForAccountRow(rowIndex);
+			}
+			if (!InvokeRequired)
+			{
+				return GetProxyForAccountRow(rowIndex);
+			}
+			ProxyInfo r = null;
+			Invoke(new Action(() => { r = GetProxyForAccountRow(rowIndex); }));
+			return r;
+		}
+		catch (ObjectDisposedException)
+		{
+			return null;
+		}
+		catch (InvalidOperationException)
+		{
+			return GetProxyForAccountRow(rowIndex);
+		}
+	}
+
+	/// <summary>Chuỗi thô cột PROXY trên UI thread (dùng khi đồng bộ GPM).</summary>
+	private string GetGridProxyRawCellOnUi(int rowIndex)
+	{
+		try
+		{
+			if (!IsHandleCreated)
+			{
+				return ReadGridProxyRawCell(rowIndex);
+			}
+			if (!InvokeRequired)
+			{
+				return ReadGridProxyRawCell(rowIndex);
+			}
+			string r = "";
+			Invoke(new Action(() => { r = ReadGridProxyRawCell(rowIndex); }));
+			return r ?? "";
+		}
+		catch
+		{
+			return ReadGridProxyRawCell(rowIndex);
+		}
+	}
+
+	private string ReadGridProxyRawCell(int rowIndex)
+	{
+		if (rowIndex < 0 || rowIndex >= dataGridView1.Rows.Count)
+		{
+			return "";
+		}
+		DataGridViewRow row = dataGridView1.Rows[rowIndex];
+		if (row.IsNewRow)
+		{
+			return "";
+		}
+		return row.Cells["PROXY"].Value?.ToString()?.Trim() ?? "";
+	}
+
+	/// <summary>Cùng quy tắc bỏ dòng / đếm hàng như <see cref="SetAccount"/> — cột 5 (index 4) là PROXY.</summary>
+	private static string ReadProxyRawFromAccountFileForGridRow(int rowIndex)
+	{
+		if (rowIndex < 0 || !File.Exists("Data/Account.txt"))
+		{
+			return "";
+		}
+		try
+		{
+			int validIndex = 0;
+			foreach (string raw in File.ReadLines("Data/Account.txt"))
+			{
+				string line = (raw ?? "").Trim();
+				if (string.IsNullOrEmpty(line))
+				{
+					continue;
+				}
+				string[] array = line.Split(new[] { '|', '\t' }, StringSplitOptions.None);
+				if (array.Length < 3)
+				{
+					continue;
+				}
+				if (validIndex == rowIndex)
+				{
+					return array.Length > 4 ? (array[4] ?? "").Trim() : "";
+				}
+				validIndex++;
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	/// <summary>Chuỗi proxy dùng khi chạy: ưu tiên lưới; ô trống thì đọc <c>Data/Account.txt</c> (tránh chỉ sửa file mà không reload lưới).</summary>
+	private string GetProxyRawForRunRow(int rowIndex)
+	{
+		string g = (GetGridProxyRawCellOnUi(rowIndex) ?? "").Trim();
+		if (!string.IsNullOrEmpty(g))
+		{
+			return g;
+		}
+		return ReadProxyRawFromAccountFileForGridRow(rowIndex);
 	}
 
 	private void mainPanel_Paint(object sender, PaintEventArgs e)
@@ -4856,20 +5268,18 @@ public partial class Form1 : Form
 			{
 				if (!string.IsNullOrWhiteSpace(text2))
 				{
-					string[] array3 = text2.Split(new char[3] { '|', '\t', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-					string text3 = "";
-					string text4 = "";
-					string text5 = "";
-					string text6 = "";
-					text3 = array3[0];
-					text4 = ((array3.Length > 1) ? array3[1] : "");
-					text5 = ((array3.Length > 2) ? array3[2] : "");
-					text6 = ((array3.Length > 3) ? array3[3] : "");
+					string[] array3 = text2.Split(new char[2] { '|', '\t' });
+					string text3 = array3.Length > 0 ? array3[0].Trim() : "";
+					string text4 = array3.Length > 1 ? array3[1].Trim() : "";
+					string text5 = array3.Length > 2 ? array3[2].Trim() : "";
+					string text6 = array3.Length > 3 ? array3[3].Trim() : "";
+					string text7 = array3.Length > 4 ? array3[4].Trim() : "";
 					int num2 = dataGridView1.Rows.Add();
 					dataGridView1.Rows[num2].Cells["UID"].Value = text3;
 					dataGridView1.Rows[num2].Cells["PASS"].Value = text4;
-					dataGridView1.Rows[num2].Cells["MAIL2"].Value = text5;
-					dataGridView1.Rows[num2].Cells["MA2FA"].Value = text6;
+					dataGridView1.Rows[num2].Cells["MA2FA"].Value = text5;
+					dataGridView1.Rows[num2].Cells["MAIL2"].Value = text6;
+					dataGridView1.Rows[num2].Cells["PROXY"].Value = text7;
 					dataGridView1.Rows[num2].Cells["STT"].Value = num2 + 1;
 					hashSet.Add(text3);
 				}
@@ -4902,15 +5312,10 @@ public partial class Form1 : Form
 				{
 					string value = method_35(selectedRow.Index, "UID");
 					string value2 = method_35(selectedRow.Index, "PASS");
-					string value3 = method_35(selectedRow.Index, "COOKIE");
-					StringBuilder stringBuilder2 = stringBuilder;
-					StringBuilder.AppendInterpolatedStringHandler handler = new StringBuilder.AppendInterpolatedStringHandler(2, 3, stringBuilder2);
-					handler.AppendFormatted(value);
-					handler.AppendLiteral("|");
-					handler.AppendFormatted(value2);
-					handler.AppendLiteral("|");
-					handler.AppendFormatted(value3);
-					stringBuilder2.AppendLine(ref handler);
+					string value3 = method_35(selectedRow.Index, "MA2FA");
+					string value4 = method_35(selectedRow.Index, "MAIL2");
+					string value5 = method_35(selectedRow.Index, "PROXY");
+					stringBuilder.AppendLine(string.Join("|", new string[5] { value, value2, value3, value4, value5 }));
 				}
 			}
 			Clipboard.SetText(stringBuilder.ToString());
@@ -5024,22 +5429,24 @@ public partial class Form1 : Form
 		Text = "Auto Login — GPM | v" + GetAppVersionLabel();
 		LoadSettings();
 		SetAccount(dataGridView1);
+		_runQueueStartRowIndex = 0;
 		UpdateGpmGroupControlsVisible();
 		lbl_status.AutoSize = false;
-		lbl_status.Width = 248;
-		lbl_status.Height = 48;
+		lbl_status.Width = 260;
+		lbl_status.Height = 56;
 		UpdateStatus();
-		if (cb_sudungproxy.Checked)
-		{
-			await RefreshGpmGroupComboAsync();
-		}
+		await RefreshGpmGroupComboAsync();
 		try
 		{
 			typeof(DataGridView).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, dataGridView1, new object[1] { true });
+			typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, sidebar, new object[1] { true });
+			typeof(Control).InvokeMember("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty, null, topbar, new object[1] { true });
 		}
 		catch
 		{
 		}
+		sidebar.Paint -= Sidebar_Paint;
+		sidebar.Paint += Sidebar_Paint;
 		_uiToolTip?.Dispose();
 		_uiToolTip = new ToolTip
 		{
@@ -5048,14 +5455,15 @@ public partial class Form1 : Form
 			ReshowDelay = 200,
 			ShowAlways = true
 		};
-		_uiToolTip.SetToolTip(btn_start, "Chạy đăng nhập cho các hàng đã chọn (hoặc cả lưới). Kiểm tra GPM API :19995 trước khi bắt đầu.");
+		_uiToolTip.SetToolTip(btn_start, "Chạy đăng nhập cho các hàng đã chọn (hoặc cả lưới). Bỏ qua UID đã login thành công cho nhóm hiện tại hoặc đã thành công ở nhóm GPM khác (login_success.log), và trong Data/dead_*.log. Kiểm tra GPM API :19995 trước khi bắt đầu.");
 		_uiToolTip.SetToolTip(btn_stop, "Dừng: đóng trình duyệt và hủy batch đang chờ.");
 		_uiToolTip.SetToolTip(txt_so_account_log, "0 hoặc để trống = xử lý mọi dòng có UID trong phạm vi đã chọn.");
 		_uiToolTip.SetToolTip(cb_luong, "Số Chrome chạy song song mỗi đợt (không vượt quá số profile GPM).");
-		_uiToolTip.SetToolTip(cb_sudungproxy, "Gán proxy từ Data\\proxy.txt lên profile GPM theo thứ tự hàng.");
-		_uiToolTip.SetToolTip(cb_gpm_group, "Nhóm chứa profile A, B, C… khớp thứ tự dòng trong lưới.");
+		_uiToolTip.SetToolTip(cb_sudungproxy, "Khi tích: mỗi hàng trong hàng đợi phải có PROXY hợp lệ. App đẩy PROXY lên GPM rồi sau khi mở profile đọc chrome://version (Command Line, --proxy-server) so host:port với lưới; lệch thì cột STATUS ghi \"Không tìm thấy proxy tương ứng bên GPM\" và không chạy hàng đó. Định dạng: host:port hoặc host:port:user:pass.");
+		_uiToolTip.SetToolTip(cb_gpm_group, "Luôn chọn nhóm GPM: profile A, B, C… trong nhóm khớp hàng 1, 2, 3… (dù tắt \"Proxy…\").");
 		_uiToolTip.SetToolTip(cb_changeinfo, "Sau khi đăng nhập: mở myaccount và đổi ảnh đại diện (cần avatar.jpg).");
-		_uiToolTip.SetToolTip(cb_taoform, "Pipeline: tạo Google Form, Sheet, Apps Script và gắn mã (cần nội dung trong Data\\).");
+		_uiToolTip.SetToolTip(cb_tao_form, "Mở Google Forms, điền tiêu đề/mô tả, theme, publish và copy link phản hồi (cần tieude.txt, noidung.txt, header.jpg… trong Data\\).");
+		_uiToolTip.SetToolTip(cb_tao_sheet_script, "Tạo Google Sheet mới, mở script.new, dán codesc.txt (thay [LINK_FORM] / [LINK_SHEET]), thêm Drive API và chạy OAuth/Run. Có thể bật một mình: khi không tạo Form, [LINK_FORM] để trống.");
 		_uiToolTip.SetToolTip(cb_offchrome, "Sau mỗi account: đóng context Playwright + gọi GPM đóng profile + ngắt CDP (tắt cửa sổ Chrome thật; tiết kiệm RAM). Bỏ tick để giữ tab xem lại.");
 	}
 
@@ -5079,6 +5487,7 @@ public partial class Form1 : Form
 		int fail = Volatile.Read(ref _batchFail);
 		if (_running)
 		{
+			lbl_status.ForeColor = System.Drawing.Color.FromArgb(130, 210, 255);
 			int done = ok + fail;
 			string progress = _batchTotalPlanned > 0 ? $" | {done}/{_batchTotalPlanned}" : "";
 			string eta = "";
@@ -5099,12 +5508,36 @@ public partial class Form1 : Form
 		}
 		else if (_lastBatchOk > 0 || _lastBatchFail > 0)
 		{
+			lbl_status.ForeColor = System.Drawing.Color.FromArgb(170, 215, 175);
 			lbl_status.Text = $"Sẵn sàng | Lần trước: OK {_lastBatchOk} — Lỗi {_lastBatchFail}";
 		}
 		else
 		{
+			lbl_status.ForeColor = System.Drawing.Color.FromArgb(155, 205, 160);
 			lbl_status.Text = "Sẵn sàng";
 		}
+	}
+
+	private void Sidebar_Paint(object sender, PaintEventArgs e)
+	{
+		using (Pen pen = new Pen(Color.FromArgb(52, 52, 58), 1f))
+		{
+			int x = sidebar.Width - 1;
+			e.Graphics.DrawLine(pen, x, 0, x, sidebar.Height);
+		}
+	}
+
+	private void Topbar_LayoutTagline()
+	{
+		if (topbar == null || lbl_app_tagline == null || btn_export_diagnostics == null)
+		{
+			return;
+		}
+		int x = btn_export_diagnostics.Right + 12;
+		int w = Math.Max(120, topbar.ClientSize.Width - x - 16);
+		int h = TextRenderer.MeasureText(lbl_app_tagline.Text, lbl_app_tagline.Font, new Size(w, int.MaxValue), TextFormatFlags.WordBreak).Height;
+		h = Math.Max(20, Math.Min(h + 4, topbar.ClientSize.Height - 8));
+		lbl_app_tagline.SetBounds(x, (topbar.ClientSize.Height - h) / 2, w, h);
 	}
 
 	private void SaveAccount()
@@ -5122,7 +5555,8 @@ public partial class Form1 : Form
 				string value2 = item.Cells["PASS"]?.Value?.ToString() ?? "";
 				string value3 = item.Cells["MA2FA"]?.Value?.ToString() ?? "";
 				string value4 = item.Cells["MAIL2"]?.Value?.ToString() ?? "";
-				list.Add($"{value}|{value2}|{value3}|{value4}");
+				string value5 = item.Cells["PROXY"]?.Value?.ToString() ?? "";
+				list.Add($"{value}|{value2}|{value3}|{value4}|{value5}");
 			}
 		}
 		File.WriteAllLines("Data/Account.txt", list);
@@ -5181,9 +5615,22 @@ public partial class Form1 : Form
 			{
 				cb_changeinfo.Checked = result2;
 			}
-			if (dictionary.ContainsKey("taoform") && bool.TryParse(dictionary["taoform"], out var result3))
+			bool loadedTaoForm = false;
+			bool loadedTaoSheetScript = false;
+			if (dictionary.ContainsKey("tao_form") && bool.TryParse(dictionary["tao_form"], out var tf))
 			{
-				cb_taoform.Checked = result3;
+				cb_tao_form.Checked = tf;
+				loadedTaoForm = true;
+			}
+			if (dictionary.ContainsKey("tao_sheet_script") && bool.TryParse(dictionary["tao_sheet_script"], out var tss))
+			{
+				cb_tao_sheet_script.Checked = tss;
+				loadedTaoSheetScript = true;
+			}
+			if (!loadedTaoForm && !loadedTaoSheetScript && dictionary.ContainsKey("taoform") && bool.TryParse(dictionary["taoform"], out var legacyTao))
+			{
+				cb_tao_form.Checked = legacyTao;
+				cb_tao_sheet_script.Checked = legacyTao;
 			}
 			if (dictionary.ContainsKey("offchrome") && bool.TryParse(dictionary["offchrome"], out var result4))
 			{
@@ -5286,7 +5733,9 @@ public partial class Form1 : Form
 		d["sudungproxy"] = cb_sudungproxy.Checked.ToString();
 		d["gpm_proxy_group_id"] = GetSelectedGpmGroupId() ?? "";
 		d["changeinfo"] = cb_changeinfo.Checked.ToString();
-		d["taoform"] = cb_taoform.Checked.ToString();
+		d["tao_form"] = cb_tao_form.Checked.ToString();
+		d["tao_sheet_script"] = cb_tao_sheet_script.Checked.ToString();
+		d["taoform"] = (cb_tao_form.Checked && cb_tao_sheet_script.Checked).ToString();
 		d["offchrome"] = cb_offchrome.Checked.ToString();
 		d["wait_slice_ms"] = _waitSliceMs.ToString();
 		d["script_run_pause_ms"] = _scriptRunPauseMs.ToString();
@@ -5584,34 +6033,6 @@ public partial class Form1 : Form
 		}
 	}
 
-	private void button1_Click(object sender, EventArgs e)
-	{
-		string arguments = "Data/proxy.txt";
-		try
-		{
-			Process.Start("notepad.exe", arguments);
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine("The file could not be opened:");
-			Console.WriteLine(ex.Message);
-		}
-	}
-
-	private void proxyToolStripMenuItem_Click(object sender, EventArgs e)
-	{
-		string arguments = "Data/proxy.txt";
-		try
-		{
-			Process.Start("notepad.exe", arguments);
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine("The file could not be opened:");
-			Console.WriteLine(ex.Message);
-		}
-	}
-
 	private void tieudeToolStripMenuItem_Click(object sender, EventArgs e)
 	{
 		string arguments = "data/tieude.txt";
@@ -5717,7 +6138,8 @@ public partial class Form1 : Form
 		System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
 		System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PlayAPP.Form1));
 		this.sidebar = new System.Windows.Forms.Panel();
-		this.cb_taoform = new System.Windows.Forms.CheckBox();
+		this.cb_tao_sheet_script = new System.Windows.Forms.CheckBox();
+		this.cb_tao_form = new System.Windows.Forms.CheckBox();
 		this.cb_changeinfo = new System.Windows.Forms.CheckBox();
 		this.label3 = new System.Windows.Forms.Label();
 		this.txt_so_account_log = new System.Windows.Forms.TextBox();
@@ -5748,7 +6170,6 @@ public partial class Form1 : Form
 		this.copySelectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.deleteAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-		this.proxyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.xuatCookieToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.tieudeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.noidungToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -5761,9 +6182,10 @@ public partial class Form1 : Form
 		((System.ComponentModel.ISupportInitialize)this.dataGridView1).BeginInit();
 		this.contextMenuStrip1.SuspendLayout();
 		base.SuspendLayout();
-		this.sidebar.BackColor = System.Drawing.Color.FromArgb(37, 37, 38);
+		this.sidebar.BackColor = System.Drawing.Color.FromArgb(32, 32, 36);
 		this.sidebar.Controls.Add(this.cb_offchrome);
-		this.sidebar.Controls.Add(this.cb_taoform);
+		this.sidebar.Controls.Add(this.cb_tao_sheet_script);
+		this.sidebar.Controls.Add(this.cb_tao_form);
 		this.sidebar.Controls.Add(this.cb_changeinfo);
 		this.sidebar.Controls.Add(this.label3);
 		this.sidebar.Controls.Add(this.txt_so_account_log);
@@ -5775,91 +6197,108 @@ public partial class Form1 : Form
 		this.sidebar.Controls.Add(this.cb_gpm_group);
 		this.sidebar.Dock = System.Windows.Forms.DockStyle.Left;
 		this.sidebar.Name = "sidebar";
-		this.sidebar.Size = new System.Drawing.Size(276, 601);
+		this.sidebar.Size = new System.Drawing.Size(300, 601);
 		this.sidebar.TabIndex = 0;
-		this.cb_taoform.AutoSize = true;
-		this.cb_taoform.Cursor = System.Windows.Forms.Cursors.Hand;
-		this.cb_taoform.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.cb_taoform.ForeColor = System.Drawing.Color.FromArgb(220, 220, 220);
-		this.cb_taoform.Location = new System.Drawing.Point(14, 283);
-		this.cb_taoform.Name = "cb_taoform";
-		this.cb_taoform.TabIndex = 10;
-		this.cb_taoform.Text = "Tạo Form + Sheet + Script";
+		this.cb_tao_form.AutoSize = false;
+		this.cb_tao_form.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.cb_tao_form.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.cb_tao_form.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
+		this.cb_tao_form.Location = new System.Drawing.Point(16, 312);
+		this.cb_tao_form.Name = "cb_tao_form";
+		this.cb_tao_form.Size = new System.Drawing.Size(260, 24);
+		this.cb_tao_form.TabIndex = 6;
+		this.cb_tao_form.Text = "Tạo Form";
+		this.cb_tao_sheet_script.AutoSize = false;
+		this.cb_tao_sheet_script.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.cb_tao_sheet_script.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.cb_tao_sheet_script.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
+		this.cb_tao_sheet_script.Location = new System.Drawing.Point(16, 340);
+		this.cb_tao_sheet_script.Name = "cb_tao_sheet_script";
+		this.cb_tao_sheet_script.Size = new System.Drawing.Size(260, 24);
+		this.cb_tao_sheet_script.TabIndex = 7;
+		this.cb_tao_sheet_script.Text = "Tạo Sheet + Script";
+		this.cb_changeinfo.AutoSize = false;
 		this.cb_changeinfo.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_changeinfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.cb_changeinfo.ForeColor = System.Drawing.Color.FromArgb(220, 220, 220);
-		this.cb_changeinfo.Location = new System.Drawing.Point(14, 258);
+		this.cb_changeinfo.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
+		this.cb_changeinfo.Location = new System.Drawing.Point(16, 284);
 		this.cb_changeinfo.Name = "cb_changeinfo";
-		this.cb_changeinfo.Size = new System.Drawing.Size(140, 20);
-		this.cb_changeinfo.TabIndex = 9;
+		this.cb_changeinfo.Size = new System.Drawing.Size(260, 24);
+		this.cb_changeinfo.TabIndex = 5;
 		this.cb_changeinfo.Text = "Đổi ảnh / thông tin Gmail";
-		this.label3.Font = new System.Drawing.Font("Segoe UI", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-		this.label3.ForeColor = System.Drawing.Color.FromArgb(160, 160, 165);
-		this.label3.Location = new System.Drawing.Point(14, 68);
+		this.label3.Font = new System.Drawing.Font("Segoe UI", 8.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+		this.label3.ForeColor = System.Drawing.Color.FromArgb(150, 152, 162);
+		this.label3.Location = new System.Drawing.Point(16, 80);
 		this.label3.Name = "label3";
-		this.label3.Size = new System.Drawing.Size(248, 18);
-		this.label3.TabIndex = 8;
+		this.label3.Size = new System.Drawing.Size(260, 20);
+		this.label3.TabIndex = 10;
+		this.label3.TabStop = false;
 		this.label3.Text = "Giới hạn số account (0 = chạy tất cả)";
-		this.txt_so_account_log.BackColor = System.Drawing.Color.FromArgb(51, 51, 55);
+		this.txt_so_account_log.BackColor = System.Drawing.Color.FromArgb(48, 48, 54);
 		this.txt_so_account_log.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-		this.txt_so_account_log.ForeColor = System.Drawing.Color.FromArgb(241, 241, 241);
-		this.txt_so_account_log.Location = new System.Drawing.Point(14, 88);
+		this.txt_so_account_log.ForeColor = System.Drawing.Color.FromArgb(245, 245, 248);
+		this.txt_so_account_log.Location = new System.Drawing.Point(16, 104);
 		this.txt_so_account_log.Name = "txt_so_account_log";
-		this.txt_so_account_log.Size = new System.Drawing.Size(248, 23);
-		this.txt_so_account_log.TabIndex = 7;
+		this.txt_so_account_log.Size = new System.Drawing.Size(260, 25);
+		this.txt_so_account_log.TabIndex = 1;
 		this.lbl_status.AutoSize = false;
-		this.lbl_status.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-		this.lbl_status.ForeColor = System.Drawing.Color.FromArgb(120, 200, 120);
-		this.lbl_status.Location = new System.Drawing.Point(14, 12);
+		this.lbl_status.BackColor = System.Drawing.Color.FromArgb(42, 42, 48);
+		this.lbl_status.Font = new System.Drawing.Font("Segoe UI", 9.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+		this.lbl_status.ForeColor = System.Drawing.Color.FromArgb(155, 205, 160);
+		this.lbl_status.Location = new System.Drawing.Point(16, 12);
 		this.lbl_status.Name = "lbl_status";
-		this.lbl_status.Size = new System.Drawing.Size(248, 48);
-		this.lbl_status.TabIndex = 2;
+		this.lbl_status.Padding = new System.Windows.Forms.Padding(10, 8, 10, 8);
+		this.lbl_status.Size = new System.Drawing.Size(260, 56);
+		this.lbl_status.TabIndex = 0;
+		this.lbl_status.TabStop = false;
 		this.lbl_status.Text = "Sẵn sàng";
-		this.label2.Font = new System.Drawing.Font("Segoe UI", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-		this.label2.ForeColor = System.Drawing.Color.FromArgb(160, 160, 165);
-		this.label2.Location = new System.Drawing.Point(14, 120);
+		this.label2.Font = new System.Drawing.Font("Segoe UI", 8.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+		this.label2.ForeColor = System.Drawing.Color.FromArgb(150, 152, 162);
+		this.label2.Location = new System.Drawing.Point(16, 140);
 		this.label2.Name = "label2";
-		this.label2.Size = new System.Drawing.Size(248, 18);
-		this.label2.TabIndex = 6;
+		this.label2.Size = new System.Drawing.Size(260, 20);
+		this.label2.TabIndex = 3;
+		this.label2.TabStop = false;
 		this.label2.Text = "Luồng song song (profile GPM)";
-		this.cb_luong.BackColor = System.Drawing.Color.FromArgb(51, 51, 55);
+		this.cb_luong.BackColor = System.Drawing.Color.FromArgb(48, 48, 54);
 		this.cb_luong.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 		this.cb_luong.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.cb_luong.ForeColor = System.Drawing.Color.FromArgb(241, 241, 241);
+		this.cb_luong.ForeColor = System.Drawing.Color.FromArgb(245, 245, 248);
 		this.cb_luong.FormattingEnabled = true;
 		this.cb_luong.Items.AddRange(new object[3] { "2", "5", "10" });
-		this.cb_luong.Location = new System.Drawing.Point(14, 140);
+		this.cb_luong.Location = new System.Drawing.Point(16, 164);
 		this.cb_luong.Name = "cb_luong";
-		this.cb_luong.Size = new System.Drawing.Size(248, 23);
-		this.cb_luong.TabIndex = 5;
+		this.cb_luong.Size = new System.Drawing.Size(260, 25);
+		this.cb_luong.TabIndex = 2;
 		this.cb_luong.SelectedItem = "5";
 		this.cb_sudungproxy.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_sudungproxy.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.cb_sudungproxy.ForeColor = System.Drawing.Color.FromArgb(220, 220, 220);
-		this.cb_sudungproxy.Location = new System.Drawing.Point(14, 172);
+		this.cb_sudungproxy.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
+		this.cb_sudungproxy.Location = new System.Drawing.Point(16, 196);
 		this.cb_sudungproxy.Name = "cb_sudungproxy";
-		this.cb_sudungproxy.Size = new System.Drawing.Size(200, 20);
-		this.cb_sudungproxy.TabIndex = 2;
-		this.cb_sudungproxy.Text = "Proxy từ Data\\proxy.txt";
+		this.cb_sudungproxy.Size = new System.Drawing.Size(260, 24);
+		this.cb_sudungproxy.TabIndex = 3;
+		this.cb_sudungproxy.Text = "Proxy từ cột PROXY (Account.txt)";
 		this.cb_sudungproxy.CheckedChanged += new System.EventHandler(cb_sudungproxy_CheckedChanged);
-		this.lbl_gpm_group.Font = new System.Drawing.Font("Segoe UI", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-		this.lbl_gpm_group.ForeColor = System.Drawing.Color.FromArgb(160, 160, 165);
-		this.lbl_gpm_group.Location = new System.Drawing.Point(14, 198);
+		this.lbl_gpm_group.Font = new System.Drawing.Font("Segoe UI", 8.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+		this.lbl_gpm_group.ForeColor = System.Drawing.Color.FromArgb(150, 152, 162);
+		this.lbl_gpm_group.Location = new System.Drawing.Point(16, 226);
 		this.lbl_gpm_group.Name = "lbl_gpm_group";
-		this.lbl_gpm_group.Size = new System.Drawing.Size(248, 18);
-		this.lbl_gpm_group.TabIndex = 12;
+		this.lbl_gpm_group.Size = new System.Drawing.Size(260, 20);
+		this.lbl_gpm_group.TabIndex = 20;
+		this.lbl_gpm_group.TabStop = false;
 		this.lbl_gpm_group.Text = "Nhóm profile GPM";
-		this.cb_gpm_group.BackColor = System.Drawing.Color.FromArgb(51, 51, 55);
+		this.cb_gpm_group.BackColor = System.Drawing.Color.FromArgb(48, 48, 54);
 		this.cb_gpm_group.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 		this.cb_gpm_group.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.cb_gpm_group.ForeColor = System.Drawing.Color.FromArgb(241, 241, 241);
-		this.cb_gpm_group.Location = new System.Drawing.Point(14, 218);
+		this.cb_gpm_group.ForeColor = System.Drawing.Color.FromArgb(245, 245, 248);
+		this.cb_gpm_group.Location = new System.Drawing.Point(16, 248);
 		this.cb_gpm_group.Name = "cb_gpm_group";
-		this.cb_gpm_group.Size = new System.Drawing.Size(248, 23);
-		this.cb_gpm_group.TabIndex = 13;
-		this.lbl_gpm_group.Visible = false;
-		this.cb_gpm_group.Visible = false;
-		this.topbar.BackColor = System.Drawing.Color.FromArgb(45, 45, 48);
+		this.cb_gpm_group.Size = new System.Drawing.Size(260, 25);
+		this.cb_gpm_group.TabIndex = 4;
+		this.lbl_gpm_group.Visible = true;
+		this.cb_gpm_group.Visible = true;
+		this.topbar.BackColor = System.Drawing.Color.FromArgb(40, 40, 44);
 		this.topbar.Controls.Add(this.lbl_app_tagline);
 		this.topbar.Controls.Add(this.btn_export_diagnostics);
 		this.topbar.Controls.Add(this.btn_open_data_folder);
@@ -5867,116 +6306,123 @@ public partial class Form1 : Form
 		this.topbar.Controls.Add(this.btn_stop);
 		this.topbar.Dock = System.Windows.Forms.DockStyle.Top;
 		this.topbar.Name = "topbar";
-		this.topbar.Size = new System.Drawing.Size(1184, 52);
+		this.topbar.Size = new System.Drawing.Size(1184, 58);
 		this.topbar.TabIndex = 1;
 		this.lbl_app_tagline.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
-		this.lbl_app_tagline.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-		this.lbl_app_tagline.ForeColor = System.Drawing.Color.FromArgb(140, 140, 150);
-		this.lbl_app_tagline.Location = new System.Drawing.Point(520, 14);
+		this.lbl_app_tagline.AutoSize = false;
+		this.lbl_app_tagline.Font = new System.Drawing.Font("Segoe UI", 8.75f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+		this.lbl_app_tagline.ForeColor = System.Drawing.Color.FromArgb(155, 157, 168);
+		this.lbl_app_tagline.Location = new System.Drawing.Point(528, 11);
 		this.lbl_app_tagline.Name = "lbl_app_tagline";
-		this.lbl_app_tagline.Size = new System.Drawing.Size(652, 22);
-		this.lbl_app_tagline.TabIndex = 2;
+		this.lbl_app_tagline.Size = new System.Drawing.Size(644, 36);
+		this.lbl_app_tagline.TabIndex = 30;
+		this.lbl_app_tagline.TabStop = false;
 		this.lbl_app_tagline.Text = "Tự động đăng nhập Gmail · GPM Login (API 19995) · Playwright";
 		this.lbl_app_tagline.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-		this.btn_start.BackColor = System.Drawing.Color.FromArgb(14, 99, 156);
+		this.btn_start.BackColor = System.Drawing.Color.FromArgb(0, 120, 212);
 		this.btn_start.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.btn_start.FlatAppearance.BorderSize = 0;
-		this.btn_start.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		this.btn_start.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(0, 92, 168);
+		this.btn_start.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(28, 151, 234);
 		this.btn_start.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btn_start.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+		this.btn_start.Font = new System.Drawing.Font("Segoe UI", 9.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
 		this.btn_start.ForeColor = System.Drawing.Color.White;
-		this.btn_start.Location = new System.Drawing.Point(16, 10);
+		this.btn_start.Location = new System.Drawing.Point(16, 11);
 		this.btn_start.Name = "btn_start";
-		this.btn_start.Size = new System.Drawing.Size(108, 34);
+		this.btn_start.Size = new System.Drawing.Size(118, 36);
 		this.btn_start.TabIndex = 0;
 		this.btn_start.Text = "▶  Bắt đầu";
 		this.btn_start.UseVisualStyleBackColor = false;
 		this.btn_start.Click += new System.EventHandler(btnStart_Click);
-		this.btn_stop.BackColor = System.Drawing.Color.FromArgb(140, 48, 48);
+		this.btn_stop.BackColor = System.Drawing.Color.FromArgb(168, 52, 56);
 		this.btn_stop.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.btn_stop.FlatAppearance.BorderSize = 0;
-		this.btn_stop.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(180, 60, 60);
+		this.btn_stop.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(130, 40, 44);
+		this.btn_stop.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(198, 72, 76);
 		this.btn_stop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.btn_stop.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+		this.btn_stop.Font = new System.Drawing.Font("Segoe UI", 9.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
 		this.btn_stop.ForeColor = System.Drawing.Color.White;
-		this.btn_stop.Location = new System.Drawing.Point(132, 10);
+		this.btn_stop.Location = new System.Drawing.Point(142, 11);
 		this.btn_stop.Name = "btn_stop";
-		this.btn_stop.Size = new System.Drawing.Size(100, 34);
+		this.btn_stop.Size = new System.Drawing.Size(108, 36);
 		this.btn_stop.TabIndex = 1;
 		this.btn_stop.Text = "■  Dừng";
 		this.btn_stop.UseVisualStyleBackColor = false;
 		this.btn_stop.Click += new System.EventHandler(btnStop_Click);
-		this.btn_open_data_folder.BackColor = System.Drawing.Color.FromArgb(63, 63, 70);
+		this.btn_open_data_folder.BackColor = System.Drawing.Color.FromArgb(58, 58, 64);
 		this.btn_open_data_folder.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.btn_open_data_folder.FlatAppearance.BorderSize = 0;
-		this.btn_open_data_folder.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(80, 80, 88);
+		this.btn_open_data_folder.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(48, 48, 54);
+		this.btn_open_data_folder.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(72, 72, 80);
 		this.btn_open_data_folder.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btn_open_data_folder.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-		this.btn_open_data_folder.ForeColor = System.Drawing.Color.FromArgb(220, 220, 225);
-		this.btn_open_data_folder.Location = new System.Drawing.Point(240, 10);
+		this.btn_open_data_folder.ForeColor = System.Drawing.Color.FromArgb(232, 232, 236);
+		this.btn_open_data_folder.Location = new System.Drawing.Point(258, 11);
 		this.btn_open_data_folder.Name = "btn_open_data_folder";
-		this.btn_open_data_folder.Size = new System.Drawing.Size(130, 34);
+		this.btn_open_data_folder.Size = new System.Drawing.Size(136, 36);
 		this.btn_open_data_folder.TabIndex = 3;
 		this.btn_open_data_folder.Text = "Thư mục Data";
 		this.btn_open_data_folder.UseVisualStyleBackColor = false;
 		this.btn_open_data_folder.Click += new System.EventHandler(btn_open_data_folder_Click);
-		this.btn_export_diagnostics.BackColor = System.Drawing.Color.FromArgb(63, 63, 70);
+		this.btn_export_diagnostics.BackColor = System.Drawing.Color.FromArgb(58, 58, 64);
 		this.btn_export_diagnostics.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.btn_export_diagnostics.FlatAppearance.BorderSize = 0;
-		this.btn_export_diagnostics.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(80, 80, 88);
+		this.btn_export_diagnostics.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(48, 48, 54);
+		this.btn_export_diagnostics.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(72, 72, 80);
 		this.btn_export_diagnostics.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.btn_export_diagnostics.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-		this.btn_export_diagnostics.ForeColor = System.Drawing.Color.FromArgb(220, 220, 225);
-		this.btn_export_diagnostics.Location = new System.Drawing.Point(376, 10);
+		this.btn_export_diagnostics.ForeColor = System.Drawing.Color.FromArgb(232, 232, 236);
+		this.btn_export_diagnostics.Location = new System.Drawing.Point(400, 11);
 		this.btn_export_diagnostics.Name = "btn_export_diagnostics";
-		this.btn_export_diagnostics.Size = new System.Drawing.Size(132, 34);
+		this.btn_export_diagnostics.Size = new System.Drawing.Size(120, 36);
 		this.btn_export_diagnostics.TabIndex = 4;
 		this.btn_export_diagnostics.Text = "ZIP chẩn đoán";
 		this.btn_export_diagnostics.UseVisualStyleBackColor = false;
 		this.btn_export_diagnostics.Click += new System.EventHandler(btn_export_diagnostics_Click);
 		this.dataGridView1.AllowUserToResizeRows = false;
-		this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(30, 30, 32);
+		this.dataGridView1.BackgroundColor = System.Drawing.Color.FromArgb(24, 24, 28);
 		this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
 		this.dataGridView1.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.SingleHorizontal;
-		this.dataGridView1.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.Single;
+		this.dataGridView1.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
 		dataGridViewCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-		dataGridViewCellStyle.BackColor = System.Drawing.Color.FromArgb(55, 55, 60);
+		dataGridViewCellStyle.BackColor = System.Drawing.Color.FromArgb(46, 46, 52);
 		dataGridViewCellStyle.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-		dataGridViewCellStyle.ForeColor = System.Drawing.Color.FromArgb(230, 230, 235);
-		dataGridViewCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(55, 55, 60);
-		dataGridViewCellStyle.SelectionForeColor = System.Drawing.Color.FromArgb(230, 230, 235);
+		dataGridViewCellStyle.ForeColor = System.Drawing.Color.FromArgb(236, 236, 240);
+		dataGridViewCellStyle.SelectionBackColor = System.Drawing.Color.FromArgb(46, 46, 52);
+		dataGridViewCellStyle.SelectionForeColor = System.Drawing.Color.FromArgb(236, 236, 240);
 		dataGridViewCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
 		this.dataGridView1.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle;
-		this.dataGridView1.ColumnHeadersHeight = 32;
+		this.dataGridView1.ColumnHeadersHeight = 36;
 		this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
 		this.dataGridView1.Columns.AddRange(this.STT, this.UID, this.PASS, this.MA2FA, this.MAIL2, this.STATUS, this.PROXY);
 		this.dataGridView1.ContextMenuStrip = this.contextMenuStrip1;
 		dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-		dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(30, 30, 32);
+		dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(24, 24, 28);
 		dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-		dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(230, 230, 235);
-		dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(232, 232, 236);
+		dataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(0, 120, 212);
 		dataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.White;
 		dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
 		this.dataGridView1.DefaultCellStyle = dataGridViewCellStyle2;
 		this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
 		this.dataGridView1.EnableHeadersVisualStyles = false;
-		this.dataGridView1.GridColor = System.Drawing.Color.FromArgb(58, 58, 62);
+		this.dataGridView1.GridColor = System.Drawing.Color.FromArgb(52, 52, 58);
 		this.dataGridView1.Name = "dataGridView1";
 		this.dataGridView1.RowHeadersVisible = false;
 		this.dataGridView1.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
 		dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-		dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(30, 30, 32);
+		dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(24, 24, 28);
 		dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
-		dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(230, 230, 235);
-		dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(0, 122, 204);
+		dataGridViewCellStyle3.ForeColor = System.Drawing.Color.FromArgb(232, 232, 236);
+		dataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(0, 120, 212);
 		dataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White;
 		dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
 		this.dataGridView1.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-		this.dataGridView1.RowTemplate.Height = 24;
+		this.dataGridView1.RowTemplate.Height = 28;
+		this.dataGridView1.SelectionChanged += new System.EventHandler(DataGridView1_SelectionChanged);
 		this.dataGridView1.TabIndex = 2;
 		System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyleAlt = new System.Windows.Forms.DataGridViewCellStyle(this.dataGridView1.DefaultCellStyle);
-		dataGridViewCellStyleAlt.BackColor = System.Drawing.Color.FromArgb(40, 40, 44);
+		dataGridViewCellStyleAlt.BackColor = System.Drawing.Color.FromArgb(32, 32, 38);
 		this.dataGridView1.AlternatingRowsDefaultCellStyle = dataGridViewCellStyleAlt;
 		this.STT.FillWeight = 70f;
 		this.STT.HeaderText = "#";
@@ -6004,8 +6450,9 @@ public partial class Form1 : Form
 		this.PROXY.HeaderText = "PROXY";
 		this.PROXY.Name = "PROXY";
 		this.contextMenuStrip1.Name = "contextMenuStrip1";
-		this.contextMenuStrip1.BackColor = System.Drawing.Color.FromArgb(45, 45, 48);
-		this.contextMenuStrip1.ForeColor = System.Drawing.Color.FromArgb(240, 240, 240);
+		this.contextMenuStrip1.BackColor = System.Drawing.Color.FromArgb(42, 42, 48);
+		this.contextMenuStrip1.ForeColor = System.Drawing.Color.FromArgb(242, 242, 246);
+		this.contextMenuStrip1.Font = new System.Drawing.Font("Segoe UI", 9f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
 		this.toolStripMenuItem1.Name = "toolStripMenuItem1";
 		this.toolStripMenuItem1.Size = new System.Drawing.Size(220, 22);
 		this.toolStripMenuItem1.Text = "Dán mail từ clipboard…";
@@ -6026,10 +6473,6 @@ public partial class Form1 : Form
 		this.deleteAllToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
 		this.deleteAllToolStripMenuItem.Text = "Xóa toàn bộ";
 		this.deleteAllToolStripMenuItem.Click += new System.EventHandler(deleteAllToolStripMenuItem_Click);
-		this.proxyToolStripMenuItem.Name = "proxyToolStripMenuItem";
-		this.proxyToolStripMenuItem.Size = new System.Drawing.Size(200, 22);
-		this.proxyToolStripMenuItem.Text = "proxy.txt";
-		this.proxyToolStripMenuItem.Click += new System.EventHandler(proxyToolStripMenuItem_Click);
 		this.xuatCookieToolStripMenuItem.Name = "xuatCookieToolStripMenuItem";
 		this.xuatCookieToolStripMenuItem.Size = new System.Drawing.Size(220, 22);
 		this.xuatCookieToolStripMenuItem.Text = "Xuất cookie (file Cookie\\)";
@@ -6060,7 +6503,6 @@ public partial class Form1 : Form
 		this.menuMoFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[]
 		{
 			this.acoountToolStripMenuItem,
-			this.proxyToolStripMenuItem,
 			new System.Windows.Forms.ToolStripSeparator(),
 			this.tieudeToolStripMenuItem,
 			this.noidungToolStripMenuItem,
@@ -6081,27 +6523,32 @@ public partial class Form1 : Form
 			this.xuatCsvLuoiToolStripMenuItem
 		});
 		this.contextMenuStrip1.Size = new System.Drawing.Size(240, 198);
+		this.topbar.Resize += delegate
+		{
+			Topbar_LayoutTagline();
+		};
+		this.cb_offchrome.AutoSize = false;
 		this.cb_offchrome.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_offchrome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-		this.cb_offchrome.ForeColor = System.Drawing.Color.FromArgb(220, 220, 220);
-		this.cb_offchrome.Location = new System.Drawing.Point(14, 310);
+		this.cb_offchrome.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
+		this.cb_offchrome.Location = new System.Drawing.Point(16, 368);
 		this.cb_offchrome.Name = "cb_offchrome";
-		this.cb_offchrome.Size = new System.Drawing.Size(220, 20);
-		this.cb_offchrome.TabIndex = 11;
+		this.cb_offchrome.Size = new System.Drawing.Size(260, 24);
+		this.cb_offchrome.TabIndex = 8;
 		this.cb_offchrome.Text = "Đóng Chrome sau mỗi account";
-		this.BackColor = System.Drawing.Color.FromArgb(30, 30, 32);
-		base.ClientSize = new System.Drawing.Size(1184, 661);
+		this.BackColor = System.Drawing.Color.FromArgb(24, 24, 28);
+		base.ClientSize = new System.Drawing.Size(1200, 700);
 		base.Controls.Add(this.dataGridView1);
 		base.Controls.Add(this.sidebar);
 		base.Controls.Add(this.topbar);
-		this.Font = new System.Drawing.Font("Segoe UI", 9f);
+		this.Font = new System.Drawing.Font("Segoe UI", 9.25f);
 		base.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
 		base.Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
 		base.MaximizeBox = true;
-		base.MinimumSize = new System.Drawing.Size(960, 560);
+		base.MinimumSize = new System.Drawing.Size(1000, 580);
 		base.Name = "Form1";
 		base.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-		this.Text = "Auto Login";
+		this.Text = "PlayAPP — Auto Login";
 		base.FormClosing += new System.Windows.Forms.FormClosingEventHandler(Form1_FormClosing);
 		base.FormClosed += new System.Windows.Forms.FormClosedEventHandler(Form1_FormClosed);
 		base.Load += new System.EventHandler(Form1_Load);
@@ -6111,6 +6558,8 @@ public partial class Form1 : Form
 		this.topbar.ResumeLayout(false);
 		((System.ComponentModel.ISupportInitialize)this.dataGridView1).EndInit();
 		this.contextMenuStrip1.ResumeLayout(false);
+		UpdateGpmGroupControlsVisible();
+		Topbar_LayoutTagline();
 		base.ResumeLayout(false);
 	}
 
