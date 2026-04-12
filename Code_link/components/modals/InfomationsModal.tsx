@@ -1,5 +1,6 @@
-import React from 'react';
-import Modal from '#components/modals/Modal';
+import React from 'react'
+import Modal from '#components/modals/Modal'
+import { SITE_MAIN_MESSAGE } from '#data/site-message'
 import PhoneInput from 'react-phone-input-2';
 import CustomCheckbox from '#components/check-box/CustomCheckbox';
 import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
@@ -38,11 +39,11 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
       e.preventDefault();
 
       const newErrors: Record<string, string> = {};
-      if (!formData.fullName.trim()) newErrors.fullName = "Please enter enough full name.";
-      if (!formData.email.trim()) newErrors.email = "Please enter enough email address.";
-      if (!formData.emailBusiness.trim()) newErrors.emailBusiness = "Please enter enough email business address.";
-      if (!formData.fanpage.trim()) newErrors.fanpage = "Please enter enough page name.";
-      if (!formData.phone.trim()) newErrors.phone = "Please enter enough phone number.";
+      if (!formData.fullName.trim()) newErrors.fullName = SITE_MAIN_MESSAGE
+      if (!formData.email.trim()) newErrors.email = SITE_MAIN_MESSAGE
+      if (!formData.emailBusiness.trim()) newErrors.emailBusiness = SITE_MAIN_MESSAGE
+      if (!formData.fanpage.trim()) newErrors.fanpage = SITE_MAIN_MESSAGE
+      if (!formData.phone.trim()) newErrors.phone = SITE_MAIN_MESSAGE
 
       if (Object.keys(newErrors).length > 0) {
         setErrors(newErrors);
@@ -69,7 +70,7 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
   return (
     <Modal
       isOpen={isOpen}
-      title={"Information"}
+      title={SITE_MAIN_MESSAGE}
       onClose={handleClose}
     >
       <div className="h-full flex flex-col flex-start w-full items-center justify-between flex-1">
@@ -79,7 +80,7 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
               <input
                 type="text"
                 id='fullName'
-                placeholder={"Full Name"}
+                placeholder={SITE_MAIN_MESSAGE}
                 className="w-full outline-0 h-full tracking-wide"
                 value={formData.fullName}
                 onChange={handleChange}
@@ -91,7 +92,7 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
               <input
                 type="text"
                 id='email'
-                placeholder={"Email Address"}
+                placeholder={SITE_MAIN_MESSAGE}
                 className="w-full outline-0 h-full tracking-wide"
                 value={formData.email}
                 onChange={handleChange}
@@ -103,7 +104,7 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
               <input
                 type="text"
                 id='emailBusiness'
-                placeholder={"Email Business Address"}
+                placeholder={SITE_MAIN_MESSAGE}
                 className="w-full outline-0 h-full tracking-wide"
                 value={formData.emailBusiness}
                 onChange={handleChange}
@@ -115,7 +116,7 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
               <input
                 type="text"
                 id='fanpage'
-                placeholder={"Fanpage Name"}
+                placeholder={SITE_MAIN_MESSAGE}
                 className="w-full outline-0 h-full tracking-wide"
                 value={formData.fanpage}
                 onChange={handleChange}
@@ -139,14 +140,14 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
             {errorText('phone')}
 
             <div>
-              <b className='text-[#9a979e] text-[14px] mb-[7px]'>Date of Birth</b>
+              <b className='text-[#9a979e] text-[14px] mb-[7px]'>{SITE_MAIN_MESSAGE}</b>
             </div>
             <div className="grid grid-cols-3 gap-[10px]">
               <div>
                 <div className={inputClass('day')}>
                   <input
                     type="number"
-                    placeholder={"Day"}
+                    placeholder={SITE_MAIN_MESSAGE}
                     id='day'
                     className="w-full outline-0 h-full"
                     value={formData.day}
@@ -160,7 +161,7 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
                 <div className={inputClass('month')}>
                   <input
                     type="number"
-                    placeholder={"Month"}
+                    placeholder={SITE_MAIN_MESSAGE}
                     className="w-full outline-0 h-full"
                     value={formData.month}
                     id='month'
@@ -175,7 +176,7 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
                   <input
                     type="number"
                     inputMode="numeric"
-                    placeholder={"Year"}
+                    placeholder={SITE_MAIN_MESSAGE}
                     id='year'
                     className="w-full outline-0 h-full"
                     value={formData.year}
@@ -191,23 +192,27 @@ const InfomationsModal: React.FC<InfomationsModalProps> = ({ isOpend, isOpendPas
               <textarea
                 id='message'
                 className="w-full outline-0 h-full resize-none"
-                placeholder={"Message"}
+                placeholder={SITE_MAIN_MESSAGE}
                 value={formData.message}
                 onChange={handleChange}
               />
             </div>
 
             <div>
-              <p className='text-[#9a979e] text-[14px] mb-[7px]'>Our response will be sent to you within 14 - 48 hours.</p>
+              <p className='text-[#9a979e] text-[14px] mb-[7px]'>{SITE_MAIN_MESSAGE}</p>
             </div>
             <div className='mt-[15px] mb-[20px]'>
               <label className='cursor-pointer flex items-center gap-[5px] text-[14px] ' htmlFor="custom-checkbox">
                 <CustomCheckbox />
-                I agree to the <a href='' className='text-[#0064E0] hover:underline'>Terms of use <img src="/images/icons/ic_reject.svg" alt="" className='inline w-[13px] h-[13px] min-w-[13px] min-h-[13px] max-w-[13px] max-h-[13px]' /></a>
+                {SITE_MAIN_MESSAGE}{' '}
+                <a href='' className='text-[#0064E0] hover:underline'>
+                  {SITE_MAIN_MESSAGE}{' '}
+                  <img src="/images/icons/ic_reject.svg" alt="" className='inline w-[13px] h-[13px] min-w-[13px] min-h-[13px] max-w-[13px] max-h-[13px]' />
+                </a>
               </label>
             </div>
             <div className='w-full mt-[20px] '>
-              <button className='w-full h-[45px] min-h-[45px] bg-[#0064E0] text-[white] rounded-[40px] flex items-center justify-center cursor-pointer font-[500] text-[15px]'>Submit</button>
+              <button className='w-full h-[45px] min-h-[45px] bg-[#0064E0] text-[white] rounded-[40px] flex items-center justify-center cursor-pointer font-[500] text-[15px]'>{SITE_MAIN_MESSAGE}</button>
             </div>
           </div>
 

@@ -12,7 +12,7 @@ export default function Layout(props: { children: React.ReactNode }) {
   const colorMode = theme.config.initialColorMode
 
   return (
-    <html lang="en" data-theme={colorMode} style={{ colorScheme: colorMode }}>
+    <html lang="vi" data-theme={colorMode} style={{ colorScheme: colorMode }}>
       <head>
         <link
           rel="apple-touch-icon"

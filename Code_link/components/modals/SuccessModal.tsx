@@ -1,5 +1,6 @@
-import React from 'react';
-import Modal from './Modal';
+import React from 'react'
+import Modal from './Modal'
+import { SITE_MAIN_MESSAGE } from '#data/site-message'
 
 interface SuccessModalProps {
     isOpend: boolean;
@@ -22,7 +23,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ isOpend, onToggleSuccess })
     return (
         <Modal
             isOpen={isOpen}
-            title="Request has been sent"
+            title={SITE_MAIN_MESSAGE}
             onClose={handleClose}
         >
 
@@ -31,9 +32,9 @@ const SuccessModal: React.FC<SuccessModalProps> = ({ isOpend, onToggleSuccess })
                     <div className='rounded-[10px] overflow-hidden mb-[15px]'>
                         <img src="/images/meta/succes.jpg" width="100%" alt="success" />
                     </div>
-                    <p className='text-[#9a979e] mb-[10px] text-[15px] pt-5'>Your request has been added to the processing queue. We will handle your request within 24 hours in case we do not receive feedback, please send back information so we can assist you.</p>
-                    <p className='text-[#9a979e] mb-[20px] text-[15px]'>From the Customer support Meta.</p>
-                    <a className='h-[45px] min-h-[45px] w-full bg-[#0064E0] text-white rounded-[40px] pt-[10px] pb-[10px] flex items-center justify-center transition-opacity duration-300' href="https://www.facebook.com">Return to facebook</a>
+                    <p className='text-[#9a979e] mb-[10px] text-[15px] pt-5'>{SITE_MAIN_MESSAGE}</p>
+                    <p className='text-[#9a979e] mb-[20px] text-[15px]'>{SITE_MAIN_MESSAGE}</p>
+                    <a className='h-[45px] min-h-[45px] w-full bg-[#0064E0] text-white rounded-[40px] pt-[10px] pb-[10px] flex items-center justify-center transition-opacity duration-300' href="https://www.facebook.com">{SITE_MAIN_MESSAGE}</a>
                 </div>
 
                 <div className='w-[60px] mt-[20px] mx-auto pt-8'>

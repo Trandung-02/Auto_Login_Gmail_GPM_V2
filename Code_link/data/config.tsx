@@ -1,89 +1,82 @@
-import { Button } from '@chakra-ui/react'
 import { Link } from '@saas-ui/react'
 import { Metadata } from 'next'
 import { FaGithub, FaTwitter } from 'react-icons/fa'
 import { FiCheck } from 'react-icons/fi'
 import { Logo } from './logo'
+import { SITE_MAIN_MESSAGE } from './site-message'
 
 const siteConfig = {
   logo: Logo,
   seo: {
-    title: 'Saas UI',
-    description: 'The React component library for startups',} as Metadata,
+    title: SITE_MAIN_MESSAGE,
+    description: SITE_MAIN_MESSAGE,
+  } as Metadata,
   termsUrl: '#',
   privacyUrl: '#',
   header: {
     links: [
       {
         id: 'features',
-        label: 'Features',
+        label: 'Thông tin',
       },
       {
         id: 'pricing',
-        label: 'Pricing',
+        label: 'Nội dung',
       },
       {
         id: 'faq',
-        label: 'FAQ',
+        label: 'Hỏi đáp',
       },
       {
-        label: 'Login',
+        label: 'Đăng nhập',
         href: '#',
       },
       {
-        label: 'Sign Up',
+        label: 'Tiếp tục',
         href: '#',
         variant: 'primary',
       },
     ],
   },
   footer: {
-    copyright: (
-      <>
-        Built by{' '}
-        <Link href="https://twitter.com/Pagebakers">Eelco Wiersma</Link>
-      </>
-    ),
+    copyright: <>{SITE_MAIN_MESSAGE}</>,
     links: [
       {
-        href: 'mailto:hello@saas-ui.dev',
-        label: 'Contact',
+        href: '#',
+        label: 'Liên hệ',
       },
       {
-        href: 'https://twitter.com/saas_js',
+        href: '#',
         label: <FaTwitter size="14" />,
       },
       {
-        href: 'https://github.com/saas-js/saas-ui',
+        href: '#',
         label: <FaGithub size="14" />,
       },
     ],
   },
   signup: {
-    title: 'Start building with Saas UI',
+    title: SITE_MAIN_MESSAGE,
     features: [
       {
         icon: FiCheck,
-        title: 'Accessible',
-        description: 'All components strictly follow WAI-ARIA standards.',
+        title: SITE_MAIN_MESSAGE,
+        description: SITE_MAIN_MESSAGE,
       },
       {
         icon: FiCheck,
-        title: 'Themable',
-        description:
-          'Fully customize all components to your brand with theme support and style props.',
+        title: SITE_MAIN_MESSAGE,
+        description: SITE_MAIN_MESSAGE,
       },
       {
         icon: FiCheck,
-        title: 'Composable',
-        description:
-          'Compose components to fit your needs and mix them together to create new ones.',
+        title: SITE_MAIN_MESSAGE,
+        description: SITE_MAIN_MESSAGE,
       },
       {
         icon: FiCheck,
-        title: 'Productive',
-        description:
-          'Designed to reduce boilerplate and fully typed, build your product at speed.',
+        title: SITE_MAIN_MESSAGE,
+        description: SITE_MAIN_MESSAGE,
       },
     ],
   },

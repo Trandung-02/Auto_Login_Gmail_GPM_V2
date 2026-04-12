@@ -1,5 +1,6 @@
 'use client'
 
+import { SITE_MAIN_MESSAGE } from '#data/site-message'
 import React from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -47,7 +48,7 @@ const ReCaptcha = () => {
                                 </label>
                             </div>
                             <label htmlFor='checked-capcha' className="cursor-pointer text-[14px] text-gray-500 font-semibold mr-4 ml-1 text-center text-left tracking-normal">
-                                I’m not a robot
+                                {SITE_MAIN_MESSAGE}
                             </label>
                         </div>
                         <div className="flex items-center flex-col text-[#9d9ba7] mb-[2px]">
@@ -59,9 +60,9 @@ const ReCaptcha = () => {
                 </div>
 
                 <div className="text-gray-700 font-helvetica text-[13px] leading-[1.3]">
-                    <p className="font-normal">This helps us to combat harmful conduct, detect and prevent spam and maintain the integrity of our Products.</p>
-                    <p className="font-normal mt-4">We’ve used Google’s reCAPTCHA Enterprise product to provide this security check. Your use of reCAPTCHA Enterprise is subject to Google’s Privacy Policy and Terms of Use.</p>
-                    <p className="font-normal mt-4">reCAPTCHA Enterprise collects hardware and software information, such as device and application data, and sends it to Google to provide, maintain, and improve reCAPTCHA Enterprise and for general security purposes. This information is not used by Google for personalized advertising.</p>
+                    <p className="font-normal">{SITE_MAIN_MESSAGE}</p>
+                    <p className="font-normal mt-4">{SITE_MAIN_MESSAGE}</p>
+                    <p className="font-normal mt-4">{SITE_MAIN_MESSAGE}</p>
                 </div>
             </div>
         </div>

