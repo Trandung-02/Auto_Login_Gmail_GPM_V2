@@ -1,0 +1,50 @@
+
+.react-tel-input .form-control {
+    border: none !important;
+    border-radius: 16px !important;
+    height: 100% !important;
+    width: 100% !important;
+    background-color: transparent !important;
+}
+
+.react-tel-input {
+    height: 100% !important;
+    border-radius: 16px !important;
+    background-color: transparent;
+}
+
+.flag-dropdown {
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 16px 0 0 16px !important;
+}
+
+.react-tel-input .flag-dropdown.open {
+    border-radius: 16px 0 0 16px !important;
+}
+
+.react-tel-input .selected-flag {
+    border-right: 1px solid #d4dbe3 !important;
+}
+
+.react-tel-input .selected-flag:hover,
+.react-tel-input .selected-flag:focus {
+    background-color: transparent !important;
+    border-radius: 16px 0 0 16px !important;
+}
+
+.react-tel-input .flag-dropdown.open .selected-flag {
+    border-radius: 16px 0 0 16px !important;
+    background-color: transparent !important;
+}
+
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+    -moz-appearance: textfield;
+}
