@@ -1847,9 +1847,64 @@ public partial class Form1 : Form
 		}
 	}
 
+	/// <summary>Execution log Apps Script: "Attempted to execute ..., but it was deleted."</summary>
+	private static async Task<bool> ScriptPageShowsExecutionLogDeletedFunctionErrorAsync(IPage scriptPage)
+	{
+		try
+		{
+			string html = await scriptPage.ContentAsync();
+			if (string.IsNullOrEmpty(html))
+			{
+				return false;
+			}
+			if (html.IndexOf("Attempted to execute", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			if (html.IndexOf("but it was deleted", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			string url = scriptPage.Url ?? "";
+			return url.IndexOf("script.google.com", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static async Task<bool> ScriptPageShowsAuthorizationRequiredDialogAsync(IPage scriptPage)
+	{
+		try
+		{
+			ILocator dlg = scriptPage.Locator("h2:has-text('Authorization required')").Or(scriptPage.Locator("span.UywwFc-vQzf8d:has-text('Review permissions')")).First;
+			return await dlg.IsVisibleAsync();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static async Task<bool> WaitForAccountAccessWarningAsync(IPage scriptPage, int timeoutMs = 8000, int pollMs = 400)
+	{
+		DateTime endAt = DateTime.UtcNow.AddMilliseconds(timeoutMs);
+		while (DateTime.UtcNow < endAt)
+		{
+			if (await ScriptPageShowsExecutionLogAccountAccessWarningAsync(scriptPage))
+			{
+				return true;
+			}
+			await Task.Delay(pollMs);
+		}
+		return await ScriptPageShowsExecutionLogAccountAccessWarningAsync(scriptPage);
+	}
+
 	/// <summary>Khi Execution log báo thiếu quyền tài khoản: F5 (reload) trang editor rồi Run 2 lần; lặp tối đa maxAttempts.</summary>
 	private async Task RunScriptEditorTwiceWithReloadOnAccountAccessWarningAsync(IPage scriptPage, int vitri, string email, bool reloadImmediately = false, int maxAttempts = 4)
 	{
+		int authDialogSeenConsecutive = 0;
 		for (int attempt = 0; attempt < maxAttempts; attempt++)
 		{
 			if (attempt > 0 || reloadImmediately)
@@ -1887,17 +1942,219 @@ public partial class Form1 : Form
 				await DelayBatchAsync(1500);
 			}
 			SetText(vitri, "STATUS", "[Script] Editor sẵn sàng → Run function (lần 1)...");
-			await scriptPage.Locator("button[aria-label='Run the selected function']").ClickAsync();
-			await PageWaitCancellableAsync(scriptPage, _scriptRunPauseMs);
-			SetText(vitri, "STATUS", "[Script] Run function (lần 2)...");
-			await scriptPage.Locator("button[aria-label='Run the selected function']").ClickAsync();
-			await PageWaitCancellableAsync(scriptPage, _scriptRunPauseMs);
-			if (!await ScriptPageShowsExecutionLogAccountAccessWarningAsync(scriptPage))
+			await ClickRunSelectedFunctionAsync(scriptPage, vitri, "lần 1");
+			await WaitForRunCycleAsync(scriptPage, vitri, "lần 1");
+			if (await ScriptPageShowsExecutionLogDeletedFunctionErrorAsync(scriptPage))
 			{
+				authDialogSeenConsecutive = 0;
+				SetText(vitri, "STATUS", "[Script] Execution log báo '...but it was deleted' sau lần 1 → F5 và Run lại...");
+				AppendAutomationLog("WARN", vitri, email, "[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.");
+				continue;
+			}
+			if (await ScriptPageShowsAuthorizationRequiredDialogAsync(scriptPage))
+			{
+				authDialogSeenConsecutive++;
+				if (authDialogSeenConsecutive <= 1 && attempt + 1 < maxAttempts)
+				{
+					SetText(vitri, "STATUS", "[Script] Đã hiện Authorization required sau lần 1 → F5 + Run thêm 1 vòng trước khi vào OAuth...");
+					AppendAutomationLog("WARN", vitri, email, "[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.");
+					continue;
+				}
+				SetText(vitri, "STATUS", "[Script] Authorization required vẫn còn sau khi đã F5 + Run thêm vòng → chuyển bước OAuth.");
 				return;
 			}
+			authDialogSeenConsecutive = 0;
+			bool stillNeedAccountAccessAfterRun1 = await WaitForAccountAccessWarningAsync(scriptPage);
+			if (!stillNeedAccountAccessAfterRun1)
+			{
+				SetText(vitri, "STATUS", "[Script] Run function (lần 1) đã hoàn tất, không còn warning account access.");
+				return;
+			}
+			SetText(vitri, "STATUS", "[Script] Run function (lần 1) còn warning account access → F5 và Run lại...");
+			AppendAutomationLog("WARN", vitri, email, "[Script] Warning account access sau Run lần 1 — F5 + Run lại.");
+			continue;
 		}
 		throw new InvalidOperationException("Apps Script: Execution log vẫn báo cần quyền Google Account sau " + maxAttempts + " lần (F5 + Run).");
+	}
+
+	private static async Task ClickRunSelectedFunctionAsync(IPage scriptPage, int vitri, string lan)
+	{
+		ILocator runBtn = scriptPage.Locator("button[aria-label='Run the selected function']").First;
+		await runBtn.WaitForAsync(new LocatorWaitForOptions
+		{
+			State = WaitForSelectorState.Visible,
+			Timeout = 45000f
+		});
+		DateTime waitEnabledUntil = DateTime.UtcNow.AddSeconds(20.0);
+		while (DateTime.UtcNow < waitEnabledUntil)
+		{
+			try
+			{
+				if (!await runBtn.IsDisabledAsync())
+				{
+					break;
+				}
+			}
+			catch
+			{
+			}
+			await Task.Delay(200);
+		}
+		bool clicked = false;
+		try
+		{
+			await runBtn.ClickAsync(new LocatorClickOptions
+			{
+				Timeout = 15000f
+			});
+			clicked = true;
+		}
+		catch
+		{
+		}
+		if (!clicked)
+		{
+			try
+			{
+				await runBtn.ClickAsync(new LocatorClickOptions
+				{
+					Timeout = 15000f,
+					Force = true
+				});
+				clicked = true;
+			}
+			catch
+			{
+			}
+		}
+		if (!clicked)
+		{
+			clicked = await scriptPage.EvaluateAsync<bool>("() => { const btn = document.querySelector(\"button[aria-label='Run the selected function']\"); if (!btn) return false; btn.click(); return true; }");
+		}
+		if (!clicked)
+		{
+			throw new InvalidOperationException("[Script] Không click được nút Run the selected function (" + lan + ").");
+		}
+		ILocator stopBtn = scriptPage.Locator("button[aria-label='Stop the execution']").First;
+		bool runStarted = false;
+		DateTime waitStartUntil = DateTime.UtcNow.AddSeconds(8.0);
+		while (DateTime.UtcNow < waitStartUntil)
+		{
+			try
+			{
+				if (await runBtn.IsDisabledAsync())
+				{
+					runStarted = true;
+					break;
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				if (await stopBtn.IsVisibleAsync() && !await stopBtn.IsDisabledAsync())
+				{
+					runStarted = true;
+					break;
+				}
+			}
+			catch
+			{
+			}
+			await Task.Delay(200);
+		}
+		if (!runStarted)
+		{
+			throw new InvalidOperationException("[Script] Đã click Run (" + lan + ") nhưng không thấy trạng thái chạy bắt đầu.");
+		}
+	}
+
+	private async Task WaitForRunCycleAsync(IPage scriptPage, int vitri, string lan)
+	{
+		ILocator runBtn = scriptPage.Locator("button[aria-label='Run the selected function']").First;
+		ILocator stopBtn = scriptPage.Locator("button[aria-label='Stop the execution']").First;
+		ILocator oauthDialog = scriptPage.Locator("h2:has-text('Authorization required')").Or(scriptPage.Locator("span.UywwFc-vQzf8d:has-text('Review permissions')")).First;
+		bool sawRunStarted = false;
+		DateTime endAt = DateTime.UtcNow.AddSeconds(45.0);
+		while (DateTime.UtcNow < endAt)
+		{
+			try
+			{
+				if (await oauthDialog.IsVisibleAsync())
+				{
+					return;
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				bool runDisabled = await runBtn.IsDisabledAsync();
+				if (runDisabled)
+				{
+					sawRunStarted = true;
+				}
+				else if (sawRunStarted)
+				{
+					bool stopVisible = false;
+					bool stopDisabled = true;
+					try
+					{
+						stopVisible = await stopBtn.IsVisibleAsync();
+						stopDisabled = await stopBtn.IsDisabledAsync();
+					}
+					catch
+					{
+					}
+					if (!stopVisible || stopDisabled)
+					{
+						return;
+					}
+				}
+			}
+			catch
+			{
+			}
+			try
+			{
+				bool stopVisibleNow = await stopBtn.IsVisibleAsync();
+				bool stopDisabledNow = true;
+				try
+				{
+					stopDisabledNow = await stopBtn.IsDisabledAsync();
+				}
+				catch
+				{
+				}
+				if (stopVisibleNow && !stopDisabledNow)
+				{
+					sawRunStarted = true;
+				}
+			}
+			catch
+			{
+			}
+			// Chỉ xét warning account access sau khi thấy run thật sự bắt đầu,
+			// tránh ăn phải warning cũ còn lưu trong execution log rồi nhảy sang lần 2 quá sớm.
+			if (sawRunStarted)
+			{
+				try
+				{
+					if (await ScriptPageShowsExecutionLogAccountAccessWarningAsync(scriptPage))
+					{
+						return;
+					}
+				}
+				catch
+				{
+				}
+			}
+			await DelayBatchAsync(400);
+		}
+		// Fallback: giữ hành vi chờ pause cũ để không thoát quá sớm khi UI không phản hồi trạng thái nút.
+		await PageWaitCancellableAsync(scriptPage, _scriptRunPauseMs);
 	}
 
 	/// <summary>Lỗi ở một bước: reload (F5), tùy chọn khôi phục; thử lại 1 lần. Nếu lỗi giống limit/throttle (message hoặc HTML trang) thì thử thêm 1 lần nữa (tối đa 3 lần chạy step).</summary>
@@ -3641,6 +3898,7 @@ public partial class Form1 : Form
 						SetText(vitri, "STATUS", "[Form] Lỗi tạo / chỉnh / publish Form: " + ex6.Message);
 					}
 				}
+				bool sheetScriptFlowOk = !wantTaoSheetScript;
 				if (wantTaoSheetScript)
 				{
 				try
@@ -3763,10 +4021,30 @@ public partial class Form1 : Form
 					try
 					{
 						SetText(vitri, "STATUS", "[Script] OAuth: chờ cấp quyền (Authorization required / Review permissions)...");
-						ILocator oauthReviewBtn = scriptPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+						bool needOauthFlow = false;
+						for (int oauthWait = 0; oauthWait < 20; oauthWait++)
+						{
+							if (await ScriptPageShowsAuthorizationRequiredDialogAsync(scriptPage))
+							{
+								needOauthFlow = true;
+								break;
+							}
+							await DelayBatchAsync(500);
+						}
+						if (!needOauthFlow)
+						{
+							SetText(vitri, "STATUS", "[Script] Không thấy dialog Authorization required sau khi Run → bỏ qua bước OAuth, chuyển kiểm tra Execution log.");
+							goto AFTER_OAUTH_FLOW;
+						}
+						ILocator oauthReviewBtnStrict = scriptPage.Locator("div.uW2Fw-P5QLlc button[data-mdc-dialog-action='cCU94d']").First;
+						ILocator oauthReviewTextStrict = scriptPage.Locator("div.uW2Fw-P5QLlc span[jsname='V67aGc'].UywwFc-vQzf8d").Filter(new LocatorFilterOptions
+						{
+							HasTextString = "Review permissions"
+						}).First;
+						ILocator oauthReviewBtn = oauthReviewBtnStrict.Or(scriptPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
 						{
 							Name = "Review permissions"
-						});
+						})).First;
 						try
 						{
 							await oauthReviewBtn.WaitForAsync(new LocatorWaitForOptions
@@ -3777,7 +4055,7 @@ public partial class Form1 : Form
 						}
 						catch
 						{
-							ILocator authDlg = scriptPage.Locator("text=Authorization required").Or(scriptPage.Locator("text=Review permissions"));
+							ILocator authDlg = scriptPage.Locator("h2:has-text('Authorization required')").Or(scriptPage.Locator("span.UywwFc-vQzf8d:has-text('Review permissions')"));
 							await authDlg.First.WaitForAsync(new LocatorWaitForOptions
 							{
 								State = WaitForSelectorState.Visible,
@@ -3816,8 +4094,92 @@ public partial class Form1 : Form
 								}
 								await DelayBatchAsync(2500);
 							}
-							await oauthReviewBtn.ClickAsync();
-							authPage = await context.WaitForPageAsync();
+							try
+							{
+								Task<IPage> waitNewPage = context.WaitForPageAsync(new BrowserContextWaitForPageOptions
+								{
+									Timeout = 45000f
+								});
+								bool clicked = false;
+								try
+								{
+									await oauthReviewBtnStrict.ClickAsync(new LocatorClickOptions
+									{
+										Timeout = 12000f
+									});
+									clicked = true;
+								}
+								catch
+								{
+								}
+								if (!clicked)
+								{
+									try
+									{
+										await oauthReviewBtn.ClickAsync(new LocatorClickOptions
+										{
+											Timeout = 12000f,
+											Force = true
+										});
+										clicked = true;
+									}
+									catch
+									{
+									}
+								}
+								if (!clicked)
+								{
+									try
+									{
+										await oauthReviewTextStrict.ClickAsync(new LocatorClickOptions
+										{
+											Timeout = 12000f,
+											Force = true
+										});
+										clicked = true;
+									}
+									catch
+									{
+									}
+								}
+								if (!clicked)
+								{
+									try
+									{
+										clicked = await scriptPage.EvaluateAsync<bool>("() => { const btn = document.querySelector(\"div.uW2Fw-P5QLlc button[data-mdc-dialog-action='cCU94d']\"); if (!btn) return false; btn.click(); return true; }");
+									}
+									catch
+									{
+									}
+								}
+								if (!clicked)
+								{
+									try
+									{
+										clicked = await scriptPage.EvaluateAsync<bool>("() => { const span = document.querySelector(\"div.uW2Fw-P5QLlc span.UywwFc-vQzf8d\"); if (!span) return false; const btn = span.closest('button'); if (!btn) return false; btn.click(); return true; }");
+									}
+									catch
+									{
+									}
+								}
+								if (!clicked)
+								{
+									throw new InvalidOperationException("Không click được nút Review permissions trong dialog Authorization required.");
+								}
+								authPage = await waitNewPage;
+							}
+							catch
+							{
+								authPage = context.Pages.LastOrDefault((IPage p) => p != scriptPage && !p.IsClosed && p.Url.Contains("accounts.google.com"));
+								if (authPage == null)
+								{
+									authPage = context.Pages.LastOrDefault((IPage p) => p != scriptPage && !p.IsClosed);
+								}
+								if (authPage == null)
+								{
+									throw;
+								}
+							}
 							await authPage.WaitForLoadStateAsync();
 							try
 							{
@@ -3908,54 +4270,108 @@ public partial class Form1 : Form
 							{
 								await PageWaitCancellableAsync(scriptPage, 2000f);
 							}
-							await authPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+							bool consentDone = false;
+							for (int consentStep = 0; consentStep < 3 && !consentDone; consentStep++)
 							{
-								Name = "Continue"
-							}).ClickAsync();
-							await PageWaitCancellableAsync(scriptPage, 4500f);
-							try
-							{
-								await authPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+								ILocator allCheckboxes = authPage.Locator("input[type='checkbox'][jsname='YPqjbf']").Or(authPage.GetByRole(AriaRole.Checkbox));
+								int cbCount = 0;
+								try
 								{
+									cbCount = await allCheckboxes.CountAsync();
+								}
+								catch
+								{
+								}
+								if (cbCount > 0)
+								{
+									ILocator selectAllCb = authPage.GetByRole(AriaRole.Checkbox, new PageGetByRoleOptions
+									{
+										Name = "Select all"
+									});
+									try
+									{
+										if (await selectAllCb.CountAsync() > 0 && !await selectAllCb.First.IsCheckedAsync())
+										{
+											await selectAllCb.First.CheckAsync(new LocatorCheckOptions
+											{
+												Timeout = 15000f
+											});
+										}
+									}
+									catch
+									{
+										ILocator firstCb = allCheckboxes.First;
+										try
+										{
+											await firstCb.CheckAsync(new LocatorCheckOptions
+											{
+												Timeout = 15000f
+											});
+										}
+										catch
+										{
+										}
+									}
+									await PageWaitCancellableAsync(scriptPage, 1500f);
+								}
+								ILocator continueBtn = authPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+								{
+									Name = "Continue"
+								}).First;
+								await continueBtn.WaitForAsync(new LocatorWaitForOptions
+								{
+									State = WaitForSelectorState.Visible,
 									Timeout = 30000f
 								});
-							}
-							catch
-							{
-							}
-							await DelayBatchAsync(2000);
-							if (await PageShowsGoogleSignInSomethingWentWrongAsync(authPage))
-							{
-								if (oauthSw >= maxOauthSomethingWrongAttempts - 1)
+								try
 								{
-									throw new InvalidOperationException("Google OAuth: Something went wrong sau Continue (đã thử " + maxOauthSomethingWrongAttempts + " lần).");
+									if (await continueBtn.IsDisabledAsync())
+									{
+										await DelayBatchAsync(1500);
+									}
 								}
-								continue;
+								catch
+								{
+								}
+								await continueBtn.ClickAsync(new LocatorClickOptions
+								{
+									Timeout = 20000f
+								});
+								await PageWaitCancellableAsync(scriptPage, 3500f);
+								try
+								{
+									await authPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+									{
+										Timeout = 30000f
+									});
+								}
+								catch
+								{
+								}
+								await DelayBatchAsync(1200);
+								int remainingCb = 0;
+								try
+								{
+									remainingCb = await allCheckboxes.CountAsync();
+								}
+								catch
+								{
+								}
+								consentDone = remainingCb == 0 || authPage.Url.IndexOf("accounts.google.com", StringComparison.OrdinalIgnoreCase) < 0;
 							}
-							ILocator consentCheckbox = authPage.Locator("input[type='checkbox'][jsname='YPqjbf']").Or(authPage.GetByRole(AriaRole.Checkbox)).First;
-							await consentCheckbox.WaitForAsync(new LocatorWaitForOptions
+							if (!consentDone)
 							{
-								State = WaitForSelectorState.Visible,
-								Timeout = 45000f
-							});
-							await DelayBatchAsync(1500);
-							await consentCheckbox.CheckAsync(new LocatorCheckOptions
-							{
-								Timeout = 20000f
-							});
-							await PageWaitCancellableAsync(scriptPage, 4500f);
-							await authPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
-							{
-								Name = "Continue"
-							}).ClickAsync();
-							await PageWaitCancellableAsync(scriptPage, 3000f);
+								throw new TimeoutException("Google OAuth consent: chưa hoàn tất chọn quyền + Continue.");
+							}
 							SetText(vitri, "STATUS", "[Script] OAuth: cấp quyền / Continue / checkbox → xong");
 							break;
 						}
+						AFTER_OAUTH_FLOW:
+						;
 					}
 					catch (Exception ex7)
 					{
-						SetText(vitri, "STATUS", "[Script] Lỗi OAuth / cấp quyền Run: " + ex7.Message);
+						throw new InvalidOperationException("[Script] Lỗi OAuth / cấp quyền Run: " + ex7.Message, ex7);
 					}
 					try
 					{
@@ -3964,21 +4380,32 @@ public partial class Form1 : Form
 							SetText(vitri, "STATUS", "[Script] Sau OAuth vẫn thấy cảnh báo Execution log — F5 và Run lại...");
 							AppendAutomationLog("WARN", vitri, email, "[Script] Cảnh báo account access còn sau OAuth — F5 + Run.");
 							await RunScriptEditorTwiceWithReloadOnAccountAccessWarningAsync(scriptPage, vitri, email, reloadImmediately: true, maxAttempts: 3);
+							if (await ScriptPageShowsExecutionLogAccountAccessWarningAsync(scriptPage))
+							{
+								throw new InvalidOperationException("[Script] Execution log vẫn còn cảnh báo requires access to your Google Account sau khi đã OAuth + F5/Run lại.");
+							}
 						}
 					}
 					catch (InvalidOperationException exAcc2)
 					{
-						SetText(vitri, "STATUS", "[Script] " + exAcc2.Message);
+						throw new InvalidOperationException("[Script] " + exAcc2.Message, exAcc2);
 					}
 					catch (Exception exAfterOauth)
 					{
-						SetText(vitri, "STATUS", "[Script] Lỗi khi F5 sau OAuth (Execution log): " + exAfterOauth.Message);
+						throw new InvalidOperationException("[Script] Lỗi khi F5 sau OAuth (Execution log): " + exAfterOauth.Message, exAfterOauth);
 					}
+					sheetScriptFlowOk = true;
 				}
 				catch (Exception ex8)
 				{
+					sheetScriptFlowOk = false;
 					SetText(vitri, "STATUS", "[Sheet/Script] Lỗi (Sheets, editor, API hoặc Run): " + ex8.Message);
 				}
+				}
+				if (wantTaoSheetScript && !sheetScriptFlowOk)
+				{
+					SetText(vitri, "STATUS", "ERROR [Sheet/Script] Chưa hoàn tất do vẫn còn lỗi/warning ở bước Script/OAuth.");
+					return false;
 				}
 				if (wantTaoForm && wantTaoSheetScript)
 				{

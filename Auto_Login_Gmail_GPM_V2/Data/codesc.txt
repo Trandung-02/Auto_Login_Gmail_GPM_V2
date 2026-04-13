@@ -1,5 +1,5 @@
 const CONFIG = {
-  FORM_URL: "https://drive.google.com/file/d/1kRa5fnj9elgU1SgjkcrqcqACldEw1Q40/view",
+  FORM_URL: "drive.google.com/file/d/1t_ue7S71fs51Sr3IEMthGtqIPJf67M-5/view",
   SPREADSHEET_URL: "[LINK_SHEET]",
   SHEET_NAME: "Sheet1",
   SENDER_NAME: "Meta Verified",
