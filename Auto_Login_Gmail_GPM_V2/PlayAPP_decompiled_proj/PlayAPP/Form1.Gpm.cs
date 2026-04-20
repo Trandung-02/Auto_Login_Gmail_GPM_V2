@@ -15,7 +15,7 @@ namespace PlayAPP;
 
 public partial class Form1
 {
-	private const int SidebarPadX = 16;
+	private const int SidebarPadX = 12;
 
 	private const int SidebarOptsRowGap = 28;
 
@@ -386,6 +386,13 @@ public partial class Form1
 
 	private const string GpmNoteTaiKhoanDaChet = "Tài khoản đã chết";
 
+	/// <summary>Ghi chú GPM khi mở Gmail bị chuyển sang trang Restrictions (không coi tài khoản chết).</summary>
+	private const string GpmNoteGoogleMyAccountRestrictions = "Google: myaccount/restrictions";
+
+	private const string GpmNoteLogMailMoiRecaptcha = "Log mail mới: reCAPTCHA/Verify";
+
+	private const string GpmNoteLogMailMoiAccountDisabled = "Log mail mới: Account disabled";
+
 	/// <summary>Id profile GPM cho hàng lưới: snapshot chết → dict mở CDP → nhóm theo hàng.</summary>
 	private string ResolveGpmProfileIdForRow(int rowIndex, string preferredProfileIdFromDeadSnapshot)
 	{
@@ -408,10 +415,16 @@ public partial class Form1
 		}
 	}
 
-	/// <summary>POST cập nhật trường <c>note</c> (Ghi chú trong GPM) khi không xóa được profile.</summary>
-	private async Task TryGpmSetProfileNoteDeadAccountAsync(string profileId, int rowIndex)
+	/// <summary>POST cập nhật trường <c>note</c> (Ghi chú trong GPM).</summary>
+	/// <param name="okLogSuffix">Nối vào log INFO khi thành công (vd. ngữ cảnh xóa profile thất bại).</param>
+	private async Task TryGpmSetProfileNoteAsync(string profileId, int rowIndex, string note, string okLogSuffix = null)
 	{
 		if (string.IsNullOrWhiteSpace(profileId))
+		{
+			return;
+		}
+		string n = (note ?? "").Trim();
+		if (string.IsNullOrEmpty(n))
 		{
 			return;
 		}
@@ -419,7 +432,7 @@ public partial class Form1
 		{
 			using HttpClient http = new HttpClient();
 			http.Timeout = TimeSpan.FromSeconds(35.0);
-			string body = JsonConvert.SerializeObject(new { note = GpmNoteTaiKhoanDaChet });
+			string body = JsonConvert.SerializeObject(new { note = n });
 			using StringContent content = new StringContent(body, Encoding.UTF8, "application/json");
 			using HttpResponseMessage resp = await http.PostAsync(GpmApi.ProfileUpdateUrl(profileId.Trim()), content);
 			string respText = await resp.Content.ReadAsStringAsync();
@@ -435,19 +448,31 @@ public partial class Form1
 			catch
 			{
 			}
+			string respPreview = (respText ?? "").Replace('\r', ' ').Replace('\n', ' ').Trim();
+			if (respPreview.Length > 200)
+			{
+				respPreview = respPreview.Substring(0, 200) + "…";
+			}
 			if (ok)
 			{
-				AppendAutomationLog("INFO", rowIndex, null, "GPM: đã ghi chú profile id=" + profileId + " — \"" + GpmNoteTaiKhoanDaChet + "\" (xóa profile không thành công).");
+				string suffix = string.IsNullOrEmpty(okLogSuffix) ? "" : okLogSuffix;
+				AppendAutomationLog("INFO", rowIndex, null, "GPM: đã ghi chú profile id=" + profileId + " — \"" + n + "\"" + suffix + " | API trả: " + respPreview);
 			}
 			else
 			{
-				AppendAutomationLog("WARN", rowIndex, null, "GPM: không ghi chú được profile id=" + profileId + " HTTP " + (int)resp.StatusCode + " " + (respText ?? "").Replace('\r', ' ').Replace('\n', ' ').Trim());
+				AppendAutomationLog("WARN", rowIndex, null, "GPM: không ghi chú được profile id=" + profileId + " HTTP " + (int)resp.StatusCode + " " + respPreview);
 			}
 		}
 		catch (Exception ex)
 		{
-			AppendAutomationLog("WARN", rowIndex, null, "GPM: lỗi khi ghi chú profile (tài khoản chết): " + ex.Message);
+			AppendAutomationLog("WARN", rowIndex, null, "GPM: lỗi khi POST ghi chú profile: " + ex.Message);
 		}
+	}
+
+	/// <summary>POST cập nhật <c>note</c> khi không xóa được profile (tài khoản chết).</summary>
+	private Task TryGpmSetProfileNoteDeadAccountAsync(string profileId, int rowIndex)
+	{
+		return TryGpmSetProfileNoteAsync(profileId, rowIndex, GpmNoteTaiKhoanDaChet, " (xóa profile không thành công)");
 	}
 
 	/// <summary>Ghi id profile GPM cần xóa khi hàng bị coi chết (ưu tiên profile đã mở CDP cho hàng đó).</summary>

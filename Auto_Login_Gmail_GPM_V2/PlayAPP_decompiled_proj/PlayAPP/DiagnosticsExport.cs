@@ -13,7 +13,6 @@ internal static class DiagnosticsExport
 		"automation.log",
 		"login_success.log",
 		"dead_recaptcha_verify.log",
-		"dead_google_restrictions.log",
 		"dead_google_account_disabled.log"
 	};
 

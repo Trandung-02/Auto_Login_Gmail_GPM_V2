@@ -1,30 +1,24 @@
 const CONFIG = {
-  FORM_URL: "drive.google.com/file/d/1t_ue7S71fs51Sr3IEMthGtqIPJf67M-5/view",
+  FORM_URL: "drive.google.com/file/d/1Okn5g7YEh5hanH_CS_YlPc79BXw0ZgDE/view",
   SPREADSHEET_URL: "[LINK_SHEET]",
   SHEET_NAME: "Sheet1",
-  SENDER_NAME: "Meta Verified",
-  BATCH_LIMIT: 5,
-  REST_MIN: 2,
-  REST_MAX: 4,
-  MIN_SLEEP: 20000,
-  MAX_SLEEP: 50000,
-  MAX_EXECUTION_TIME: 280000,
-  QUOTA_RESERVE: 10,
+  SENDER_NAME: "Meta Verified Team",
+  BATCH_LIMIT: 3,  
+  REST_MIN: 5,    
+  REST_MAX: 10,    
+  MAX_EXECUTION_TIME: 280000, 
+  QUOTA_RESERVE: 15,
   MAX_RETRY: 2,
   LOCK_TIMEOUT: 30000
 };
 
 function shareSingleFormToList(e) {
   const lock = LockService.getScriptLock();
-  if (!lock.tryLock(CONFIG.LOCK_TIMEOUT)) {
-    Logger.log("🔒 Script đang chạy ở instance khác");
-    return;
-  }
-
+  if (!lock.tryLock(CONFIG.LOCK_TIMEOUT)) return;
   try {
     _mainLogic(e);
   } catch (err) {
-    Logger.log("🔥 Lỗi tổng: " + err.message);
+    Logger.log("🔥 Lỗi: " + err.message);
   } finally {
     lock.releaseLock();
   }
@@ -34,55 +28,39 @@ function _mainLogic(e) {
   const startTime = Date.now();
   const props = PropertiesService.getScriptProperties();
   const userEmail = getEffectiveUserEmail();
-
   const quota = MailApp.getRemainingDailyQuota();
-  Logger.log("📊 Quota còn: " + quota);
+
   if (quota <= CONFIG.QUOTA_RESERVE) {
-    Logger.log("⚠️ Không đủ quota");
+    Logger.log("⚠️ Hết quota, dừng.");
     return;
   }
 
-  if (e === undefined) {
-    props.deleteProperty("LAST_SENT_ROW");
+  if (e === undefined && !props.getProperty("LAST_SENT_ROW")) {
+    props.setProperty("LAST_SENT_ROW", "2");
     deleteTriggers("shareSingleFormToList");
-    Logger.log("🔄 Reset thủ công: xóa LAST_SENT_ROW và trigger cũ");
+    Logger.log("🔄 Bắt đầu chiến dịch mới từ dòng 2");
   }
 
   const ss = SpreadsheetApp.openById(extractSpreadsheetId(CONFIG.SPREADSHEET_URL));
   const sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
-
-  if (!sheet) throw new Error("❌ Sheet không tồn tại");
-
   const startRow = Number(props.getProperty("LAST_SENT_ROW")) || 2;
   const lastRow = sheet.getLastRow();
 
   if (startRow > lastRow) {
     props.deleteProperty("LAST_SENT_ROW");
-    Logger.log("🎉 Hoàn tất toàn bộ");
+    deleteTriggers("shareSingleFormToList");
+    Logger.log("🎉 Xong! Hoàn thành gửi toàn bộ danh sách.");
     return;
   }
 
-  const rowsToProcess = Math.min(
-    CONFIG.BATCH_LIMIT,
-    lastRow - startRow + 1,
-    quota - CONFIG.QUOTA_RESERVE
-  );
-
-  const data = sheet.getRange(startRow, 1, rowsToProcess, 7).getValues();
+  const dynamicBatchSize = randomBetween(1, CONFIG.BATCH_LIMIT);
+  const data = sheet.getRange(startRow, 1, Math.min(30, lastRow - startRow + 1), 7).getValues();
   const output = [];
-
-  let sentEmailsRaw = props.getProperty("SENT_EMAILS");
-  const sentCache = new Set(sentEmailsRaw ? JSON.parse(sentEmailsRaw) : []);
-  const newlySent = [];
-
-  let processed = 0;
+  let sentCount = 0;
 
   for (let i = 0; i < data.length; i++) {
-
-    if (Date.now() - startTime > CONFIG.MAX_EXECUTION_TIME) break;
-
-    if (MailApp.getRemainingDailyQuota() <= CONFIG.QUOTA_RESERVE) {
-      Logger.log("⚠️ Hết quota giữa chừng");
+    if (Date.now() - startTime > CONFIG.MAX_EXECUTION_TIME) {
+      Logger.log("⏳ Sắp hết giới hạn thời gian chạy 6 phút, tạm dừng để chuyển sang đợt sau.");
       break;
     }
 
@@ -92,147 +70,105 @@ function _mainLogic(e) {
     let intro = String(data[i][3]).trim();
     let linkText = String(data[i][4]).trim();
     const status = String(data[i][5]).trim();
-    const oldTime = data[i][6];
+
+    if (!email && !pageName) {
+      output.push(["", ""]);
+      continue;
+    }
 
     if (status === "✅ Sent") {
-      output.push([status, oldTime]);
-      processed++;
+      output.push([status, data[i][6]]);
       continue;
     }
 
-    if (!isValidEmail(email) || !pageName) {
-      output.push(["🚫 Invalid Data", new Date()]);
-      processed++;
-      continue;
-    }
-
-    if (sentCache.has(email)) {
-      Logger.log(`⚠️ Duplicate (đã gửi trước đó): ${email}`);
-      output.push(["⚠️ Duplicate", new Date()]);
-      processed++;
-      continue;
-    }
-
-    subject = subject.replace(/\[Name\]/g, pageName);
+    subject = `[${getRandomDateFormat(new Date())}] ${subject.replace(/\[Name\]/g, pageName)}`;
     intro = intro.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
     linkText = linkText.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
 
-    const refId = generateNumericId(4);
-    const finalSubject = "[" + refId + "] " + subject;
-
-    const footer = `Este mensaje ha sido enviado a ${email} porque se encuentra suscrito(a) a nuestras comunicaciones y actualizaciones nuestras.`;
-
-    const fullMessage =
-`${intro}
-
-${linkText} ${CONFIG.FORM_URL}
-
-Gracias por formar parte de nuestra comunidad.
-
-${footer}`;
+    const body = buildPlainText(intro, linkText, CONFIG.FORM_URL, email);
 
     let success = false;
-    let errorMsg = "";
-
-    Logger.log(`📤 Sending to row ${startRow + i} | ${email} | ${pageName}`);
-
     for (let attempt = 1; attempt <= CONFIG.MAX_RETRY; attempt++) {
       try {
-        MailApp.sendEmail({
-          to: email,
-          subject: finalSubject,
-          body: fullMessage,
-          name: CONFIG.SENDER_NAME,
-          replyTo: userEmail
-        });
+        MailApp.sendEmail({to: email, subject: subject, body: body, name: CONFIG.SENDER_NAME, replyTo: userEmail});
         success = true;
+        Logger.log(`✅ Sent: ${email}`);
         break;
       } catch (err) {
-        errorMsg = err.message;
-        Logger.log(`❌ Attempt ${attempt}: ${email} | ${errorMsg}`);
-        Utilities.sleep(5000);
+        Logger.log(`❌ Attempt ${attempt} Error: ${email} - ${err.message}`);
+        if (attempt < CONFIG.MAX_RETRY) Utilities.sleep(5000);
       }
     }
 
     if (success) {
       output.push(["✅ Sent", new Date()]);
-      sentCache.add(email);
-      newlySent.push(email);
+      sentCount++;
     } else {
-      output.push(["❌ " + errorMsg, new Date()]);
+      output.push(["❌ Error", new Date()]);
     }
 
-    const sleepTime =
-      Math.floor(Math.random() * (CONFIG.MAX_SLEEP - CONFIG.MIN_SLEEP + 1)) +
-      CONFIG.MIN_SLEEP;
-    Logger.log(`😴 Sleep ${Math.round(sleepTime / 1000)}s trước email tiếp theo`);
-    Utilities.sleep(sleepTime);
+    if (sentCount >= dynamicBatchSize) break;
 
-    processed++;
-  }
-
-  if (newlySent.length > 0) {
-    props.setProperty("SENT_EMAILS", JSON.stringify([...sentCache]));
-    Logger.log(`💾 Đã lưu ${sentCache.size} email vào SENT_EMAILS cache`);
+    Utilities.sleep(getHumanLikeDelay());
   }
 
   if (output.length > 0) {
     sheet.getRange(startRow, 6, output.length, 2).setValues(output);
+    SpreadsheetApp.flush();
   }
 
-  const nextRow = startRow + processed;
+  const nextRow = startRow + output.length;
+  props.setProperty("LAST_SENT_ROW", nextRow.toString());
+  deleteTriggers("shareSingleFormToList");
 
   if (nextRow <= lastRow) {
-    props.setProperty("LAST_SENT_ROW", nextRow.toString());
-    deleteTriggers("shareSingleFormToList");
-
-    const restMinutes = Math.floor(Math.random() * (CONFIG.REST_MAX - CONFIG.REST_MIN + 1)) + CONFIG.REST_MIN;
-
-    ScriptApp.newTrigger("shareSingleFormToList")
-      .timeBased()
-      .after(restMinutes * 60 * 1000)
-      .create();
-
-    Logger.log(`⏳ Batch xong. Trigger tiếp theo sau ${restMinutes} phút. Row tiếp: ${nextRow}`);
+    const rest = randomBetween(CONFIG.REST_MIN, CONFIG.REST_MAX);
+    ScriptApp.newTrigger("shareSingleFormToList").timeBased().after(rest * 60 * 1000).create();
+    Logger.log(`⏳ Đã gửi ${sentCount} mail. Nghỉ ${rest} phút, sẽ chạy tiếp từ dòng ${nextRow}`);
   } else {
     props.deleteProperty("LAST_SENT_ROW");
-    props.deleteProperty("SENT_EMAILS");
-    deleteTriggers("shareSingleFormToList");
-    Logger.log("🎉 DONE toàn bộ — đã xóa SENT_EMAILS cache");
+    Logger.log("🎉 Hoàn tất chiến dịch.");
   }
 }
 
+function randomBetween(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function getHumanLikeDelay() {
+  const r = Math.random();
+  if (r < 0.65) return randomBetween(20000, 45000);
+  return randomBetween(45000, 90000);
+}
+
+function buildPlainText(intro, linkText, formUrl, email) {
+  return `${intro}
+
+${linkText} ${formUrl}
+
+نقدّر كونك جزءًا من مجتمعنا.
+
+تم إرسال هذه الرسالة إلى ${email} نظرًا لاشتراكك في تلقي التحديثات من خدماتنا.`;
+}
+
+function getRandomDateFormat(now) {
+  const formats = ["MMM dd, yyyy HH:mm", "MM/dd/yyyy hh:mm a", "yyyy-MM-dd HH:mm"];
+  const format = formats[Math.floor(Math.random() * formats.length)];
+  return Utilities.formatDate(now, "Asia/Qatar", format);
+}
+
 function getEffectiveUserEmail() {
-  try {
-    const email = Session.getActiveUser().getEmail();
-    if (email) return email;
-  } catch (e) {}
-  return "fallback@gmail.com";
+  try { return Session.getEffectiveUser().getEmail() || ""; } catch (e) { return ""; }
 }
 
 function extractSpreadsheetId(url) {
   const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (!match) throw new Error("❌ Invalid Spreadsheet URL");
+  if (!match) throw new Error("URL không hợp lệ");
   return match[1];
-}
-
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function deleteTriggers(fn) {
   ScriptApp.getProjectTriggers().forEach(t => {
-    if (t.getHandlerFunction() === fn) {
-      ScriptApp.deleteTrigger(t);
-    }
+    if (t.getHandlerFunction() === fn) ScriptApp.deleteTrigger(t);
   });
-}
-
-function generateNumericId(length) {
-  let result = "";
-  const digits = "0123456789";
-  for (let i = 0; i < length; i++) {
-    result += digits[Math.floor(Math.random() * digits.length)];
-  }
-  return result;
 }

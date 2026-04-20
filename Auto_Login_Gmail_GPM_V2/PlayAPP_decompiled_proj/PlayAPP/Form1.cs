@@ -87,8 +87,6 @@ public partial class Form1 : Form
 
 	private static readonly object DeadRecaptchaVerifyLogSync = new object();
 
-	private static readonly object DeadGoogleRestrictionsLogSync = new object();
-
 	private static readonly object DeadGoogleAccountDisabledLogSync = new object();
 
 	private const long AutomationLogMaxBytesBeforeRotate = 5242880L;
@@ -119,7 +117,11 @@ public partial class Form1 : Form
 	/// <summary>Sau mỗi lần bấm Run trong editor Apps Script (chờ execution log).</summary>
 	private int _scriptRunPauseMs = 10000;
 
-	/// <summary>Hàng nào cần đóng Chrome ngay cả khi tắt "Đóng Chrome sau mỗi account" (tài khoản chết: Account disabled, reCAPTCHA/Verify, myaccount/restrictions). Sau finally còn gọi GPM xóa/ghi chú profile.</summary>
+	/// <summary>Hệ số nhân thời gian chờ (DelayBatchAsync). 1.0 = mặc định; &lt;1 = nhanh hơn (mạng tốt); &gt;1 = chậm hơn (mạng kém).</summary>
+	private double _speedScale = 1.0;
+
+	/// <summary>Hàng nào cần đóng Chrome ngay cả khi tắt "Đóng Chrome sau mỗi account" (tài khoản chết: Account disabled, reCAPTCHA/Verify). Không còn xóa profile GPM tự động.</summary>
+	[Obsolete("Đã thay bằng _keepChromeOpenForDead — giữ trường để binary cũ không vỡ; không còn được dùng.")]
 	private readonly ConcurrentDictionary<int, bool> _forceCloseChromeAfterCycle = new ConcurrentDictionary<int, bool>();
 
 	/// <summary>Profile GPM vừa mở theo chỉ số hàng lưới trong batch hiện tại (để gọi API đóng profile).</summary>
@@ -169,6 +171,41 @@ public partial class Form1 : Form
 
 	private TextBox txt_so_account_log;
 
+	private Panel panelLogMailSection;
+
+	private Label lbl_log_mail_mode;
+
+	private RadioButton rb_log_mail_cu;
+
+	private RadioButton rb_log_mail_moi;
+
+	/// <summary>Snapshot khi bấm Bắt đầu: <c>true</c> = Log mail mới (không bỏ qua dead log; chết chỉ ghi chú GPM, không xóa profile).</summary>
+	private bool _batchLogMailMoi;
+
+	private const int LogMailCuPrimarySlotCount = 25;
+
+	/// <summary>Hàng lưới 0-based ≥ giá trị này = mail dự phòng (dòng 26+) dùng khi Log mail cũ + slot 1–25 chết.</summary>
+	private const int LogMailCuReserveGridRowStart0 = 25;
+
+	/// <summary>Log mail cũ: 0 = không giới hạn số lần đăng nhập thành công; &gt;0 = dừng khi đạt chỉ tiêu.</summary>
+	private int _batchSuccessTargetCu;
+
+	private readonly ConcurrentDictionary<int, byte> _googleDeadSignInStopRow = new ConcurrentDictionary<int, byte>();
+
+	/// <summary>Log mail cũ: sau chết có mail dự phòng — đóng context nhưng không ngắt CDP/GPM để thử mail tiếp.</summary>
+	private readonly ConcurrentDictionary<int, byte> _cuSlotSuppressGpmBrowserClose = new ConcurrentDictionary<int, byte>();
+
+	/// <summary>Slot mail chết (cả Log mail mới &amp; cũ): luôn giữ Chrome/profile/tab mở để người dùng kiểm tra, kể cả khi tick «Đóng Chrome sau mỗi account».</summary>
+	private readonly ConcurrentDictionary<int, byte> _keepChromeOpenForDead = new ConcurrentDictionary<int, byte>();
+
+	/// <summary>Log mail cũ slot 1–25 đã chết và HẾT mail dự phòng dòng 26+: đóng tab + Chrome + xóa profile GPM trong <c>finally</c>.</summary>
+	private readonly ConcurrentDictionary<int, byte> _deleteGpmProfileForRow = new ConcurrentDictionary<int, byte>();
+
+	/// <summary>Slot 1–25 đã được swap UID dự phòng từ trước khi RunOneCycle bắt đầu (do UID gốc trong dead log) — map slotRow → sourceRow của mail dự phòng.</summary>
+	private readonly ConcurrentDictionary<int, int> _reserveSourceRowIndexInitial = new ConcurrentDictionary<int, int>();
+
+	private ConcurrentQueue<(string uid, string pass, string ma2fa, string mail2, int sourceRowIndex)> _reserveMailQueue = new ConcurrentQueue<(string, string, string, string, int)>();
+
 	private ToolStripMenuItem copySelectToolStripMenuItem;
 
 	private ToolStripMenuItem deleteToolStripMenuItem;
@@ -215,6 +252,10 @@ public partial class Form1 : Form
 
 	private CheckBox cb_offchrome;
 
+	private Label lbl_speed_profile;
+
+	private ComboBox cb_speed_profile;
+
 	private Button btn_open_data_folder;
 
 	private Button btn_export_diagnostics;
@@ -229,6 +270,29 @@ public partial class Form1 : Form
 		catch
 		{
 		}
+	}
+
+	private void LogMailModeRadio_CheckedChanged(object sender, EventArgs e)
+	{
+		if (rb_log_mail_cu == null || rb_log_mail_moi == null)
+		{
+			return;
+		}
+		if (sender == rb_log_mail_cu && rb_log_mail_cu.Checked)
+		{
+			rb_log_mail_moi.Checked = false;
+			return;
+		}
+		if (sender == rb_log_mail_moi && rb_log_mail_moi.Checked)
+		{
+			rb_log_mail_cu.Checked = false;
+			return;
+		}
+		if (!rb_log_mail_cu.Checked && !rb_log_mail_moi.Checked)
+		{
+			rb_log_mail_cu.Checked = true;
+		}
+		UpdateLogMailLimitLabelText();
 	}
 
 	private async void btnStart_Click(object sender, EventArgs e)
@@ -281,16 +345,31 @@ public partial class Form1 : Form
 			return;
 		}
 		luong = Math.Min(luong, MaxConcurrentBrowsers);
-		int soAccountWanted = 0;
-		if (int.TryParse(txt_so_account_log.Text?.Trim(), out var parsedSo) && parsedSo > 0)
+		int.TryParse(txt_so_account_log.Text?.Trim(), out int parsedLimit);
+		bool logMailMoi = rb_log_mail_moi.Checked;
+		_batchSuccessTargetCu = 0;
+		List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> accountQueue;
+		int reserveMailCountForLog = 0;
+		if (!logMailMoi)
 		{
-			soAccountWanted = parsedSo;
+			_batchSuccessTargetCu = parsedLimit > 0 ? parsedLimit : 0;
+			reserveMailCountForLog = RefillReserveMailQueueFromGridSelection();
+			accountQueue = BuildAccountProcessingQueueLogMailCuPrimarySlots();
+			if (accountQueue.Count == 0)
+			{
+				MessageBox.Show("Log mail cũ: không có UID ở các dòng 1–25 (trong phạm vi đã chọn). Đặt mail gắn proxy ở 25 dòng đầu và mail dự phòng từ dòng 26 trở đi.");
+				return;
+			}
 		}
-		List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> accountQueue = BuildAccountProcessingQueue(soAccountWanted);
-		if (accountQueue.Count == 0)
+		else
 		{
-			MessageBox.Show("Không có account nào (UID trống) trong phạm vi hàng đã chọn.");
-			return;
+			int soAccountWanted = parsedLimit > 0 ? parsedLimit : 0;
+			accountQueue = BuildAccountProcessingQueue(soAccountWanted);
+			if (accountQueue.Count == 0)
+			{
+				MessageBox.Show("Không có account nào (UID trống) trong phạm vi hàng đã chọn.");
+				return;
+			}
 		}
 		string logGroupId = GetGpmGroupIdForLoginLog();
 		LoadLoginSuccessEmailSets(logGroupId, out HashSet<string> alreadyOkForGroup, out HashSet<string> alreadyOkOtherGroups);
@@ -317,33 +396,86 @@ public partial class Form1 : Form
 			MessageBox.Show("Tất cả account trong hàng đợi đã bị bỏ qua: đã login cùng nhóm GPM hiện tại hoặc đã thành công ở nhóm khác (xem Data/login_success.log).");
 			return;
 		}
-		HashSet<string> deadEmails = LoadEmailsMarkedDeadInAnyDeadLog();
-		if (deadEmails.Count > 0)
+		if (!rb_log_mail_moi.Checked)
 		{
-			int beforeDeadSkip = accountQueue.Count;
-			List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> notDead = new List<(string, string, string, string, int)>();
-			foreach (var acc in accountQueue)
+			HashSet<string> deadEmails = LoadEmailsMarkedDeadInAnyDeadLog();
+			if (deadEmails.Count > 0)
 			{
-				string uidTrim = (acc.uid ?? "").Trim();
-				if (deadEmails.Contains(uidTrim))
+				int beforeDeadSkip = accountQueue.Count;
+				List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> notDead = new List<(string, string, string, string, int)>();
+				int swappedReserveCount = 0;
+				int slotDroppedNoReserve = 0;
+				foreach (var acc in accountQueue)
 				{
-					SetText(acc.rowIndex, "STATUS", "Bỏ qua — tài khoản chết (Data/dead_*.log)");
-					AppendAutomationLog("INFO", acc.rowIndex, acc.uid, "Bỏ qua: UID nằm trong log tài khoản chết (reCAPTCHA / restrictions / Account disabled).");
-					continue;
+					string uidTrim = (acc.uid ?? "").Trim();
+					if (!deadEmails.Contains(uidTrim))
+					{
+						notDead.Add(acc);
+						continue;
+					}
+					(string uid, string pass, string ma2fa, string mail2, int sourceRowIndex) reserve = default;
+					bool got = false;
+					while (_reserveMailQueue.TryDequeue(out var candidate))
+					{
+						string candUidTrim = (candidate.uid ?? "").Trim();
+						if (deadEmails.Contains(candUidTrim) || alreadyOkForGroup.Contains(candUidTrim) || alreadyOkOtherGroups.Contains(candUidTrim))
+						{
+							AppendAutomationLog("INFO", acc.rowIndex, candidate.uid, "Bỏ qua UID dự phòng dòng " + (candidate.sourceRowIndex + 1) + ": đã chết hoặc đã login trước đó.");
+							continue;
+						}
+						reserve = candidate;
+						got = true;
+						break;
+					}
+					if (!got)
+					{
+						SetText(acc.rowIndex, "STATUS", "Bỏ qua — UID slot chết và hết mail dự phòng còn sống");
+						AppendAutomationLog("INFO", acc.rowIndex, acc.uid, "Bỏ qua slot: UID gốc đã trong dead log và không còn UID dự phòng dòng 26+ còn sống.");
+						slotDroppedNoReserve++;
+						continue;
+					}
+					int rowIndexCap = acc.rowIndex;
+					var reserveCap = reserve;
+					try
+					{
+						Invoke(delegate
+						{
+							if (rowIndexCap >= 0 && rowIndexCap < dataGridView1.Rows.Count)
+							{
+								DataGridViewRow row = dataGridView1.Rows[rowIndexCap];
+								row.Cells["UID"].Value = reserveCap.uid ?? "";
+								row.Cells["PASS"].Value = reserveCap.pass ?? "";
+								row.Cells["MA2FA"].Value = reserveCap.ma2fa ?? "";
+								row.Cells["MAIL2"].Value = reserveCap.mail2 ?? "";
+								row.Cells["UID"].ToolTipText = "";
+								row.Cells["PASS"].ToolTipText = "";
+								row.Cells["MA2FA"].ToolTipText = "";
+								row.Cells["MAIL2"].ToolTipText = "";
+							}
+							SaveAccount();
+						});
+					}
+					catch
+					{
+					}
+					SetText(acc.rowIndex, "STATUS", "Đổi UID dự phòng dòng " + (reserve.sourceRowIndex + 1) + " (UID gốc đã chết)");
+					SetText(reserve.sourceRowIndex, "STATUS", "Mail dự phòng — đang dùng cho hàng " + (acc.rowIndex + 1) + " (đầu batch)");
+					AppendAutomationLog("INFO", acc.rowIndex, reserve.uid, "Slot dòng " + (acc.rowIndex + 1) + ": UID gốc đã trong dead log → đổi sang UID dự phòng dòng " + (reserve.sourceRowIndex + 1) + " ngay từ đầu batch.");
+					_reserveSourceRowIndexInitial[acc.rowIndex] = reserve.sourceRowIndex;
+					notDead.Add((reserve.uid, reserve.pass, reserve.ma2fa, reserve.mail2, acc.rowIndex));
+					swappedReserveCount++;
 				}
-				notDead.Add(acc);
+				accountQueue = notDead;
+				if (swappedReserveCount > 0 || slotDroppedNoReserve > 0)
+				{
+					AppendAutomationLog("INFO", null, null, "Slot 1–25 dùng UID gốc đã chết: thay bằng UID dự phòng " + swappedReserveCount + ", bỏ qua " + slotDroppedNoReserve + " (hết dự phòng còn sống).");
+				}
 			}
-			accountQueue = notDead;
-			int skippedDead = beforeDeadSkip - accountQueue.Count;
-			if (skippedDead > 0)
+			if (accountQueue.Count == 0)
 			{
-				AppendAutomationLog("INFO", null, null, "Đã bỏ qua " + skippedDead + " account (đã ghi trong Data/dead_recaptcha_verify.log, dead_google_restrictions.log hoặc dead_google_account_disabled.log).");
+				MessageBox.Show("Sau khi xử lý dead log không còn slot nào để chạy.\r\nXóa dòng tương ứng trong các file Data/dead_*.log nếu muốn thử lại các UID đó, hoặc bổ sung mail dự phòng từ dòng 26 trở đi.");
+				return;
 			}
-		}
-		if (accountQueue.Count == 0)
-		{
-			MessageBox.Show("Sau khi bỏ qua account đã login và account trong log tài khoản chết, không còn hàng nào để chạy.\r\nXóa dòng tương ứng trong các file Data/dead_*.log nếu muốn thử lại.");
-			return;
 		}
 		if (cb_gpm_group.Items.Count == 0 || GetSelectedGpmGroupId() == null)
 		{
@@ -367,10 +499,23 @@ public partial class Form1 : Form
 			AppendAutomationLog("WARN", null, null, "Không chạy batch: GPM API 19995 không phản hồi (kiểm tra trong 5 giây).");
 			return;
 		}
+		_batchLogMailMoi = rb_log_mail_moi.Checked;
 		Interlocked.Exchange(ref _batchOk, 0);
 		Interlocked.Exchange(ref _batchFail, 0);
 		LoadNoiDung();
-		AppendAutomationLog("INFO", null, null, "Bắt đầu batch: " + accountQueue.Count + " account, luồng " + luong + ", bắt buộc PROXY mỗi hàng=" + cb_sudungproxy.Checked + ", nhóm GPM log=\"" + GetGpmGroupIdForLoginLog() + "\".");
+		if (_batchLogMailMoi)
+		{
+			AppendAutomationLog("INFO", null, null, "Bắt đầu batch: " + accountQueue.Count + " account, luồng " + luong + ", bắt buộc PROXY mỗi hàng=" + cb_sudungproxy.Checked + ", nhóm GPM log=\"" + GetGpmGroupIdForLoginLog() + "\", Log mail=mới (không bỏ qua dead log; chết chỉ ghi chú GPM).");
+		}
+		else
+		{
+			string tgt = _batchSuccessTargetCu > 0 ? "chỉ tiêu log đúng=" + _batchSuccessTargetCu : "chỉ tiêu log đúng=không giới hạn";
+			AppendAutomationLog("INFO", null, null, "Bắt đầu batch: " + accountQueue.Count + " slot (dòng 1–25), mail dự phòng (dòng 26+)=" + reserveMailCountForLog + ", " + tgt + ", luồng " + luong + ", nhóm GPM log=\"" + GetGpmGroupIdForLoginLog() + "\", Log mail=cũ (dead log; chết không xóa profile; thử mail dự phòng trên cùng profile).");
+			if (reserveMailCountForLog == 0)
+			{
+				AppendAutomationLog("WARN", null, null, "Log mail cũ: không có UID dự phòng từ dòng 26+ — nếu slot chết sẽ dừng slot đó.");
+			}
+		}
 		_batchCts?.Dispose();
 		_batchCts = new CancellationTokenSource();
 		_batchToken = _batchCts.Token;
@@ -510,8 +655,6 @@ public partial class Form1 : Form
 	private static string AutomationLogPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "automation.log");
 
 	private static string DeadRecaptchaVerifyLogPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "dead_recaptcha_verify.log");
-
-	private static string DeadGoogleRestrictionsLogPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "dead_google_restrictions.log");
 
 	private static string DeadGoogleAccountDisabledLogPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "dead_google_account_disabled.log");
 
@@ -665,11 +808,36 @@ public partial class Form1 : Form
 
 	private Task DelayBatchAsync(int millisecondsDelay)
 	{
+		int scaled = ScaleMs(millisecondsDelay);
 		if (_batchToken.CanBeCanceled)
 		{
-			return Task.Delay(millisecondsDelay, _batchToken);
+			return Task.Delay(scaled, _batchToken);
 		}
-		return Task.Delay(millisecondsDelay);
+		return Task.Delay(scaled);
+	}
+
+	/// <summary>Nhân thời gian (ms) với <see cref="_speedScale"/>; clamp [50ms, 10 phút] để tránh hang/giảm về 0.</summary>
+	private int ScaleMs(int ms)
+	{
+		if (ms <= 0)
+		{
+			return 0;
+		}
+		double scale = _speedScale;
+		if (scale <= 0.0 || double.IsNaN(scale) || double.IsInfinity(scale))
+		{
+			scale = 1.0;
+		}
+		long v = (long)Math.Round((double)ms * scale, MidpointRounding.AwayFromZero);
+		if (v < 50L)
+		{
+			v = 50L;
+		}
+		else if (v > 600000L)
+		{
+			v = 600000L;
+		}
+		return (int)v;
 	}
 
 	private Task PageWaitCancellableAsync(IPage page, float totalMs)
@@ -959,10 +1127,9 @@ public partial class Form1 : Form
 	private static HashSet<string> LoadEmailsMarkedDeadInAnyDeadLog()
 	{
 		HashSet<string> set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-		string[] paths = new string[3]
+		string[] paths = new string[2]
 		{
 			DeadRecaptchaVerifyLogPath,
-			DeadGoogleRestrictionsLogPath,
 			DeadGoogleAccountDisabledLogPath
 		};
 		for (int pi = 0; pi < paths.Length; pi++)
@@ -1024,33 +1191,6 @@ public partial class Form1 : Form
 					File.WriteAllText(DeadRecaptchaVerifyLogPath, "# time[TAB]email[TAB]reason — UTF-8 (chỉ ghi khi phát hiện reCAPTCHA/Verify)" + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 				}
 				File.AppendAllText(DeadRecaptchaVerifyLogPath, line + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-			}
-		}
-		catch
-		{
-		}
-	}
-
-	/// <summary>Ghi email bị redirect Gmail → myaccount.google.com/.../restrictions (coi mail chết).</summary>
-	private static void AppendGoogleRestrictionsAccountDeadLine(string email)
-	{
-		try
-		{
-			string dataDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
-			Directory.CreateDirectory(dataDir);
-			string e = (email ?? "").Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ').Trim();
-			if (string.IsNullOrEmpty(e))
-			{
-				return;
-			}
-			string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\t" + e + "\tGmail redirect → myaccount/restrictions — tài khoản chết";
-			lock (DeadGoogleRestrictionsLogSync)
-			{
-				if (!File.Exists(DeadGoogleRestrictionsLogPath))
-				{
-					File.WriteAllText(DeadGoogleRestrictionsLogPath, "# time[TAB]email[TAB]reason — UTF-8" + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-				}
-				File.AppendAllText(DeadGoogleRestrictionsLogPath, line + Environment.NewLine, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 			}
 		}
 		catch
@@ -1142,6 +1282,87 @@ public partial class Form1 : Form
 		return list;
 	}
 
+	/// <summary>Log mail cũ: chỉ các hàng 1–25 (index 0–24) có UID, giao với profile/proxy cố định theo hàng.</summary>
+	private List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> BuildAccountProcessingQueueLogMailCuPrimarySlots()
+	{
+		List<(string, string, string, string, int)> list = new List<(string, string, string, string, int)>();
+		int lastRow = ((_endRow >= _startRow) ? _endRow : _startRow);
+		for (int r = _startRow; r <= lastRow; r++)
+		{
+			if (r < 0 || r >= LogMailCuPrimarySlotCount)
+			{
+				continue;
+			}
+			DataGridViewRow row = dataGridView1.Rows[r];
+			if (row.IsNewRow)
+			{
+				continue;
+			}
+			string uid = row.Cells["UID"].Value?.ToString();
+			if (string.IsNullOrWhiteSpace(uid))
+			{
+				continue;
+			}
+			string pass = row.Cells["PASS"].Value?.ToString();
+			string ma2fa = row.Cells["MA2FA"].Value?.ToString();
+			string mail2 = row.Cells["MAIL2"].Value?.ToString();
+			list.Add((uid, pass, ma2fa, mail2, r));
+		}
+		return list;
+	}
+
+	/// <summary>Log mail cũ: nạp hàng đợi mail dự phòng từ dòng 26+ (index ≥ 25) trong phạm vi chọn.</summary>
+	private int RefillReserveMailQueueFromGridSelection()
+	{
+		_reserveMailQueue = new ConcurrentQueue<(string, string, string, string, int)>();
+		int n = 0;
+		int lastRow = ((_endRow >= _startRow) ? _endRow : _startRow);
+		for (int r = _startRow; r <= lastRow; r++)
+		{
+			if (r < LogMailCuReserveGridRowStart0)
+			{
+				continue;
+			}
+			DataGridViewRow row = dataGridView1.Rows[r];
+			if (row.IsNewRow)
+			{
+				continue;
+			}
+			string uid = row.Cells["UID"].Value?.ToString();
+			if (string.IsNullOrWhiteSpace(uid))
+			{
+				continue;
+			}
+			string pass = row.Cells["PASS"].Value?.ToString();
+			string ma2fa = row.Cells["MA2FA"].Value?.ToString();
+			string mail2 = row.Cells["MAIL2"].Value?.ToString();
+			_reserveMailQueue.Enqueue((uid, pass, ma2fa, mail2, r));
+			n++;
+		}
+		return n;
+	}
+
+	/// <summary>Log mail cũ: đếm <see cref="_batchOk"/> toàn batch. Chỉ dùng để dừng thêm vòng thử dự phòng (không chặn lần chạy đầu của mỗi slot), tránh lát sau (hàng 21–25) bị bỏ qua khi chỉ tiêu đã đạt do lát trước.</summary>
+	private bool ShouldStopCuBatchBySuccessTarget()
+	{
+		return !_batchLogMailMoi && _batchSuccessTargetCu > 0 && Volatile.Read(ref _batchOk) >= _batchSuccessTargetCu;
+	}
+
+	private void UpdateLogMailLimitLabelText()
+	{
+		if (label3 == null)
+		{
+			return;
+		}
+		try
+		{
+			label3.Text = rb_log_mail_moi.Checked ? "Giới hạn số dòng có UID\r\n0 = tất cả trong phạm vi chọn" : "Chỉ tiêu tổng số lần đăng nhập OK\r\n0 = không giới hạn · >0 = ngừng mở lát slot mới khi đạt; slot đang chạy vẫn lấy mail dự phòng tới khi OK / hết dự phòng";
+		}
+		catch
+		{
+		}
+	}
+
 	private async Task RunBatchedLoginAsync(List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> accountQueue, int luongPerBatch)
 	{
 		if (!_running || accountQueue.Count == 0)
@@ -1169,6 +1390,11 @@ public partial class Form1 : Form
 		}
 		for (int offset = 0; offset < accountQueue.Count && _running && !_batchToken.IsCancellationRequested; offset += luongPerBatch)
 		{
+			if (ShouldStopCuBatchBySuccessTarget())
+			{
+				AppendAutomationLog("INFO", null, null, "Log mail cũ: đã đạt chỉ tiêu tổng số lần đăng nhập OK — không mở thêm lát slot kế tiếp; các slot đang chạy vẫn tiếp tục đến khi OK / hết dự phòng.");
+				break;
+			}
 			int n = Math.Min(luongPerBatch, accountQueue.Count - offset);
 			List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> slice = accountQueue.GetRange(offset, n);
 			List<(string uid, string pass, string ma2fa, string mail2, int rowIndex)> runSlice = await LaunchBrowserBatchAsync(client, slice);
@@ -1251,165 +1477,327 @@ public partial class Form1 : Form
 
 	private async Task RunOneCycle(IBrowser browser, string email, string password, string cookie, string filename, int rowIndex)
 	{
-		IBrowserContext context = null;
-		IPage page2 = null;
-		try
+		string emailCur = email;
+		string passwordCur = password;
+		string cookieCur = cookie;
+		string filenameCur = filename;
+		IBrowserContext playwrightContextHardened = null;
+		Invoke(delegate
 		{
-			Invoke(delegate
+			dataGridView1.Rows[rowIndex].DefaultCellStyle.BackColor = Color.DarkRed;
+		});
+		ProxyInfo proxyInfo = GetProxyForAccountRowOnUi(rowIndex);
+		bool slotPoolMode = !UseLogMailMoiPolicyForBatch() && rowIndex >= 0 && rowIndex < LogMailCuPrimarySlotCount;
+		int logCuSlotCycleIndex = 0;
+		int reserveSourceRowIndex = -1;
+		if (!_reserveSourceRowIndexInitial.TryRemove(rowIndex, out reserveSourceRowIndex))
+		{
+			reserveSourceRowIndex = -1;
+		}
+		while (true)
+		{
+			if (!_running || (_batchToken.CanBeCanceled && _batchToken.IsCancellationRequested))
 			{
-				dataGridView1.Rows[rowIndex].DefaultCellStyle.BackColor = Color.DarkRed;
-			});
-			ProxyInfo proxyInfo = GetProxyForAccountRowOnUi(rowIndex);
-			context = browser.Contexts.First();
-			IPage page = ((context.Pages.Count <= 0) ? (await context.NewPageAsync()) : context.Pages.First());
-			page2 = page;
-			await context.GrantPermissionsAsync(new string[2] { "clipboard-read", "clipboard-write" });
-			await context.AddInitScriptAsync("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});");
-			await context.AddInitScriptAsync($"\r\n                    window.__AUTO_ID = '{rowIndex + 1}';\r\n\r\n                    function forceTitle() {{\r\n                        document.title = '#' + window.__AUTO_ID;\r\n                    }}\r\n\r\n                    setInterval(forceTitle, 1000);\r\n                ");
-			await context.AddCookiesAsync(new Microsoft.Playwright.Cookie[1]
-			{
-				new Microsoft.Playwright.Cookie
-				{
-					Name = "PREF",
-					Value = "hl=en",
-					Domain = ".google.com",
-					Path = "/"
-				}
-			});
-			await page2.GotoAsync("https://accounts.google.com/", new PageGotoOptions
-			{
-				WaitUntil = WaitUntilState.NetworkIdle
-			});
-			string content = await page2.ContentAsync();
-			if (content.Contains("ERR_PROXY_CONNECTION_FAILED") || content.Contains("ERR_NAME_NOT_RESOLVED") || content.Contains("ERR_INTERNET_DISCONNECTED") || content.Contains("ERR_CONNECTION_TIMED_OUT") || content.Contains("ERR_CONNECTION_REFUSED") || content.Contains("ERR_NETWORK_CHANGED") || content.Contains("ERR_SSL_PROTOCOL_ERROR") || content.Contains("ERR_ADDRESS_UNREACHABLE") || content.Contains("ERR_TUNNEL_CONNECTION_FAILED") || content.Contains("ERR_CONNECTION_RESET") || content.Contains("ERR_BAD_SSL_CLIENT_AUTH_CERT") || content.Contains("ERR_QUIC_PROTOCOL_ERROR") || content.Contains("ERR_EMPTY_RESPONSE") || content.Contains("ERR_SSL_VERSION_OR_CIPHER_MISMATCH"))
-			{
-				SetText(rowIndex, "STATUS", "PROXY RỚT MẠNG");
-				AppendAutomationLog("WARN", rowIndex, email, "Trang accounts.google báo lỗi mạng/proxy (Chrome error page).");
-				Interlocked.Increment(ref _batchFail);
-				UpdateStatus();
 				return;
 			}
-			if (await hamcheckpass(rowIndex, context, page2, email, password, cookie, filename))
+			IBrowserContext context = null;
+			IPage page2 = null;
+			bool reserveContinue = false;
+			try
 			{
-				SetText(rowIndex, "STATUS", "Xong");
-				AppendLoginSuccessLine(email, GetGpmGroupIdForLoginLog(), proxyInfo?.RawLineForGpm ?? "");
-				AppendAutomationLog("INFO", rowIndex, email, "Hoàn tất chu trình (hamcheckpass OK).");
-				Interlocked.Increment(ref _batchOk);
-				UpdateStatus();
-			}
-			else
-			{
-				AppendAutomationLog("WARN", rowIndex, email, "hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.");
-				try
+				context = (browser.Contexts.Count > 0) ? browser.Contexts[0] : await browser.NewContextAsync();
+				if (logCuSlotCycleIndex > 0 || context.Pages.Count == 0)
 				{
-					await TryCaptureFailureScreenshotAsync(page2, rowIndex, "login_flow_fail", context);
+					page2 = await context.NewPageAsync();
 				}
-				catch
+				else
 				{
+					page2 = context.Pages[0];
+				}
+				if (!object.ReferenceEquals(playwrightContextHardened, context))
+				{
+					await context.GrantPermissionsAsync(new string[2] { "clipboard-read", "clipboard-write" });
+					await context.AddInitScriptAsync("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});");
+					await context.AddInitScriptAsync($"\r\n                    window.__AUTO_ID = '{rowIndex + 1}';\r\n\r\n                    function forceTitle() {{\r\n                        document.title = '#' + window.__AUTO_ID;\r\n                    }}\r\n\r\n                    setInterval(forceTitle, 1000);\r\n                ");
+					playwrightContextHardened = context;
+				}
+				await context.AddCookiesAsync(new Microsoft.Playwright.Cookie[1]
+				{
+					new Microsoft.Playwright.Cookie
+					{
+						Name = "PREF",
+						Value = "hl=en",
+						Domain = ".google.com",
+						Path = "/"
+					}
+				});
+				await page2.BringToFrontAsync();
+				await page2.GotoAsync("https://accounts.google.com/", new PageGotoOptions
+				{
+					WaitUntil = WaitUntilState.NetworkIdle
+				});
+				string content = await page2.ContentAsync();
+				if (content.Contains("ERR_PROXY_CONNECTION_FAILED") || content.Contains("ERR_NAME_NOT_RESOLVED") || content.Contains("ERR_INTERNET_DISCONNECTED") || content.Contains("ERR_CONNECTION_TIMED_OUT") || content.Contains("ERR_CONNECTION_REFUSED") || content.Contains("ERR_NETWORK_CHANGED") || content.Contains("ERR_SSL_PROTOCOL_ERROR") || content.Contains("ERR_ADDRESS_UNREACHABLE") || content.Contains("ERR_TUNNEL_CONNECTION_FAILED") || content.Contains("ERR_CONNECTION_RESET") || content.Contains("ERR_BAD_SSL_CLIENT_AUTH_CERT") || content.Contains("ERR_QUIC_PROTOCOL_ERROR") || content.Contains("ERR_EMPTY_RESPONSE") || content.Contains("ERR_SSL_VERSION_OR_CIPHER_MISMATCH"))
+				{
+					SetText(rowIndex, "STATUS", "PROXY RỚT MẠNG");
+					AppendAutomationLog("WARN", rowIndex, emailCur, "Trang accounts.google báo lỗi mạng/proxy (Chrome error page).");
+					Interlocked.Increment(ref _batchFail);
+					UpdateStatus();
+					return;
+				}
+				if (await hamcheckpass(rowIndex, context, page2, emailCur, passwordCur, cookieCur, filenameCur))
+				{
+					SetText(rowIndex, "STATUS", "Xong");
+					AppendLoginSuccessLine(emailCur, GetGpmGroupIdForLoginLog(), proxyInfo?.RawLineForGpm ?? "");
+					AppendAutomationLog("INFO", rowIndex, emailCur, "Hoàn tất chu trình (hamcheckpass OK).");
+					Interlocked.Increment(ref _batchOk);
+					UpdateStatus();
+					if (reserveSourceRowIndex >= 0)
+					{
+						SetText(reserveSourceRowIndex, "STATUS", "Mail dự phòng — đã đăng nhập trên hàng " + (rowIndex + 1));
+						int sourceCap = reserveSourceRowIndex;
+						try
+						{
+							Invoke(delegate
+							{
+								if (sourceCap >= 0 && sourceCap < dataGridView1.Rows.Count)
+								{
+									bool altSrc = sourceCap % 2 == 1;
+									dataGridView1.Rows[sourceCap].DefaultCellStyle.BackColor = altSrc ? Color.FromArgb(32, 32, 38) : Color.FromArgb(24, 24, 28);
+								}
+							});
+						}
+						catch
+						{
+						}
+					}
+					try
+					{
+						Invoke(delegate
+						{
+							if (rowIndex >= 0 && rowIndex < dataGridView1.Rows.Count)
+							{
+								bool alt = rowIndex % 2 == 1;
+								dataGridView1.Rows[rowIndex].DefaultCellStyle.BackColor = alt ? Color.FromArgb(32, 32, 38) : Color.FromArgb(24, 24, 28);
+							}
+						});
+					}
+					catch
+					{
+					}
+					return;
+				}
+				bool deadSignIn = _googleDeadSignInStopRow.TryRemove(rowIndex, out _);
+				if (slotPoolMode && deadSignIn)
+				{
+					if (reserveSourceRowIndex >= 0)
+					{
+						SetText(reserveSourceRowIndex, "STATUS", "Mail dự phòng — chết tại hàng " + (rowIndex + 1));
+					}
+					if (_reserveMailQueue.TryDequeue(out var nextAcc))
+					{
+						_cuSlotSuppressGpmBrowserClose[rowIndex] = 1;
+						reserveContinue = true;
+						emailCur = nextAcc.uid;
+						passwordCur = nextAcc.pass;
+						cookieCur = nextAcc.ma2fa;
+						filenameCur = nextAcc.mail2;
+						reserveSourceRowIndex = nextAcc.sourceRowIndex;
+						SetText(nextAcc.sourceRowIndex, "STATUS", "Mail dự phòng — đang thử trên hàng " + (rowIndex + 1));
+						try
+						{
+							Invoke(delegate
+							{
+								if (rowIndex >= 0 && rowIndex < dataGridView1.Rows.Count)
+								{
+									DataGridViewRow row = dataGridView1.Rows[rowIndex];
+									row.Cells["UID"].Value = nextAcc.uid ?? "";
+									row.Cells["PASS"].Value = nextAcc.pass ?? "";
+									row.Cells["MA2FA"].Value = nextAcc.ma2fa ?? "";
+									row.Cells["MAIL2"].Value = nextAcc.mail2 ?? "";
+									row.Cells["UID"].ToolTipText = "";
+									row.Cells["PASS"].ToolTipText = "";
+									row.Cells["MA2FA"].ToolTipText = "";
+									row.Cells["MAIL2"].ToolTipText = "";
+								}
+								SaveAccount();
+							});
+						}
+						catch
+						{
+						}
+						SetText(rowIndex, "STATUS", "Mail chết — thử dự phòng dòng " + (nextAcc.sourceRowIndex + 1) + " trên profile hàng " + (rowIndex + 1));
+						AppendAutomationLog("INFO", rowIndex, emailCur, "Log mail cũ: lấy UID dòng " + (nextAcc.sourceRowIndex + 1) + " đăng lại trên cùng profile GPM (proxy hàng " + (rowIndex + 1) + ").");
+					}
+					else
+					{
+						SetText(rowIndex, "STATUS", "Mail chết — hết mail dự phòng (dòng 26+) — sẽ đóng tab + xóa profile GPM");
+						AppendAutomationLog("WARN", rowIndex, emailCur, "Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng " + (rowIndex + 1) + ".");
+						_keepChromeOpenForDead.TryRemove(rowIndex, out _);
+						_deleteGpmProfileForRow[rowIndex] = 1;
+						Interlocked.Increment(ref _batchFail);
+						UpdateStatus();
+						return;
+					}
+				}
+				else
+				{
+					AppendAutomationLog("WARN", rowIndex, emailCur, "hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.");
+					if (reserveSourceRowIndex >= 0)
+					{
+						SetText(reserveSourceRowIndex, "STATUS", "Mail dự phòng — fail tại hàng " + (rowIndex + 1) + " (không phải Google dead)");
+					}
+					try
+					{
+						await TryCaptureFailureScreenshotAsync(page2, rowIndex, "login_flow_fail", context);
+					}
+					catch
+					{
+					}
+					Interlocked.Increment(ref _batchFail);
+					UpdateStatus();
+					return;
+				}
+			}
+			catch (OperationCanceledException)
+			{
+				AppendAutomationLog("INFO", rowIndex, emailCur, "Đã dừng theo yêu cầu (Dừng).");
+				return;
+			}
+			catch (Exception ex)
+			{
+				Exception ex2 = ex;
+				Console.WriteLine("Error " + emailCur + ": " + ex2.Message);
+				AppendAutomationLog("ERROR", rowIndex, emailCur, "Exception: " + ex2.GetType().Name + " — " + ex2.Message);
+				if (reserveSourceRowIndex >= 0)
+				{
+					SetText(reserveSourceRowIndex, "STATUS", "Mail dự phòng — exception tại hàng " + (rowIndex + 1));
 				}
 				Interlocked.Increment(ref _batchFail);
 				UpdateStatus();
-			}
-		}
-		catch (OperationCanceledException)
-		{
-			AppendAutomationLog("INFO", rowIndex, email, "Đã dừng theo yêu cầu (Dừng).");
-		}
-		catch (Exception ex)
-		{
-			Exception ex2 = ex;
-			Console.WriteLine("Error " + email + ": " + ex2.Message);
-			AppendAutomationLog("ERROR", rowIndex, email, "Exception: " + ex2.GetType().Name + " — " + ex2.Message);
-			Interlocked.Increment(ref _batchFail);
-			UpdateStatus();
-			try
-			{
-				await TryCaptureFailureScreenshotAsync(page2, rowIndex, "exception", context);
-			}
-			catch
-			{
-			}
-		}
-		finally
-		{
-			bool forceCloseChrome = false;
-			try
-			{
-				forceCloseChrome = _forceCloseChromeAfterCycle.TryRemove(rowIndex, out bool fc) && fc;
-			}
-			catch
-			{
-			}
-			bool closeChromeAfterAccount = cb_offchrome.Checked || forceCloseChrome;
-			try
-			{
-				if (context != null && !closeChromeAfterAccount)
+				try
 				{
-					IPage p = context.Pages.Count > 0 ? context.Pages[0] : null;
-					if (p != null)
+					await TryCaptureFailureScreenshotAsync(page2, rowIndex, "exception", context);
+				}
+				catch
+				{
+				}
+				return;
+			}
+			finally
+			{
+				bool keepOpenForDead = false;
+				try
+				{
+					keepOpenForDead = _keepChromeOpenForDead.TryRemove(rowIndex, out _);
+				}
+				catch
+				{
+				}
+				bool suppressGpmBrowser = false;
+				try
+				{
+					suppressGpmBrowser = _cuSlotSuppressGpmBrowserClose.TryRemove(rowIndex, out _);
+				}
+				catch
+				{
+				}
+				bool deleteGpmProfile = false;
+				try
+				{
+					deleteGpmProfile = _deleteGpmProfileForRow.TryRemove(rowIndex, out _);
+				}
+				catch
+				{
+				}
+				if (deleteGpmProfile)
+				{
+					keepOpenForDead = false;
+					suppressGpmBrowser = false;
+				}
+				bool offchrome = cb_offchrome.Checked;
+				bool closeUi = (offchrome && !keepOpenForDead) || deleteGpmProfile;
+				if (suppressGpmBrowser && context != null)
+				{
+					try
 					{
-						await TryMaximizeChromeAfterCycleAsync(p, rowIndex);
+						await context.ClearCookiesAsync();
+					}
+					catch
+					{
 					}
 				}
-			}
-			catch
-			{
-			}
-			if (context != null && closeChromeAfterAccount)
-			{
 				try
 				{
-					await context.CloseAsync();
+					if (context != null && !closeUi)
+					{
+						IPage p = context.Pages.Count > 0 ? context.Pages[0] : null;
+						if (p != null)
+						{
+							await TryMaximizeChromeAfterCycleAsync(p, rowIndex);
+						}
+					}
 				}
 				catch
 				{
 				}
-			}
-			if (closeChromeAfterAccount)
-			{
-				try
+				if (context != null && closeUi && !suppressGpmBrowser)
 				{
-					await TryGpmCloseProfileByRowAsync(rowIndex);
+					try
+					{
+						await context.CloseAsync();
+					}
+					catch
+					{
+					}
+					playwrightContextHardened = null;
 				}
-				catch
+				if (closeUi && !suppressGpmBrowser)
 				{
+					try
+					{
+						await TryGpmCloseProfileByRowAsync(rowIndex);
+					}
+					catch
+					{
+					}
+					try
+					{
+						await browser.CloseAsync();
+					}
+					catch
+					{
+					}
 				}
-				try
+				if (deleteGpmProfile)
 				{
-					await browser.CloseAsync();
+					try
+					{
+						await TryGpmDeleteProfileByRowAsync(rowIndex);
+					}
+					catch (Exception exDel)
+					{
+						AppendAutomationLog("WARN", rowIndex, emailCur, "Xóa profile GPM (hết mail dự phòng) lỗi: " + exDel.Message);
+					}
+					try
+					{
+						_deadAccountGpmProfileIdByRow.TryRemove(rowIndex, out _);
+					}
+					catch
+					{
+					}
+					try
+					{
+						await DelayBatchAsync(600);
+					}
+					catch (OperationCanceledException)
+					{
+					}
+					catch
+					{
+					}
 				}
-				catch
-				{
-				}
-			}
-			if (forceCloseChrome)
-			{
-				try
-				{
-					await DelayBatchAsync(600);
-				}
-				catch (OperationCanceledException)
-				{
-				}
-				catch
-				{
-				}
-				string deadProfileSnap = null;
-				try
-				{
-					_deadAccountGpmProfileIdByRow.TryGetValue(rowIndex, out deadProfileSnap);
-				}
-				catch
-				{
-				}
-				try
-				{
-					await TryGpmDeleteProfileByRowAsync(rowIndex, deadProfileSnap);
-				}
-				catch
-				{
-				}
-				finally
+				else if (keepOpenForDead)
 				{
 					try
 					{
@@ -1418,8 +1806,23 @@ public partial class Form1 : Form
 					catch
 					{
 					}
+					try
+					{
+						await DelayBatchAsync(600);
+					}
+					catch (OperationCanceledException)
+					{
+					}
+					catch
+					{
+					}
 				}
 			}
+			if (!reserveContinue)
+			{
+				return;
+			}
+			logCuSlotCycleIndex++;
 		}
 	}
 
@@ -1642,16 +2045,46 @@ public partial class Form1 : Form
 		}
 	}
 
+	private bool UseLogMailMoiPolicyForBatch()
+	{
+		return _batchLogMailMoi;
+	}
+
+	/// <summary>Đánh dấu slot 0–24 vừa dừng do Google dead (reCAPTCHA/Account disabled) để RunOneCycle lấy mail dự phòng.</summary>
+	private void MarkGoogleDeadSignInStopForLogMailCuSlot(int vitri)
+	{
+		if (!UseLogMailMoiPolicyForBatch() && vitri >= 0 && vitri < LogMailCuPrimarySlotCount)
+		{
+			_googleDeadSignInStopRow[vitri] = 1;
+		}
+	}
+
 	private async Task<bool> TryAbortIfGoogleAccountDisabledAsync(IPage page, int vitri, string email)
 	{
 		if (!await PageShowsGoogleAccountDisabledAsync(page))
 		{
 			return false;
 		}
-		SetText(vitri, "STATUS", "Tài khoản chết — Google: Account disabled (tài khoản bị khóa)");
-		AppendAutomationLog("WARN", vitri, email, "Dừng: màn Account disabled — coi tài khoản chết, đóng Chrome.");
-		_forceCloseChromeAfterCycle[vitri] = true;
-		RememberGpmProfileIdForDeadAccountRow(vitri);
+		if (UseLogMailMoiPolicyForBatch())
+		{
+			SetText(vitri, "STATUS", "Log mail mới: Account disabled — dừng (giữ tab để kiểm tra)");
+			AppendAutomationLog("WARN", vitri, email, "Dừng: Account disabled — Log mail mới: không ghi dead_*.log, không xóa profile GPM; ghi chú GPM; GIỮ tab/Chrome cho người dùng kiểm tra.");
+			_keepChromeOpenForDead[vitri] = 1;
+			string pid = ResolveGpmProfileIdForRow(vitri, null);
+			await TryGpmSetProfileNoteAsync(pid, vitri, GpmNoteLogMailMoiAccountDisabled);
+			try
+			{
+				await TryCaptureFailureScreenshotAsync(page, vitri, "google_signin_account_disabled");
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		MarkGoogleDeadSignInStopForLogMailCuSlot(vitri);
+		SetText(vitri, "STATUS", "Tài khoản chết — Google: Account disabled (giữ tab để kiểm tra)");
+		AppendAutomationLog("WARN", vitri, email, "Dừng: màn Account disabled — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.");
+		_keepChromeOpenForDead[vitri] = 1;
 		AppendGoogleAccountDisabledDeadLine(email);
 		try
 		{
@@ -1683,10 +2116,26 @@ public partial class Form1 : Form
 		{
 			return false;
 		}
-		SetText(vitri, "STATUS", "Tài khoản chết — Google: reCAPTCHA / Verify (không tự động được)");
-		AppendAutomationLog("WARN", vitri, email, "Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, đóng Chrome.");
-		_forceCloseChromeAfterCycle[vitri] = true;
-		RememberGpmProfileIdForDeadAccountRow(vitri);
+		if (UseLogMailMoiPolicyForBatch())
+		{
+			SetText(vitri, "STATUS", "Log mail mới: reCAPTCHA / Verify — dừng (giữ tab để kiểm tra)");
+			AppendAutomationLog("WARN", vitri, email, "Dừng: reCAPTCHA / Verify — Log mail mới: không ghi dead_*.log, không xóa profile GPM; ghi chú GPM; GIỮ tab/Chrome cho người dùng kiểm tra.");
+			_keepChromeOpenForDead[vitri] = 1;
+			string pid = ResolveGpmProfileIdForRow(vitri, null);
+			await TryGpmSetProfileNoteAsync(pid, vitri, GpmNoteLogMailMoiRecaptcha);
+			try
+			{
+				await TryCaptureFailureScreenshotAsync(page, vitri, "google_signin_recaptcha_dead");
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		MarkGoogleDeadSignInStopForLogMailCuSlot(vitri);
+		SetText(vitri, "STATUS", "Tài khoản chết — Google: reCAPTCHA / Verify (giữ tab để kiểm tra)");
+		AppendAutomationLog("WARN", vitri, email, "Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.");
+		_keepChromeOpenForDead[vitri] = 1;
 		AppendDeadRecaptchaVerifyAccountLine(email);
 		try
 		{
@@ -1916,7 +2365,7 @@ public partial class Form1 : Form
 					WaitUntil = WaitUntilState.DOMContentLoaded,
 					Timeout = 120000f
 				});
-				await DelayBatchAsync(3500);
+				await DelayBatchAsync(2000);
 				try
 				{
 					await scriptPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
@@ -1927,7 +2376,7 @@ public partial class Form1 : Form
 				catch
 				{
 				}
-				await DelayBatchAsync(2000);
+				await DelayBatchAsync(1000);
 				try
 				{
 					await scriptPage.SetViewportSizeAsync(1920, 1080);
@@ -1939,7 +2388,7 @@ public partial class Form1 : Form
 				{
 					Timeout = 180000f
 				});
-				await DelayBatchAsync(1500);
+				await DelayBatchAsync(800);
 			}
 			SetText(vitri, "STATUS", "[Script] Editor sẵn sàng → Run function (lần 1)...");
 			await ClickRunSelectedFunctionAsync(scriptPage, vitri, "lần 1");
@@ -2629,12 +3078,29 @@ public partial class Form1 : Form
 		return url.IndexOf("/restrictions", StringComparison.OrdinalIgnoreCase) >= 0;
 	}
 
-	/// <summary>Sau khi mở tab Gmail: nếu redirect sang myaccount/restrictions thì coi mail chết (log + force đóng Chrome).</summary>
-	private async Task<bool> TryAbortIfInboxRedirectedToGoogleRestrictionsAsync(IPage inbox, int vitri, string email)
+	/// <summary>Sau khi mở tab Gmail: nếu URL là myaccount/restrictions thì cập nhật cột Trạng thái và Ghi chú profile GPM (không dừng luồng).</summary>
+	private async Task TryNoteIfInboxOnGoogleMyAccountRestrictionsAsync(IPage inbox, int vitri, string email)
 	{
 		if (inbox == null)
 		{
-			return false;
+			return;
+		}
+		bool notedUi = false;
+		void noteUiOnce()
+		{
+			if (notedUi)
+			{
+				return;
+			}
+			notedUi = true;
+			try
+			{
+				SetText(vitri, "STATUS", "Ghi chú: Google Restrictions (myaccount…/restrictions) — sau mở Gmail; luồng vẫn tiếp tục");
+			}
+			catch
+			{
+			}
+			AppendAutomationLog("INFO", vitri, email, "Mở Gmail chuyển sang myaccount.google.com/.../restrictions — đã cập nhật Trạng thái và ghi chú GPM profile.");
 		}
 		for (int i = 0; i < 45; i++)
 		{
@@ -2648,23 +3114,14 @@ public partial class Form1 : Form
 			}
 			if (UrlLooksLikeGoogleMyAccountRestrictions(u))
 			{
-				SetText(vitri, "STATUS", "Tài khoản chết — Google Restrictions (myaccount…/restrictions)");
-				AppendAutomationLog("WARN", vitri, email, "Dừng: mở Gmail chuyển sang myaccount.google.com/.../restrictions — coi tài khoản chết.");
-				_forceCloseChromeAfterCycle[vitri] = true;
-				RememberGpmProfileIdForDeadAccountRow(vitri);
-				AppendGoogleRestrictionsAccountDeadLine(email);
-				try
-				{
-					await TryCaptureFailureScreenshotAsync(inbox, vitri, "google_myaccount_restrictions");
-				}
-				catch
-				{
-				}
-				return true;
+				noteUiOnce();
+				string pid = ResolveGpmProfileIdForRow(vitri, null);
+				await TryGpmSetProfileNoteAsync(pid, vitri, GpmNoteGoogleMyAccountRestrictions);
+				return;
 			}
 			if (u.IndexOf("mail.google.com", StringComparison.OrdinalIgnoreCase) >= 0 && !UrlLooksLikeGoogleMyAccountRestrictions(u))
 			{
-				return false;
+				return;
 			}
 			await DelayBatchAsync(500);
 		}
@@ -2673,25 +3130,14 @@ public partial class Form1 : Form
 			string u2 = inbox.Url ?? "";
 			if (UrlLooksLikeGoogleMyAccountRestrictions(u2))
 			{
-				SetText(vitri, "STATUS", "Tài khoản chết — Google Restrictions (myaccount…/restrictions)");
-				AppendAutomationLog("WARN", vitri, email, "Dừng: mở Gmail chuyển sang myaccount.google.com/.../restrictions — coi tài khoản chết.");
-				_forceCloseChromeAfterCycle[vitri] = true;
-				RememberGpmProfileIdForDeadAccountRow(vitri);
-				AppendGoogleRestrictionsAccountDeadLine(email);
-				try
-				{
-					await TryCaptureFailureScreenshotAsync(inbox, vitri, "google_myaccount_restrictions");
-				}
-				catch
-				{
-				}
-				return true;
+				noteUiOnce();
+				string pid2 = ResolveGpmProfileIdForRow(vitri, null);
+				await TryGpmSetProfileNoteAsync(pid2, vitri, GpmNoteGoogleMyAccountRestrictions);
 			}
 		}
 		catch
 		{
 		}
-		return false;
 	}
 
 	public async Task<bool> hamcheckpass(int vitri, IBrowserContext context, IPage page, string email, string password, string ma2fa, string mail2)
@@ -3434,10 +3880,7 @@ public partial class Form1 : Form
 				catch
 				{
 				}
-				if (await TryAbortIfInboxRedirectedToGoogleRestrictionsAsync(inbox, vitri, email))
-				{
-					return false;
-				}
+				await TryNoteIfInboxOnGoogleMyAccountRestrictionsAsync(inbox, vitri, email);
 			}
 			catch
 			{
@@ -3451,11 +3894,11 @@ public partial class Form1 : Form
 					{
 						SetText(vitri, "STATUS", "STEP 4: Mở trang Personal Info");
 						await page.GotoAsync("https://myaccount.google.com/personal-info");
-						await DelayBatchAsync(5000);
+						await DelayBatchAsync(2000);
 						SetText(vitri, "STATUS", "STEP 5: Click Change Avatar");
 						await page.GetByLabel("Change profile photo").ClickAsync();
 						SetText(vitri, "STATUS", "STEP 5: Chờ iframe avatar");
-						await DelayBatchAsync(5000);
+						await DelayBatchAsync(2000);
 						await page.WaitForSelectorAsync("iframe[src*='profile-picture']", new PageWaitForSelectorOptions
 						{
 							Timeout = 30000f
@@ -3480,7 +3923,7 @@ public partial class Form1 : Form
 						Task<IFileChooser> chooserTask = page.WaitForFileChooserAsync();
 						await uploadBtn.ClickAsync();
 						await (await chooserTask).SetFilesAsync(avatarPath);
-						await DelayBatchAsync(5000);
+						await DelayBatchAsync(3000);
 						SetText(vitri, "STATUS", "STEP 5: Click Next");
 						ILocator nextBtn = frame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
 						{
@@ -3503,7 +3946,7 @@ public partial class Form1 : Form
 							Timeout = 30000f
 						});
 						await saveBtn.ClickAsync();
-						await DelayBatchAsync(7000);
+						await DelayBatchAsync(4000);
 					});
 				}
 				catch (Exception ex)
@@ -3530,7 +3973,7 @@ public partial class Form1 : Form
 				if (wantTaoForm)
 				{
 					SetText(vitri, "STATUS", "[Form] Bước 1/3: Tab mới → tạo Google Form...");
-					await DelayBatchAsync(3000);
+					await DelayBatchAsync(1500);
 					IPage formPage = await context.NewPageAsync();
 					await RunStepWithReloadRetryAsync(formPage, vitri, "[Form] Mở trang tạo Form", async delegate
 					{
@@ -3904,7 +4347,7 @@ public partial class Form1 : Form
 				try
 				{
 					SetText(vitri, "STATUS", wantTaoForm ? "[Sheet] Bước 2/3: Tab mới → Google Sheets (tạo file)..." : "[Sheet] Tạo Google Sheets (không tạo Form)…");
-					await DelayBatchAsync(5000);
+					await DelayBatchAsync(1500);
 					IPage sheetPage = await context.NewPageAsync();
 					await RunStepWithReloadRetryAsync(sheetPage, vitri, "[Sheet] Mở Sheets + chờ tab", async delegate
 					{
@@ -3913,7 +4356,7 @@ public partial class Form1 : Form
 							WaitUntil = WaitUntilState.DOMContentLoaded,
 							Timeout = 120000f
 						});
-						await DelayBatchAsync(4500);
+						await DelayBatchAsync(2500);
 						SetText(vitri, "STATUS", "[Sheet] Chờ tab sheet (docs-sheet-tab-name)...");
 						await sheetPage.WaitForSelectorAsync(".docs-sheet-tab-name", new PageWaitForSelectorOptions
 						{
@@ -3935,7 +4378,7 @@ public partial class Form1 : Form
 							WaitUntil = WaitUntilState.DOMContentLoaded,
 							Timeout = 80000f
 						});
-						await DelayBatchAsync(5000);
+						await DelayBatchAsync(2500);
 						try
 						{
 							await scriptPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
@@ -3946,7 +4389,7 @@ public partial class Form1 : Form
 						catch
 						{
 						}
-						await DelayBatchAsync(2000);
+						await DelayBatchAsync(1500);
 						await scriptPage.SetViewportSizeAsync(1920, 1080);
 						SetText(vitri, "STATUS", "[Script] Chờ editor Monaco (.view-lines)...");
 						await scriptPage.WaitForSelectorAsync(".view-lines", new PageWaitForSelectorOptions
@@ -3977,7 +4420,7 @@ public partial class Form1 : Form
 					}
 					SetText(vitri, "STATUS", "[Script] Dán mã: thay [LINK_FORM] / [LINK_SHEET] / 123456...");
 					await scriptPage.EvaluateAsync("(code) => {\r\n                        let editor = window.monaco?.editor?.getModels?.()[0];\r\n                        if (editor) {\r\n                            editor.setValue(code); // \ud83d\udd25 cách chuẩn nhất\r\n                        }\r\n                         }", newCode);
-					await DelayBatchAsync(5000);
+					await DelayBatchAsync(2500);
 					IElementHandle closeBtn = await scriptPage.QuerySelectorAsync("button[aria-label='close']");
 					if (closeBtn != null)
 					{
@@ -5855,6 +6298,7 @@ public partial class Form1 : Form
 	{
 		Text = "Auto Login — GPM | v" + GetAppVersionLabel();
 		LoadSettings();
+		UpdateLogMailLimitLabelText();
 		SetAccount(dataGridView1);
 		_runQueueStartRowIndex = 0;
 		UpdateGpmGroupControlsVisible();
@@ -5882,16 +6326,20 @@ public partial class Form1 : Form
 			ReshowDelay = 200,
 			ShowAlways = true
 		};
-		_uiToolTip.SetToolTip(btn_start, "Chạy đăng nhập cho các hàng đã chọn (hoặc cả lưới). Bỏ qua UID đã login thành công cho nhóm hiện tại hoặc đã thành công ở nhóm GPM khác (login_success.log), và trong Data/dead_*.log. Kiểm tra GPM API :19995 trước khi bắt đầu.");
+		_uiToolTip.SetToolTip(btn_start, "Chạy đăng nhập. Log mail cũ: slot dòng 1–25 + proxy cố định; mail dòng 26+ là dự phòng khi chết; ô số = chỉ tiêu log đúng; không xóa profile GPM. Log mail mới: không bỏ qua dead log; chết chỉ ghi chú GPM. Bỏ qua UID đã login (login_success.log). GPM API :19995.");
+		_uiToolTip.SetToolTip(rb_log_mail_cu, "Bỏ qua UID trong dead_*.log; chỉ chạy dòng 1–25; chết ghi dead log và thử UID dòng 26+ trên cùng profile (không xóa profile GPM). Ô số = số lần đăng nhập thành công cần đạt (0 = không giới hạn).");
+		_uiToolTip.SetToolTip(rb_log_mail_moi, "Không đọc dead_*.log khi xếp hàng; UID trong dead log vẫn được chạy. Khi gặp reCAPTCHA/Verify hoặc Account disabled: dừng hàng đó, chỉ cập nhật Ghi chú GPM, không ghi dead log và không xóa profile.");
 		_uiToolTip.SetToolTip(btn_stop, "Dừng: đóng trình duyệt và hủy batch đang chờ.");
-		_uiToolTip.SetToolTip(txt_so_account_log, "0 hoặc để trống = xử lý mọi dòng có UID trong phạm vi đã chọn.");
+		_uiToolTip.SetToolTip(txt_so_account_log, "Log mail mới: 0/để trống = mọi dòng có UID trong phạm vi. Log mail cũ: 0 = không giới hạn; >0 = chỉ tiêu tổng số lần đăng nhập OK toàn batch — khi đạt sẽ KHÔNG mở thêm lát slot kế tiếp; mỗi slot đang chạy vẫn lấy mail dự phòng tới khi OK hoặc hết dự phòng dòng 26+.");
 		_uiToolTip.SetToolTip(cb_luong, "Số Chrome chạy song song mỗi đợt (không vượt quá số profile GPM).");
 		_uiToolTip.SetToolTip(cb_sudungproxy, "Khi tích: mỗi hàng trong hàng đợi phải có PROXY hợp lệ. App đẩy PROXY lên GPM rồi sau khi mở profile đọc chrome://version (Command Line, --proxy-server) so host:port với lưới; lệch thì cột STATUS ghi \"Không tìm thấy proxy tương ứng bên GPM\" và không chạy hàng đó. Định dạng: host:port hoặc host:port:user:pass.");
 		_uiToolTip.SetToolTip(cb_gpm_group, "Luôn chọn nhóm GPM: profile A, B, C… trong nhóm khớp hàng 1, 2, 3… (dù tắt \"Proxy…\").");
 		_uiToolTip.SetToolTip(cb_changeinfo, "Sau khi đăng nhập: mở myaccount và đổi ảnh đại diện (cần avatar.jpg).");
 		_uiToolTip.SetToolTip(cb_tao_form, "Mở Google Forms, điền tiêu đề/mô tả, theme, publish và copy link phản hồi (cần tieude.txt, noidung.txt, header.jpg… trong Data\\).");
 		_uiToolTip.SetToolTip(cb_tao_sheet_script, "Tạo Google Sheet mới, mở script.new, dán codesc.txt (thay [LINK_FORM] / [LINK_SHEET]), thêm Drive API và chạy OAuth/Run. Có thể bật một mình: khi không tạo Form, [LINK_FORM] để trống.");
-		_uiToolTip.SetToolTip(cb_offchrome, "Sau mỗi account: đóng context Playwright + gọi GPM đóng profile + ngắt CDP (tắt cửa sổ Chrome thật; tiết kiệm RAM). Bỏ tick để giữ tab xem lại.");
+		_uiToolTip.SetToolTip(cb_offchrome, "Sau khi slot xong (OK / lỗi không phải mail chết): đóng context Playwright + GPM đóng profile + ngắt CDP để tiết kiệm RAM. Mail chết: GIỮ tab/Chrome/profile để người dùng kiểm tra, bất kể tick này. Riêng Log mail cũ slot 1–25 chết nhưng đã HẾT mail dự phòng dòng 26+: tự động đóng tab + xóa profile GPM của hàng đó.");
+		_uiToolTip.SetToolTip(cb_speed_profile, "Hệ số nhân thời gian chờ (DelayBatchAsync) trong cả app:\n• Nhanh ×0.7 — mạng tốt, máy khoẻ; ít delay nhất, có thể nghẽn nếu mạng chậm.\n• Bình thường ×1.0 — mặc định, đã hiệu chỉnh cho đa số môi trường.\n• Chậm ×1.4 — mạng yếu/proxy chậm, giảm tỉ lệ lỗi WaitForSelector.\n• Rất chậm ×2.0 — mạng rất kém / proxy quốc tế.\nÁp dụng ngay sau khi chọn (chỉ ảnh hưởng các lệnh chờ tự định nghĩa, không ảnh hưởng timeout Playwright).");
+		_uiToolTip.SetToolTip(lbl_speed_profile, "Chọn profile tốc độ phù hợp với mạng. Mạng kém → tăng lên Chậm/Rất chậm để giảm tắc nghẽn.");
 	}
 
 	private void Form1_Shown(object sender, EventArgs e)
@@ -5947,10 +6395,23 @@ public partial class Form1 : Form
 
 	private void Sidebar_Paint(object sender, PaintEventArgs e)
 	{
-		using (Pen pen = new Pen(Color.FromArgb(52, 52, 58), 1f))
+		using (Pen pen = new Pen(Color.FromArgb(48, 50, 58), 1f))
 		{
 			int x = sidebar.Width - 1;
 			e.Graphics.DrawLine(pen, x, 0, x, sidebar.Height);
+		}
+	}
+
+	private void PanelLogMailSection_Paint(object sender, PaintEventArgs e)
+	{
+		if (!(sender is Panel pnl))
+		{
+			return;
+		}
+		Rectangle r = new Rectangle(0, 0, pnl.Width - 1, pnl.Height - 1);
+		using (Pen pen = new Pen(Color.FromArgb(58, 62, 74), 1f))
+		{
+			e.Graphics.DrawRectangle(pen, r);
 		}
 	}
 
@@ -6014,6 +6475,19 @@ public partial class Form1 : Form
 			{
 				txt_so_account_log.Text = dictionary["so_account_log"];
 			}
+			if (rb_log_mail_cu != null && rb_log_mail_moi != null)
+			{
+				if (dictionary.ContainsKey("log_mail_moi") && bool.TryParse(dictionary["log_mail_moi"], out bool logMailMoi) && logMailMoi)
+				{
+					rb_log_mail_moi.Checked = true;
+					rb_log_mail_cu.Checked = false;
+				}
+				else
+				{
+					rb_log_mail_cu.Checked = true;
+					rb_log_mail_moi.Checked = false;
+				}
+			}
 			if (dictionary.ContainsKey("username"))
 			{
 				// username setting removed
@@ -6070,6 +6544,26 @@ public partial class Form1 : Form
 			if (dictionary.ContainsKey("script_run_pause_ms") && int.TryParse(dictionary["script_run_pause_ms"], out int srpm) && srpm >= 1000 && srpm <= 120000)
 			{
 				_scriptRunPauseMs = srpm;
+			}
+			if (dictionary.ContainsKey("speed_scale") && double.TryParse(dictionary["speed_scale"], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double ss) && ss >= 0.3 && ss <= 5.0)
+			{
+				_speedScale = ss;
+			}
+			if (cb_speed_profile != null)
+			{
+				cb_speed_profile.SelectedIndexChanged -= cb_speed_profile_SelectedIndexChanged;
+				try
+				{
+					int idx = SpeedProfileIndexFromScale(_speedScale);
+					if (idx >= 0 && idx < cb_speed_profile.Items.Count)
+					{
+						cb_speed_profile.SelectedIndex = idx;
+					}
+				}
+				finally
+				{
+					cb_speed_profile.SelectedIndexChanged += cb_speed_profile_SelectedIndexChanged;
+				}
 			}
 			ApplySavedWindowPlacement(dictionary);
 		}
@@ -6156,6 +6650,10 @@ public partial class Form1 : Form
 		{
 		}
 		d["so_account_log"] = txt_so_account_log.Text;
+		if (rb_log_mail_moi != null)
+		{
+			d["log_mail_moi"] = rb_log_mail_moi.Checked.ToString();
+		}
 		d["luong"] = GetSelectedLuong().ToString();
 		d["sudungproxy"] = cb_sudungproxy.Checked.ToString();
 		d["gpm_proxy_group_id"] = GetSelectedGpmGroupId() ?? "";
@@ -6166,6 +6664,7 @@ public partial class Form1 : Form
 		d["offchrome"] = cb_offchrome.Checked.ToString();
 		d["wait_slice_ms"] = _waitSliceMs.ToString();
 		d["script_run_pause_ms"] = _scriptRunPauseMs.ToString();
+		d["speed_scale"] = _speedScale.ToString("0.###", System.Globalization.CultureInfo.InvariantCulture);
 		try
 		{
 			if (WindowState == FormWindowState.Normal)
@@ -6198,6 +6697,65 @@ public partial class Form1 : Form
 			lines.Add(kv.Key + "=" + kv.Value);
 		}
 		File.WriteAllLines("Data/Setting.txt", lines);
+	}
+
+	private void cb_speed_profile_SelectedIndexChanged(object sender, EventArgs e)
+	{
+		if (cb_speed_profile == null)
+		{
+			return;
+		}
+		int idx = cb_speed_profile.SelectedIndex;
+		double scale = SpeedProfileScaleFromIndex(idx);
+		if (scale > 0.0)
+		{
+			_speedScale = scale;
+		}
+		try
+		{
+			SaveSettings();
+		}
+		catch
+		{
+		}
+	}
+
+	private static double SpeedProfileScaleFromIndex(int idx)
+	{
+		switch (idx)
+		{
+		case 0:
+			return 0.7;
+		case 1:
+			return 1.0;
+		case 2:
+			return 1.4;
+		case 3:
+			return 2.0;
+		default:
+			return 0.0;
+		}
+	}
+
+	private static int SpeedProfileIndexFromScale(double scale)
+	{
+		if (Math.Abs(scale - 0.7) < 0.05)
+		{
+			return 0;
+		}
+		if (Math.Abs(scale - 1.0) < 0.05)
+		{
+			return 1;
+		}
+		if (Math.Abs(scale - 1.4) < 0.05)
+		{
+			return 2;
+		}
+		if (Math.Abs(scale - 2.0) < 0.05)
+		{
+			return 3;
+		}
+		return 4;
 	}
 
 	private static string EscapeProcessArg(string s)
@@ -6568,6 +7126,9 @@ public partial class Form1 : Form
 		this.cb_tao_sheet_script = new System.Windows.Forms.CheckBox();
 		this.cb_tao_form = new System.Windows.Forms.CheckBox();
 		this.cb_changeinfo = new System.Windows.Forms.CheckBox();
+		this.lbl_log_mail_mode = new System.Windows.Forms.Label();
+		this.rb_log_mail_cu = new System.Windows.Forms.RadioButton();
+		this.rb_log_mail_moi = new System.Windows.Forms.RadioButton();
 		this.label3 = new System.Windows.Forms.Label();
 		this.txt_so_account_log = new System.Windows.Forms.TextBox();
 		this.lbl_status = new System.Windows.Forms.Label();
@@ -6604,86 +7165,141 @@ public partial class Form1 : Form
 		this.copy2FAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.xuatCsvLuoiToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 		this.cb_offchrome = new System.Windows.Forms.CheckBox();
+		this.lbl_speed_profile = new System.Windows.Forms.Label();
+		this.cb_speed_profile = new System.Windows.Forms.ComboBox();
+		this.panelLogMailSection = new System.Windows.Forms.Panel();
 		this.sidebar.SuspendLayout();
+		this.panelLogMailSection.SuspendLayout();
 		this.topbar.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)this.dataGridView1).BeginInit();
 		this.contextMenuStrip1.SuspendLayout();
 		base.SuspendLayout();
-		this.sidebar.BackColor = System.Drawing.Color.FromArgb(32, 32, 36);
+		this.sidebar.BackColor = System.Drawing.Color.FromArgb(28, 28, 32);
 		this.sidebar.Controls.Add(this.cb_offchrome);
+		this.sidebar.Controls.Add(this.lbl_speed_profile);
+		this.sidebar.Controls.Add(this.cb_speed_profile);
 		this.sidebar.Controls.Add(this.cb_tao_sheet_script);
 		this.sidebar.Controls.Add(this.cb_tao_form);
 		this.sidebar.Controls.Add(this.cb_changeinfo);
-		this.sidebar.Controls.Add(this.label3);
-		this.sidebar.Controls.Add(this.txt_so_account_log);
-		this.sidebar.Controls.Add(this.lbl_status);
-		this.sidebar.Controls.Add(this.label2);
-		this.sidebar.Controls.Add(this.cb_luong);
-		this.sidebar.Controls.Add(this.cb_sudungproxy);
-		this.sidebar.Controls.Add(this.lbl_gpm_group);
 		this.sidebar.Controls.Add(this.cb_gpm_group);
+		this.sidebar.Controls.Add(this.lbl_gpm_group);
+		this.sidebar.Controls.Add(this.cb_sudungproxy);
+		this.sidebar.Controls.Add(this.cb_luong);
+		this.sidebar.Controls.Add(this.label2);
+		this.sidebar.Controls.Add(this.panelLogMailSection);
+		this.sidebar.Controls.Add(this.lbl_status);
 		this.sidebar.Dock = System.Windows.Forms.DockStyle.Left;
 		this.sidebar.Name = "sidebar";
-		this.sidebar.Size = new System.Drawing.Size(300, 601);
+		this.sidebar.Size = new System.Drawing.Size(308, 601);
 		this.sidebar.TabIndex = 0;
+		this.panelLogMailSection.BackColor = System.Drawing.Color.FromArgb(38, 40, 48);
+		this.panelLogMailSection.Location = new System.Drawing.Point(12, 76);
+		this.panelLogMailSection.Name = "panelLogMailSection";
+		this.panelLogMailSection.Size = new System.Drawing.Size(284, 150);
+		this.panelLogMailSection.TabIndex = 40;
+		this.panelLogMailSection.Paint += new System.Windows.Forms.PaintEventHandler(PanelLogMailSection_Paint);
+		this.lbl_log_mail_mode.AutoSize = false;
+		this.lbl_log_mail_mode.Font = new System.Drawing.Font("Segoe UI", 8f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+		this.lbl_log_mail_mode.ForeColor = System.Drawing.Color.FromArgb(130, 185, 255);
+		this.lbl_log_mail_mode.Location = new System.Drawing.Point(10, 8);
+		this.lbl_log_mail_mode.Name = "lbl_log_mail_mode";
+		this.lbl_log_mail_mode.Size = new System.Drawing.Size(264, 18);
+		this.lbl_log_mail_mode.TabIndex = 30;
+		this.lbl_log_mail_mode.TabStop = false;
+		this.lbl_log_mail_mode.Text = "CHẾ ĐỘ LOG MAIL";
+		this.rb_log_mail_cu.AutoSize = false;
+		this.rb_log_mail_cu.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.rb_log_mail_cu.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.rb_log_mail_cu.BackColor = System.Drawing.Color.FromArgb(38, 40, 48);
+		this.rb_log_mail_cu.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
+		this.rb_log_mail_cu.Location = new System.Drawing.Point(8, 30);
+		this.rb_log_mail_cu.Name = "rb_log_mail_cu";
+		this.rb_log_mail_cu.Size = new System.Drawing.Size(268, 22);
+		this.rb_log_mail_cu.TabIndex = 31;
+		this.rb_log_mail_cu.TabStop = true;
+		this.rb_log_mail_cu.Text = "Cũ — Slot 1–25 + dự phòng từ dòng 26";
+		this.rb_log_mail_cu.UseVisualStyleBackColor = false;
+		this.rb_log_mail_cu.Checked = true;
+		this.rb_log_mail_cu.CheckedChanged += new System.EventHandler(LogMailModeRadio_CheckedChanged);
+		this.rb_log_mail_moi.AutoSize = false;
+		this.rb_log_mail_moi.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.rb_log_mail_moi.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.rb_log_mail_moi.BackColor = System.Drawing.Color.FromArgb(38, 40, 48);
+		this.rb_log_mail_moi.ForeColor = System.Drawing.Color.FromArgb(235, 235, 240);
+		this.rb_log_mail_moi.Location = new System.Drawing.Point(8, 54);
+		this.rb_log_mail_moi.Name = "rb_log_mail_moi";
+		this.rb_log_mail_moi.Size = new System.Drawing.Size(268, 22);
+		this.rb_log_mail_moi.TabIndex = 32;
+		this.rb_log_mail_moi.TabStop = false;
+		this.rb_log_mail_moi.Text = "Mới — Không dead log; chết chỉ ghi chú GPM";
+		this.rb_log_mail_moi.UseVisualStyleBackColor = false;
+		this.rb_log_mail_moi.CheckedChanged += new System.EventHandler(LogMailModeRadio_CheckedChanged);
+		this.label3.AutoSize = false;
+		this.label3.Font = new System.Drawing.Font("Segoe UI", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, 0);
+		this.label3.ForeColor = System.Drawing.Color.FromArgb(175, 177, 188);
+		this.label3.Location = new System.Drawing.Point(10, 80);
+		this.label3.Name = "label3";
+		this.label3.Size = new System.Drawing.Size(264, 36);
+		this.label3.TabIndex = 10;
+		this.label3.TabStop = false;
+		this.label3.Text = "Số lần đăng nhập thành công (cả batch)\r\n0 = không giới hạn · dừng khi hết mail dòng 26+";
+		this.txt_so_account_log.BackColor = System.Drawing.Color.FromArgb(48, 50, 58);
+		this.txt_so_account_log.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+		this.txt_so_account_log.ForeColor = System.Drawing.Color.FromArgb(248, 248, 252);
+		this.txt_so_account_log.Location = new System.Drawing.Point(10, 118);
+		this.txt_so_account_log.Name = "txt_so_account_log";
+		this.txt_so_account_log.Size = new System.Drawing.Size(264, 26);
+		this.txt_so_account_log.TabIndex = 1;
+		this.panelLogMailSection.Controls.Add(this.lbl_log_mail_mode);
+		this.panelLogMailSection.Controls.Add(this.rb_log_mail_cu);
+		this.panelLogMailSection.Controls.Add(this.rb_log_mail_moi);
+		this.panelLogMailSection.Controls.Add(this.label3);
+		this.panelLogMailSection.Controls.Add(this.txt_so_account_log);
+		this.panelLogMailSection.ResumeLayout(false);
+		this.panelLogMailSection.PerformLayout();
 		this.cb_tao_form.AutoSize = false;
 		this.cb_tao_form.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_tao_form.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_tao_form.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
-		this.cb_tao_form.Location = new System.Drawing.Point(16, 312);
+		this.cb_tao_form.Location = new System.Drawing.Point(12, 406);
 		this.cb_tao_form.Name = "cb_tao_form";
-		this.cb_tao_form.Size = new System.Drawing.Size(260, 24);
+		this.cb_tao_form.Size = new System.Drawing.Size(284, 24);
 		this.cb_tao_form.TabIndex = 6;
 		this.cb_tao_form.Text = "Tạo Form";
 		this.cb_tao_sheet_script.AutoSize = false;
 		this.cb_tao_sheet_script.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_tao_sheet_script.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_tao_sheet_script.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
-		this.cb_tao_sheet_script.Location = new System.Drawing.Point(16, 340);
+		this.cb_tao_sheet_script.Location = new System.Drawing.Point(12, 434);
 		this.cb_tao_sheet_script.Name = "cb_tao_sheet_script";
-		this.cb_tao_sheet_script.Size = new System.Drawing.Size(260, 24);
+		this.cb_tao_sheet_script.Size = new System.Drawing.Size(284, 24);
 		this.cb_tao_sheet_script.TabIndex = 7;
 		this.cb_tao_sheet_script.Text = "Tạo Sheet + Script";
 		this.cb_changeinfo.AutoSize = false;
 		this.cb_changeinfo.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_changeinfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_changeinfo.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
-		this.cb_changeinfo.Location = new System.Drawing.Point(16, 284);
+		this.cb_changeinfo.Location = new System.Drawing.Point(12, 378);
 		this.cb_changeinfo.Name = "cb_changeinfo";
-		this.cb_changeinfo.Size = new System.Drawing.Size(260, 24);
+		this.cb_changeinfo.Size = new System.Drawing.Size(284, 24);
 		this.cb_changeinfo.TabIndex = 5;
 		this.cb_changeinfo.Text = "Đổi ảnh / thông tin Gmail";
-		this.label3.Font = new System.Drawing.Font("Segoe UI", 8.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-		this.label3.ForeColor = System.Drawing.Color.FromArgb(150, 152, 162);
-		this.label3.Location = new System.Drawing.Point(16, 80);
-		this.label3.Name = "label3";
-		this.label3.Size = new System.Drawing.Size(260, 20);
-		this.label3.TabIndex = 10;
-		this.label3.TabStop = false;
-		this.label3.Text = "Giới hạn số account (0 = chạy tất cả)";
-		this.txt_so_account_log.BackColor = System.Drawing.Color.FromArgb(48, 48, 54);
-		this.txt_so_account_log.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-		this.txt_so_account_log.ForeColor = System.Drawing.Color.FromArgb(245, 245, 248);
-		this.txt_so_account_log.Location = new System.Drawing.Point(16, 104);
-		this.txt_so_account_log.Name = "txt_so_account_log";
-		this.txt_so_account_log.Size = new System.Drawing.Size(260, 25);
-		this.txt_so_account_log.TabIndex = 1;
 		this.lbl_status.AutoSize = false;
-		this.lbl_status.BackColor = System.Drawing.Color.FromArgb(42, 42, 48);
-		this.lbl_status.Font = new System.Drawing.Font("Segoe UI", 9.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+		this.lbl_status.BackColor = System.Drawing.Color.FromArgb(34, 36, 42);
+		this.lbl_status.Font = new System.Drawing.Font("Segoe UI", 9.5f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
 		this.lbl_status.ForeColor = System.Drawing.Color.FromArgb(155, 205, 160);
-		this.lbl_status.Location = new System.Drawing.Point(16, 12);
+		this.lbl_status.Location = new System.Drawing.Point(12, 12);
 		this.lbl_status.Name = "lbl_status";
-		this.lbl_status.Padding = new System.Windows.Forms.Padding(10, 8, 10, 8);
-		this.lbl_status.Size = new System.Drawing.Size(260, 56);
+		this.lbl_status.Padding = new System.Windows.Forms.Padding(12, 10, 12, 10);
+		this.lbl_status.Size = new System.Drawing.Size(284, 58);
 		this.lbl_status.TabIndex = 0;
 		this.lbl_status.TabStop = false;
 		this.lbl_status.Text = "Sẵn sàng";
 		this.label2.Font = new System.Drawing.Font("Segoe UI", 8.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
 		this.label2.ForeColor = System.Drawing.Color.FromArgb(150, 152, 162);
-		this.label2.Location = new System.Drawing.Point(16, 140);
+		this.label2.Location = new System.Drawing.Point(16, 236);
 		this.label2.Name = "label2";
-		this.label2.Size = new System.Drawing.Size(260, 20);
+		this.label2.Size = new System.Drawing.Size(276, 20);
 		this.label2.TabIndex = 3;
 		this.label2.TabStop = false;
 		this.label2.Text = "Luồng song song (profile GPM)";
@@ -6693,25 +7309,25 @@ public partial class Form1 : Form
 		this.cb_luong.ForeColor = System.Drawing.Color.FromArgb(245, 245, 248);
 		this.cb_luong.FormattingEnabled = true;
 		this.cb_luong.Items.AddRange(new object[3] { "2", "5", "10" });
-		this.cb_luong.Location = new System.Drawing.Point(16, 164);
+		this.cb_luong.Location = new System.Drawing.Point(12, 260);
 		this.cb_luong.Name = "cb_luong";
-		this.cb_luong.Size = new System.Drawing.Size(260, 25);
+		this.cb_luong.Size = new System.Drawing.Size(284, 25);
 		this.cb_luong.TabIndex = 2;
 		this.cb_luong.SelectedItem = "5";
 		this.cb_sudungproxy.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_sudungproxy.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_sudungproxy.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
-		this.cb_sudungproxy.Location = new System.Drawing.Point(16, 196);
+		this.cb_sudungproxy.Location = new System.Drawing.Point(12, 292);
 		this.cb_sudungproxy.Name = "cb_sudungproxy";
-		this.cb_sudungproxy.Size = new System.Drawing.Size(260, 24);
+		this.cb_sudungproxy.Size = new System.Drawing.Size(284, 24);
 		this.cb_sudungproxy.TabIndex = 3;
 		this.cb_sudungproxy.Text = "Proxy từ cột PROXY (Account.txt)";
 		this.cb_sudungproxy.CheckedChanged += new System.EventHandler(cb_sudungproxy_CheckedChanged);
 		this.lbl_gpm_group.Font = new System.Drawing.Font("Segoe UI", 8.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
 		this.lbl_gpm_group.ForeColor = System.Drawing.Color.FromArgb(150, 152, 162);
-		this.lbl_gpm_group.Location = new System.Drawing.Point(16, 226);
+		this.lbl_gpm_group.Location = new System.Drawing.Point(12, 322);
 		this.lbl_gpm_group.Name = "lbl_gpm_group";
-		this.lbl_gpm_group.Size = new System.Drawing.Size(260, 20);
+		this.lbl_gpm_group.Size = new System.Drawing.Size(276, 20);
 		this.lbl_gpm_group.TabIndex = 20;
 		this.lbl_gpm_group.TabStop = false;
 		this.lbl_gpm_group.Text = "Nhóm profile GPM";
@@ -6719,13 +7335,13 @@ public partial class Form1 : Form
 		this.cb_gpm_group.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 		this.cb_gpm_group.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_gpm_group.ForeColor = System.Drawing.Color.FromArgb(245, 245, 248);
-		this.cb_gpm_group.Location = new System.Drawing.Point(16, 248);
+		this.cb_gpm_group.Location = new System.Drawing.Point(12, 344);
 		this.cb_gpm_group.Name = "cb_gpm_group";
-		this.cb_gpm_group.Size = new System.Drawing.Size(260, 25);
+		this.cb_gpm_group.Size = new System.Drawing.Size(284, 25);
 		this.cb_gpm_group.TabIndex = 4;
 		this.lbl_gpm_group.Visible = true;
 		this.cb_gpm_group.Visible = true;
-		this.topbar.BackColor = System.Drawing.Color.FromArgb(40, 40, 44);
+		this.topbar.BackColor = System.Drawing.Color.FromArgb(32, 33, 38);
 		this.topbar.Controls.Add(this.lbl_app_tagline);
 		this.topbar.Controls.Add(this.btn_export_diagnostics);
 		this.topbar.Controls.Add(this.btn_open_data_folder);
@@ -6733,7 +7349,7 @@ public partial class Form1 : Form
 		this.topbar.Controls.Add(this.btn_stop);
 		this.topbar.Dock = System.Windows.Forms.DockStyle.Top;
 		this.topbar.Name = "topbar";
-		this.topbar.Size = new System.Drawing.Size(1184, 58);
+		this.topbar.Size = new System.Drawing.Size(1208, 58);
 		this.topbar.TabIndex = 1;
 		this.lbl_app_tagline.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
 		this.lbl_app_tagline.AutoSize = false;
@@ -6958,13 +7574,41 @@ public partial class Form1 : Form
 		this.cb_offchrome.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_offchrome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_offchrome.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
-		this.cb_offchrome.Location = new System.Drawing.Point(16, 368);
+		this.cb_offchrome.Location = new System.Drawing.Point(12, 462);
 		this.cb_offchrome.Name = "cb_offchrome";
-		this.cb_offchrome.Size = new System.Drawing.Size(260, 24);
+		this.cb_offchrome.Size = new System.Drawing.Size(284, 24);
 		this.cb_offchrome.TabIndex = 8;
 		this.cb_offchrome.Text = "Đóng Chrome sau mỗi account";
+		this.lbl_speed_profile.AutoSize = false;
+		this.lbl_speed_profile.Font = new System.Drawing.Font("Segoe UI", 8.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
+		this.lbl_speed_profile.ForeColor = System.Drawing.Color.FromArgb(150, 152, 162);
+		this.lbl_speed_profile.Location = new System.Drawing.Point(16, 494);
+		this.lbl_speed_profile.Name = "lbl_speed_profile";
+		this.lbl_speed_profile.Size = new System.Drawing.Size(276, 20);
+		this.lbl_speed_profile.TabIndex = 41;
+		this.lbl_speed_profile.TabStop = false;
+		this.lbl_speed_profile.Text = "Tốc độ chạy (mạng kém → chọn chậm)";
+		this.cb_speed_profile.BackColor = System.Drawing.Color.FromArgb(48, 48, 54);
+		this.cb_speed_profile.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+		this.cb_speed_profile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.cb_speed_profile.ForeColor = System.Drawing.Color.FromArgb(245, 245, 248);
+		this.cb_speed_profile.FormattingEnabled = true;
+		this.cb_speed_profile.Items.AddRange(new object[5]
+		{
+			"Nhanh — mạng tốt (×0.7)",
+			"Bình thường — mặc định (×1.0)",
+			"Chậm — mạng yếu (×1.4)",
+			"Rất chậm — mạng rất yếu (×2.0)",
+			"Tuỳ chỉnh"
+		});
+		this.cb_speed_profile.Location = new System.Drawing.Point(12, 516);
+		this.cb_speed_profile.Name = "cb_speed_profile";
+		this.cb_speed_profile.Size = new System.Drawing.Size(284, 25);
+		this.cb_speed_profile.TabIndex = 42;
+		this.cb_speed_profile.SelectedIndex = 1;
+		this.cb_speed_profile.SelectedIndexChanged += new System.EventHandler(cb_speed_profile_SelectedIndexChanged);
 		this.BackColor = System.Drawing.Color.FromArgb(24, 24, 28);
-		base.ClientSize = new System.Drawing.Size(1200, 700);
+		base.ClientSize = new System.Drawing.Size(1208, 700);
 		base.Controls.Add(this.dataGridView1);
 		base.Controls.Add(this.sidebar);
 		base.Controls.Add(this.topbar);
