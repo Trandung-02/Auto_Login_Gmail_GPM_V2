@@ -179,7 +179,7 @@ public partial class Form1 : Form
 
 	private RadioButton rb_log_mail_moi;
 
-	/// <summary>Snapshot khi bấm Bắt đầu: <c>true</c> = Log mail mới (không bỏ qua dead log; chết chỉ ghi chú GPM, không xóa profile).</summary>
+	/// <summary>Snapshot khi bấm Bắt đầu: <c>true</c> = Log mail mới (không lọc/ghi <c>dead_*.log</c>; mail chết chỉ ghi chú GPM, không xóa profile).</summary>
 	private bool _batchLogMailMoi;
 
 	private const int LogMailCuPrimarySlotCount = 25;
@@ -505,7 +505,7 @@ public partial class Form1 : Form
 		LoadNoiDung();
 		if (_batchLogMailMoi)
 		{
-			AppendAutomationLog("INFO", null, null, "Bắt đầu batch: " + accountQueue.Count + " account, luồng " + luong + ", bắt buộc PROXY mỗi hàng=" + cb_sudungproxy.Checked + ", nhóm GPM log=\"" + GetGpmGroupIdForLoginLog() + "\", Log mail=mới (không bỏ qua dead log; chết chỉ ghi chú GPM).");
+			AppendAutomationLog("INFO", null, null, "Bắt đầu batch: " + accountQueue.Count + " account, luồng " + luong + ", bắt buộc PROXY mỗi hàng=" + cb_sudungproxy.Checked + ", nhóm GPM log=\"" + GetGpmGroupIdForLoginLog() + "\", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).");
 		}
 		else
 		{
@@ -4057,11 +4057,12 @@ public partial class Form1 : Form
 						await formPage.Locator("[aria-label='Customize Theme']").ClickAsync();
 						await PageWaitCancellableAsync(formPage, 1000f);
 						SetText(vitri, "STATUS", "[Form] Theme: chọn ảnh header (Upload → Browse)...");
-						string headerPath = ResolveBundledImagePath("header.jpg");
+						string headerBaseDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+						string headerPath = Path.GetFullPath(Path.Combine(headerBaseDir, "header.jpg"));
 						if (!File.Exists(headerPath))
 						{
-							SetText(vitri, "STATUS", "[Form] Không thấy header.jpg — đặt file cạnh PlayAPP.exe hoặc Data\\");
-							throw new FileNotFoundException("Đặt header.jpg (ảnh header gần màu #509beb / #4f9beb) cạnh PlayAPP.exe hoặc trong thư mục Data.", headerPath);
+							SetText(vitri, "STATUS", "[Form] Không thấy header.jpg — đặt file cạnh PlayAPP.exe (" + headerPath + ")");
+							throw new FileNotFoundException("Đặt header.jpg cạnh PlayAPP.exe (cùng thư mục gốc).", headerPath);
 						}
 						SetText(vitri, "STATUS", "[Form] Theme: upload file " + headerPath);
 						await formPage.Locator("[aria-label='Choose image for header']").ClickAsync();
@@ -4089,12 +4090,12 @@ public partial class Form1 : Form
 						SetText(vitri, "STATUS", "[Form] Theme: ảnh header đã áp dụng (Done)");
 						try
 						{
-							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn màu #509beb hoặc #4f9beb...");
+							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn màu #1699fd / #0870fd / #509beb / #4f9beb...");
 							await PageWaitCancellableAsync(formPage, 2000f);
 							bool colorApplied = false;
 							LocatorFilterOptions hasThemeBlue = new LocatorFilterOptions
 							{
-								Has = formPage.Locator("div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']")
+								Has = formPage.Locator("div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']")
 							};
 							ILocator themeDialog = formPage.Locator("div[role='dialog'][aria-label='Theme']");
 							try
@@ -4104,7 +4105,7 @@ public partial class Form1 : Form
 									State = WaitForSelectorState.Visible,
 									Timeout = 18000f
 								});
-								ILocator colorSwatch = themeDialog.Locator("div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
+								ILocator colorSwatch = themeDialog.Locator("div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
 								await colorSwatch.WaitForAsync(new LocatorWaitForOptions
 								{
 									State = WaitForSelectorState.Visible,
@@ -4167,26 +4168,34 @@ public partial class Form1 : Form
 											State = WaitForSelectorState.Visible,
 											Timeout = 12000f
 										});
-										ILocator colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#509beb'][data-label='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb'][data-label='#4f9beb']").First;
+										ILocator colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#1699fd'][data-label='#1699fd'], div.UBrD9d[role='listitem'][data-color='#0870fd'][data-label='#0870fd'], div.UBrD9d[role='listitem'][data-color='#509beb'][data-label='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb'][data-label='#4f9beb']").First;
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#1699fd'], div.UBrD9d[role='listitem'][data-color='#0870fd'], div.UBrD9d[role='listitem'][data-color='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#509beb'][data-label='#509beb'], div.UBrD9d[data-color='#4f9beb'][data-label='#4f9beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[data-color='#1699fd'][data-label='#1699fd'], div.UBrD9d[data-color='#0870fd'][data-label='#0870fd'], div.UBrD9d[data-color='#509beb'][data-label='#509beb'], div.UBrD9d[data-color='#4f9beb'][data-label='#4f9beb']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
 											colorItem = themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
 											{
-												Name = "#509beb",
+												Name = "#1699fd",
 												Exact = true
 											}).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
+											{
+												Name = "#0870fd",
+												Exact = true
+											})).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
+											{
+												Name = "#509beb",
+												Exact = true
+											})).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
 											{
 												Name = "#4f9beb",
 												Exact = true
@@ -4242,7 +4251,7 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								bool jsPick = await formPage.EvaluateAsync<bool>("() => {\r\n  const colors = ['#509beb', '#4f9beb'];\r\n  const pick = (root) => {\r\n    if (!root) return null;\r\n    for (let j = 0; j < colors.length; j++) {\r\n      const c = colors[j];\r\n      let hit = root.querySelector('div.UBrD9d[role=\"listitem\"][data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"]');\r\n      if (hit) return hit;\r\n    }\r\n    return null;\r\n  };\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Theme\"]');\r\n  let el = pick(dlg);\r\n  if (el) {\r\n    el.scrollIntoView({ block: 'center', inline: 'center' });\r\n    el.click();\r\n    return true;\r\n  }\r\n  const sideSels = ['div[role=\"complementary\"][aria-roledescription=\"sidebar\"]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];\r\n  for (let s = 0; s < sideSels.length; s++) {\r\n    const nodes = document.querySelectorAll(sideSels[s]);\r\n    for (let i = 0; i < nodes.length; i++) {\r\n      el = pick(nodes[i]);\r\n      if (el) {\r\n        el.scrollIntoView({ block: 'center', inline: 'center' });\r\n        el.click();\r\n        return true;\r\n      }\r\n    }\r\n  }\r\n  el = document.querySelector('div.UBrD9d[data-color=\"#509beb\"], div.UBrD9d[data-color=\"#4f9beb\"]');\r\n  if (!el) return false;\r\n  el.scrollIntoView({ block: 'center', inline: 'center' });\r\n  el.click();\r\n  return true;\r\n}");
+								bool jsPick = await formPage.EvaluateAsync<bool>("() => {\r\n  const colors = ['#1699fd', '#0870fd', '#509beb', '#4f9beb'];\r\n  const pick = (root) => {\r\n    if (!root) return null;\r\n    for (let j = 0; j < colors.length; j++) {\r\n      const c = colors[j];\r\n      let hit = root.querySelector('div.UBrD9d[role=\"listitem\"][data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"]');\r\n      if (hit) return hit;\r\n    }\r\n    return null;\r\n  };\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Theme\"]');\r\n  let el = pick(dlg);\r\n  if (el) {\r\n    el.scrollIntoView({ block: 'center', inline: 'center' });\r\n    el.click();\r\n    return true;\r\n  }\r\n  const sideSels = ['div[role=\"complementary\"][aria-roledescription=\"sidebar\"]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];\r\n  for (let s = 0; s < sideSels.length; s++) {\r\n    const nodes = document.querySelectorAll(sideSels[s]);\r\n    for (let i = 0; i < nodes.length; i++) {\r\n      el = pick(nodes[i]);\r\n      if (el) {\r\n        el.scrollIntoView({ block: 'center', inline: 'center' });\r\n        el.click();\r\n        return true;\r\n      }\r\n    }\r\n  }\r\n  el = document.querySelector('div.UBrD9d[data-color=\"#1699fd\"], div.UBrD9d[data-color=\"#0870fd\"], div.UBrD9d[data-color=\"#509beb\"], div.UBrD9d[data-color=\"#4f9beb\"]');\r\n  if (!el) return false;\r\n  el.scrollIntoView({ block: 'center', inline: 'center' });\r\n  el.click();\r\n  return true;\r\n}");
 								if (jsPick)
 								{
 									try
@@ -4298,7 +4307,155 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								throw new Exception("Không tìm thấy ô màu #509beb / #4f9beb (dialog Theme hoặc sidebar lOsMle/kiQbk).");
+								try
+								{
+									SetText(vitri, "STATUS", "[Form] Theme: không thấy preset — thử Add custom color #1699fd...");
+									ILocator addCustomBtn = formPage.Locator("div.UBrD9d[data-label='Add custom color'][aria-label='Add custom color']").First;
+									if (await addCustomBtn.CountAsync() == 0)
+									{
+										addCustomBtn = formPage.Locator("div[aria-label='Add custom color'][role='button']").First;
+									}
+									if (await addCustomBtn.CountAsync() == 0)
+									{
+										addCustomBtn = formPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+										{
+											Name = "Add custom color"
+										}).First;
+									}
+									await addCustomBtn.WaitForAsync(new LocatorWaitForOptions
+									{
+										State = WaitForSelectorState.Visible,
+										Timeout = 15000f
+									});
+									await addCustomBtn.ScrollIntoViewIfNeededAsync();
+									await PageWaitCancellableAsync(formPage, 200f);
+									await addCustomBtn.ClickAsync(new LocatorClickOptions
+									{
+										Timeout = 15000f,
+										Force = true
+									});
+									await PageWaitCancellableAsync(formPage, 900f);
+									ILocator hexInput = formPage.Locator("input[aria-label='Hex']").First;
+									if (await hexInput.CountAsync() == 0)
+									{
+										hexInput = formPage.Locator("input[jsname='YPqjbf']").First;
+									}
+									if (await hexInput.CountAsync() == 0)
+									{
+										hexInput = formPage.Locator("div[role='dialog'] input[type='text']").Last;
+									}
+									await hexInput.WaitForAsync(new LocatorWaitForOptions
+									{
+										State = WaitForSelectorState.Visible,
+										Timeout = 10000f
+									});
+									await hexInput.ClickAsync(new LocatorClickOptions
+									{
+										Force = true,
+										Timeout = 8000f
+									});
+									try
+									{
+										await hexInput.FillAsync("");
+									}
+									catch
+									{
+									}
+									try
+									{
+										await hexInput.PressAsync("Control+A");
+										await hexInput.PressAsync("Delete");
+									}
+									catch
+									{
+									}
+									await hexInput.FillAsync("1699FD");
+									await PageWaitCancellableAsync(formPage, 200f);
+									await hexInput.PressAsync("Enter");
+									await PageWaitCancellableAsync(formPage, 500f);
+									ILocator okBtn = formPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+									{
+										Name = "OK"
+									}).Last;
+									if (await okBtn.CountAsync() == 0)
+									{
+										okBtn = formPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+										{
+											Name = "Apply"
+										}).Last;
+									}
+									if (await okBtn.CountAsync() == 0)
+									{
+										okBtn = formPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+										{
+											Name = "Done"
+										}).Last;
+									}
+									if (await okBtn.CountAsync() > 0)
+									{
+										try
+										{
+											await okBtn.ClickAsync(new LocatorClickOptions
+											{
+												Timeout = 10000f,
+												Force = true
+											});
+										}
+										catch
+										{
+										}
+									}
+									await PageWaitCancellableAsync(formPage, 600f);
+									ILocator finalApply = themeDialog.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
+									{
+										Name = "Apply"
+									});
+									if (await finalApply.CountAsync() > 0)
+									{
+										try
+										{
+											await finalApply.Last.ClickAsync(new LocatorClickOptions
+											{
+												Timeout = 15000f,
+												Force = true
+											});
+										}
+										catch
+										{
+										}
+									}
+									else
+									{
+										ILocator sbApply = formPage.Locator("span.snByac").Filter(new LocatorFilterOptions
+										{
+											HasTextString = "Apply"
+										});
+										if (await sbApply.CountAsync() > 0)
+										{
+											try
+											{
+												await sbApply.Last.ClickAsync(new LocatorClickOptions
+												{
+													Timeout = 15000f,
+													Force = true
+												});
+											}
+											catch
+											{
+											}
+										}
+									}
+									colorApplied = true;
+									SetText(vitri, "STATUS", "[Form] Theme: đã thêm & áp dụng custom color #1699fd");
+								}
+								catch (Exception exCustom)
+								{
+									SetText(vitri, "STATUS", "[Form] Theme: Add custom color thất bại — " + exCustom.Message);
+								}
+							}
+							if (!colorApplied)
+							{
+								throw new Exception("Không tìm thấy ô màu #1699fd / #0870fd / #509beb / #4f9beb (dialog Theme hoặc sidebar lOsMle/kiQbk) và không thể thêm custom color.");
 							}
 							await PageWaitCancellableAsync(formPage, 1000f);
 							SetText(vitri, "STATUS", "[Form] Theme: đã Apply màu / hoàn tất tùy chỉnh");
@@ -4331,10 +4488,46 @@ public partial class Form1 : Form
 						Name = "Publish"
 					}).ClickAsync();
 					SetText(vitri, "STATUS", "[Form] Publish: xác nhận trong dialog → copy link responder");
-					await formPage.GetByLabel("Click to copy responder link").ClickAsync();
-					await PageWaitCancellableAsync(formPage, 500f);
-					formLink = await formPage.EvaluateAsync<string>("() => navigator.clipboard.readText()");
-					SetText(vitri, "STATUS", "[Form] Xong: link phản hồi đã copy (clipboard); URL editor trên tab hiện tại");
+					try { await formPage.BringToFrontAsync(); } catch { }
+					try { await formPage.GetByLabel("Click to copy responder link").ClickAsync(); } catch { }
+					await PageWaitCancellableAsync(formPage, 800f);
+					string extractFormLinkJs = "() => {\n" +
+						"  const isFormUrl = v => /^https:\\/\\/(docs\\.google\\.com\\/forms\\/|forms\\.gle\\/)/i.test((v||'').trim());\n" +
+						"  for (const el of document.querySelectorAll('input')) {\n" +
+						"    const v = (el.value || '').trim();\n" +
+						"    if (isFormUrl(v)) return v;\n" +
+						"  }\n" +
+						"  for (const el of document.querySelectorAll('textarea,[contenteditable=\"true\"]')) {\n" +
+						"    const v = (el.value || el.innerText || '').trim();\n" +
+						"    if (isFormUrl(v)) return v;\n" +
+						"  }\n" +
+						"  return '';\n" +
+						"}";
+					formLink = "";
+					for (int tryReadLink = 0; tryReadLink < 6 && string.IsNullOrWhiteSpace(formLink); tryReadLink++)
+					{
+						try
+						{
+							string fromDom = await formPage.EvaluateAsync<string>(extractFormLinkJs);
+							if (!string.IsNullOrWhiteSpace(fromDom)) { formLink = fromDom.Trim(); break; }
+						}
+						catch { }
+						try
+						{
+							string fromClip = await formPage.EvaluateAsync<string>("() => navigator.clipboard.readText().catch(() => '')");
+							if (!string.IsNullOrWhiteSpace(fromClip)) { formLink = fromClip.Trim(); break; }
+						}
+						catch { }
+						await DelayBatchAsync(600);
+					}
+					if (string.IsNullOrWhiteSpace(formLink))
+					{
+						SetText(vitri, "STATUS", "[Form] CẢNH BÁO: không lấy được link responder (DOM + clipboard trống) — FORM_URL sẽ rỗng trong Apps Script.");
+					}
+					else
+					{
+						SetText(vitri, "STATUS", "[Form] Xong: link phản hồi = " + formLink);
+					}
 				}
 					catch (Exception ex6)
 					{
@@ -4401,7 +4594,7 @@ public partial class Form1 : Form
 					await scriptPage.ClickAsync(".view-lines");
 					await scriptPage.Keyboard.PressAsync("Control+A");
 					await scriptPage.Keyboard.PressAsync("Delete");
-					string formUrlNorm = formLink ?? "";
+					string formUrlNorm = (formLink ?? "").Trim();
 					if (!string.IsNullOrEmpty(formUrlNorm))
 					{
 						int indexVf = formUrlNorm.IndexOf("viewform");
@@ -4410,7 +4603,7 @@ public partial class Form1 : Form
 							formUrlNorm = formUrlNorm.Substring(0, indexVf + "viewform".Length);
 						}
 					}
-					string sheetUrlNorm = url3 ?? "";
+					string sheetUrlNorm = (url3 ?? "").Trim();
 					string newCode = nd.codescript ?? "";
 					newCode = newCode.Replace("[LINK_FORM]", formUrlNorm);
 					newCode = newCode.Replace("[LINK_SHEET]", sheetUrlNorm);
@@ -4451,7 +4644,74 @@ public partial class Form1 : Form
 					{
 						Name = "Add"
 					}).ClickAsync();
-					await DelayBatchAsync(2500);
+					await DelayBatchAsync(1500);
+					SetText(vitri, "STATUS", "[Script] Chờ dialog 'Add a service' đóng...");
+					try
+					{
+						await scriptPage.GetByRole(AriaRole.Dialog, new PageGetByRoleOptions
+						{
+							Name = "Add a service"
+						}).First.WaitForAsync(new LocatorWaitForOptions
+						{
+							State = WaitForSelectorState.Hidden,
+							Timeout = 20000f
+						});
+					}
+					catch
+					{
+						try
+						{
+							await scriptPage.Locator("text=Add a service").First.WaitForAsync(new LocatorWaitForOptions
+							{
+								State = WaitForSelectorState.Hidden,
+								Timeout = 10000f
+							});
+						}
+						catch
+						{
+						}
+					}
+					SetText(vitri, "STATUS", "[Script] Chờ Drive API hiện trong sidebar Services...");
+					try
+					{
+						ILocator driveServiceItem = scriptPage.Locator("[aria-label='Services'] :text-matches('Drive', 'i')")
+							.Or(scriptPage.Locator("aside :text-matches('^\\s*Drive\\s*$', 'i')"))
+							.Or(scriptPage.Locator("text=/^\\s*Drive\\s*$/i"))
+							.First;
+						await driveServiceItem.WaitForAsync(new LocatorWaitForOptions
+						{
+							State = WaitForSelectorState.Visible,
+							Timeout = 25000f
+						});
+						SetText(vitri, "STATUS", "[Script] Drive API đã nằm trong Services ✓");
+					}
+					catch
+					{
+						SetText(vitri, "STATUS", "[Script] Không xác nhận được Drive trong sidebar (bỏ qua) — vẫn dãn delay trước Run.");
+					}
+					SetText(vitri, "STATUS", "[Script] Dãn thêm 4s trước khi Run để editor/manifest ổn định...");
+					await DelayBatchAsync(4000);
+					try
+					{
+						await scriptPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+						{
+							Timeout = 15000f
+						});
+					}
+					catch
+					{
+					}
+					try
+					{
+						await scriptPage.Locator(".view-lines").First.ClickAsync(new LocatorClickOptions
+						{
+							Timeout = 5000f
+						});
+					}
+					catch
+					{
+					}
+					await DelayBatchAsync(800);
 					try
 					{
 						await RunScriptEditorTwiceWithReloadOnAccountAccessWarningAsync(scriptPage, vitri, email, reloadImmediately: false, maxAttempts: 4);
@@ -6326,8 +6586,8 @@ public partial class Form1 : Form
 			ReshowDelay = 200,
 			ShowAlways = true
 		};
-		_uiToolTip.SetToolTip(btn_start, "Chạy đăng nhập. Log mail cũ: slot dòng 1–25 + proxy cố định; mail dòng 26+ là dự phòng khi chết; ô số = chỉ tiêu log đúng; không xóa profile GPM. Log mail mới: không bỏ qua dead log; chết chỉ ghi chú GPM. Bỏ qua UID đã login (login_success.log). GPM API :19995.");
-		_uiToolTip.SetToolTip(rb_log_mail_cu, "Bỏ qua UID trong dead_*.log; chỉ chạy dòng 1–25; chết ghi dead log và thử UID dòng 26+ trên cùng profile (không xóa profile GPM). Ô số = số lần đăng nhập thành công cần đạt (0 = không giới hạn).");
+		_uiToolTip.SetToolTip(btn_start, "Chạy đăng nhập. Log mail cũ: slot dòng 1–25 + proxy cố định; mail dòng 26+ là dự phòng khi chết; ô số = chỉ tiêu log OK toàn batch; không xóa profile GPM (trừ slot chết hết dự phòng: đóng + xóa profile). Log mail mới: không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM. Bỏ qua UID đã login (login_success.log). GPM API :19995.");
+		_uiToolTip.SetToolTip(rb_log_mail_cu, "Chỉ slot dòng 1–25. UID trong dead_*.log: có mail dự phòng dòng 26+ thì thay trước khi chạy; hết dự phòng thì bỏ qua slot. Khi chạy: chết ghi dead log + thử dự phòng cùng profile; hết dự phòng → đóng và xóa profile GPM. Ô số = chỉ tiêu số lần đăng nhập OK (0 = không giới hạn).");
 		_uiToolTip.SetToolTip(rb_log_mail_moi, "Không đọc dead_*.log khi xếp hàng; UID trong dead log vẫn được chạy. Khi gặp reCAPTCHA/Verify hoặc Account disabled: dừng hàng đó, chỉ cập nhật Ghi chú GPM, không ghi dead log và không xóa profile.");
 		_uiToolTip.SetToolTip(btn_stop, "Dừng: đóng trình duyệt và hủy batch đang chờ.");
 		_uiToolTip.SetToolTip(txt_so_account_log, "Log mail mới: 0/để trống = mọi dòng có UID trong phạm vi. Log mail cũ: 0 = không giới hạn; >0 = chỉ tiêu tổng số lần đăng nhập OK toàn batch — khi đạt sẽ KHÔNG mở thêm lát slot kế tiếp; mỗi slot đang chạy vẫn lấy mail dự phòng tới khi OK hoặc hết dự phòng dòng 26+.");
@@ -6338,7 +6598,7 @@ public partial class Form1 : Form
 		_uiToolTip.SetToolTip(cb_tao_form, "Mở Google Forms, điền tiêu đề/mô tả, theme, publish và copy link phản hồi (cần tieude.txt, noidung.txt, header.jpg… trong Data\\).");
 		_uiToolTip.SetToolTip(cb_tao_sheet_script, "Tạo Google Sheet mới, mở script.new, dán codesc.txt (thay [LINK_FORM] / [LINK_SHEET]), thêm Drive API và chạy OAuth/Run. Có thể bật một mình: khi không tạo Form, [LINK_FORM] để trống.");
 		_uiToolTip.SetToolTip(cb_offchrome, "Sau khi slot xong (OK / lỗi không phải mail chết): đóng context Playwright + GPM đóng profile + ngắt CDP để tiết kiệm RAM. Mail chết: GIỮ tab/Chrome/profile để người dùng kiểm tra, bất kể tick này. Riêng Log mail cũ slot 1–25 chết nhưng đã HẾT mail dự phòng dòng 26+: tự động đóng tab + xóa profile GPM của hàng đó.");
-		_uiToolTip.SetToolTip(cb_speed_profile, "Hệ số nhân thời gian chờ (DelayBatchAsync) trong cả app:\n• Nhanh ×0.7 — mạng tốt, máy khoẻ; ít delay nhất, có thể nghẽn nếu mạng chậm.\n• Bình thường ×1.0 — mặc định, đã hiệu chỉnh cho đa số môi trường.\n• Chậm ×1.4 — mạng yếu/proxy chậm, giảm tỉ lệ lỗi WaitForSelector.\n• Rất chậm ×2.0 — mạng rất kém / proxy quốc tế.\nÁp dụng ngay sau khi chọn (chỉ ảnh hưởng các lệnh chờ tự định nghĩa, không ảnh hưởng timeout Playwright).");
+		_uiToolTip.SetToolTip(cb_speed_profile, "Hệ số nhân thời gian chờ (DelayBatchAsync) trong cả app:\n• Siêu nhanh ×0.5 — mạng rất tốt, máy rất khoẻ; ít delay nhất, dễ lỗi nếu mạng/proxy chập chờn.\n• Nhanh ×0.7 — mạng tốt, máy khoẻ; ít delay, có thể nghẽn nếu mạng chậm.\n• Bình thường ×1.0 — mặc định, đã hiệu chỉnh cho đa số môi trường.\n• Chậm ×1.4 — mạng yếu/proxy chậm, giảm tỉ lệ lỗi WaitForSelector.\n• Rất chậm ×2.0 — mạng rất kém / proxy quốc tế.\nÁp dụng ngay sau khi chọn (chỉ ảnh hưởng các lệnh chờ tự định nghĩa, không ảnh hưởng timeout Playwright).");
 		_uiToolTip.SetToolTip(lbl_speed_profile, "Chọn profile tốc độ phù hợp với mạng. Mạng kém → tăng lên Chậm/Rất chậm để giảm tắc nghẽn.");
 	}
 
@@ -6725,12 +6985,14 @@ public partial class Form1 : Form
 		switch (idx)
 		{
 		case 0:
-			return 0.7;
+			return 0.5;
 		case 1:
-			return 1.0;
+			return 0.7;
 		case 2:
-			return 1.4;
+			return 1.0;
 		case 3:
+			return 1.4;
+		case 4:
 			return 2.0;
 		default:
 			return 0.0;
@@ -6739,23 +7001,27 @@ public partial class Form1 : Form
 
 	private static int SpeedProfileIndexFromScale(double scale)
 	{
-		if (Math.Abs(scale - 0.7) < 0.05)
+		if (Math.Abs(scale - 0.5) < 0.05)
 		{
 			return 0;
 		}
-		if (Math.Abs(scale - 1.0) < 0.05)
+		if (Math.Abs(scale - 0.7) < 0.05)
 		{
 			return 1;
 		}
-		if (Math.Abs(scale - 1.4) < 0.05)
+		if (Math.Abs(scale - 1.0) < 0.05)
 		{
 			return 2;
 		}
-		if (Math.Abs(scale - 2.0) < 0.05)
+		if (Math.Abs(scale - 1.4) < 0.05)
 		{
 			return 3;
 		}
-		return 4;
+		if (Math.Abs(scale - 2.0) < 0.05)
+		{
+			return 4;
+		}
+		return 5;
 	}
 
 	private static string EscapeProcessArg(string s)
@@ -7593,19 +7859,20 @@ public partial class Form1 : Form
 		this.cb_speed_profile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_speed_profile.ForeColor = System.Drawing.Color.FromArgb(245, 245, 248);
 		this.cb_speed_profile.FormattingEnabled = true;
-		this.cb_speed_profile.Items.AddRange(new object[5]
+		this.cb_speed_profile.Items.AddRange(new object[6]
 		{
+			"Siêu nhanh — mạng rất tốt (×0.5)",
 			"Nhanh — mạng tốt (×0.7)",
 			"Bình thường — mặc định (×1.0)",
 			"Chậm — mạng yếu (×1.4)",
 			"Rất chậm — mạng rất yếu (×2.0)",
-			"Tuỳ chỉnh"
+			"Tùy chỉnh"
 		});
 		this.cb_speed_profile.Location = new System.Drawing.Point(12, 516);
 		this.cb_speed_profile.Name = "cb_speed_profile";
 		this.cb_speed_profile.Size = new System.Drawing.Size(284, 25);
 		this.cb_speed_profile.TabIndex = 42;
-		this.cb_speed_profile.SelectedIndex = 1;
+		this.cb_speed_profile.SelectedIndex = 2;
 		this.cb_speed_profile.SelectedIndexChanged += new System.EventHandler(cb_speed_profile_SelectedIndexChanged);
 		this.BackColor = System.Drawing.Color.FromArgb(24, 24, 28);
 		base.ClientSize = new System.Drawing.Size(1208, 700);

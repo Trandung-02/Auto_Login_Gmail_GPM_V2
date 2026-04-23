@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Drawing;
 using System.Net.Http;
 using System.Text;
@@ -30,6 +31,16 @@ public partial class Form1
 		cb_offchrome.Location = new Point(SidebarPadX, baseY + SidebarOptsRowGap * 3);
 	}
 
+	/// <summary>Sắp xếp id nhóm GPM lớn → bé (id số giảm dần; id không phải số so chuỗi giảm dần).</summary>
+	private static int CompareGpmGroupIdDescending(string idA, string idB)
+	{
+		if (long.TryParse(idA, NumberStyles.Integer, CultureInfo.InvariantCulture, out long la) && long.TryParse(idB, NumberStyles.Integer, CultureInfo.InvariantCulture, out long lb))
+		{
+			return lb.CompareTo(la);
+		}
+		return string.CompareOrdinal(idB, idA);
+	}
+
 	private async Task RefreshGpmGroupComboAsync()
 	{
 		try
@@ -48,7 +59,7 @@ public partial class Form1
 				MessageBox.Show("GPM không có nhóm nào (API /api/v3/groups).");
 				return;
 			}
-			cb_gpm_group.Items.Clear();
+			List<GpmGroupListItem> items = new List<GpmGroupListItem>(groupArr.Count);
 			foreach (JToken g in groupArr)
 			{
 				string id = g["id"]?.ToString();
@@ -57,7 +68,13 @@ public partial class Form1
 					continue;
 				}
 				string name = g["name"]?.Value<string>() ?? "";
-				cb_gpm_group.Items.Add(new GpmGroupListItem(id, name));
+				items.Add(new GpmGroupListItem(id, name));
+			}
+			items.Sort((a, b) => CompareGpmGroupIdDescending(a.Id, b.Id));
+			cb_gpm_group.Items.Clear();
+			foreach (GpmGroupListItem it in items)
+			{
+				cb_gpm_group.Items.Add(it);
 			}
 			if (!string.IsNullOrEmpty(_savedGpmGroupId))
 			{
