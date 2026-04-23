@@ -4090,12 +4090,12 @@ public partial class Form1 : Form
 						SetText(vitri, "STATUS", "[Form] Theme: ảnh header đã áp dụng (Done)");
 						try
 						{
-							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn màu #1699fd / #0870fd / #509beb / #4f9beb...");
+							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn màu #086ef4 / #1699fd / #0870fd / #509beb / #4f9beb...");
 							await PageWaitCancellableAsync(formPage, 2000f);
 							bool colorApplied = false;
 							LocatorFilterOptions hasThemeBlue = new LocatorFilterOptions
 							{
-								Has = formPage.Locator("div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']")
+								Has = formPage.Locator("div.UBrD9d[data-color='#086ef4'], div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']")
 							};
 							ILocator themeDialog = formPage.Locator("div[role='dialog'][aria-label='Theme']");
 							try
@@ -4105,7 +4105,7 @@ public partial class Form1 : Form
 									State = WaitForSelectorState.Visible,
 									Timeout = 18000f
 								});
-								ILocator colorSwatch = themeDialog.Locator("div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
+								ILocator colorSwatch = themeDialog.Locator("div.UBrD9d[data-color='#086ef4'], div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
 								await colorSwatch.WaitForAsync(new LocatorWaitForOptions
 								{
 									State = WaitForSelectorState.Visible,
@@ -4168,26 +4168,30 @@ public partial class Form1 : Form
 											State = WaitForSelectorState.Visible,
 											Timeout = 12000f
 										});
-										ILocator colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#1699fd'][data-label='#1699fd'], div.UBrD9d[role='listitem'][data-color='#0870fd'][data-label='#0870fd'], div.UBrD9d[role='listitem'][data-color='#509beb'][data-label='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb'][data-label='#4f9beb']").First;
+										ILocator colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#086ef4'][data-label='#086ef4'], div.UBrD9d[role='listitem'][data-color='#1699fd'][data-label='#1699fd'], div.UBrD9d[role='listitem'][data-color='#0870fd'][data-label='#0870fd'], div.UBrD9d[role='listitem'][data-color='#509beb'][data-label='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb'][data-label='#4f9beb']").First;
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#1699fd'], div.UBrD9d[role='listitem'][data-color='#0870fd'], div.UBrD9d[role='listitem'][data-color='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#086ef4'], div.UBrD9d[role='listitem'][data-color='#1699fd'], div.UBrD9d[role='listitem'][data-color='#0870fd'], div.UBrD9d[role='listitem'][data-color='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#1699fd'][data-label='#1699fd'], div.UBrD9d[data-color='#0870fd'][data-label='#0870fd'], div.UBrD9d[data-color='#509beb'][data-label='#509beb'], div.UBrD9d[data-color='#4f9beb'][data-label='#4f9beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[data-color='#086ef4'][data-label='#086ef4'], div.UBrD9d[data-color='#1699fd'][data-label='#1699fd'], div.UBrD9d[data-color='#0870fd'][data-label='#0870fd'], div.UBrD9d[data-color='#509beb'][data-label='#509beb'], div.UBrD9d[data-color='#4f9beb'][data-label='#4f9beb']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[data-color='#086ef4'], div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
 											colorItem = themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
 											{
-												Name = "#1699fd",
+												Name = "#086ef4",
 												Exact = true
 											}).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
+											{
+												Name = "#1699fd",
+												Exact = true
+											})).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
 											{
 												Name = "#0870fd",
 												Exact = true
@@ -4251,7 +4255,7 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								bool jsPick = await formPage.EvaluateAsync<bool>("() => {\r\n  const colors = ['#1699fd', '#0870fd', '#509beb', '#4f9beb'];\r\n  const pick = (root) => {\r\n    if (!root) return null;\r\n    for (let j = 0; j < colors.length; j++) {\r\n      const c = colors[j];\r\n      let hit = root.querySelector('div.UBrD9d[role=\"listitem\"][data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"]');\r\n      if (hit) return hit;\r\n    }\r\n    return null;\r\n  };\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Theme\"]');\r\n  let el = pick(dlg);\r\n  if (el) {\r\n    el.scrollIntoView({ block: 'center', inline: 'center' });\r\n    el.click();\r\n    return true;\r\n  }\r\n  const sideSels = ['div[role=\"complementary\"][aria-roledescription=\"sidebar\"]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];\r\n  for (let s = 0; s < sideSels.length; s++) {\r\n    const nodes = document.querySelectorAll(sideSels[s]);\r\n    for (let i = 0; i < nodes.length; i++) {\r\n      el = pick(nodes[i]);\r\n      if (el) {\r\n        el.scrollIntoView({ block: 'center', inline: 'center' });\r\n        el.click();\r\n        return true;\r\n      }\r\n    }\r\n  }\r\n  el = document.querySelector('div.UBrD9d[data-color=\"#1699fd\"], div.UBrD9d[data-color=\"#0870fd\"], div.UBrD9d[data-color=\"#509beb\"], div.UBrD9d[data-color=\"#4f9beb\"]');\r\n  if (!el) return false;\r\n  el.scrollIntoView({ block: 'center', inline: 'center' });\r\n  el.click();\r\n  return true;\r\n}");
+								bool jsPick = await formPage.EvaluateAsync<bool>("() => {\r\n  const colors = ['#086ef4', '#1699fd', '#0870fd', '#509beb', '#4f9beb'];\r\n  const pick = (root) => {\r\n    if (!root) return null;\r\n    for (let j = 0; j < colors.length; j++) {\r\n      const c = colors[j];\r\n      let hit = root.querySelector('div.UBrD9d[role=\"listitem\"][data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"]');\r\n      if (hit) return hit;\r\n    }\r\n    return null;\r\n  };\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Theme\"]');\r\n  let el = pick(dlg);\r\n  if (el) {\r\n    el.scrollIntoView({ block: 'center', inline: 'center' });\r\n    el.click();\r\n    return true;\r\n  }\r\n  const sideSels = ['div[role=\"complementary\"][aria-roledescription=\"sidebar\"]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];\r\n  for (let s = 0; s < sideSels.length; s++) {\r\n    const nodes = document.querySelectorAll(sideSels[s]);\r\n    for (let i = 0; i < nodes.length; i++) {\r\n      el = pick(nodes[i]);\r\n      if (el) {\r\n        el.scrollIntoView({ block: 'center', inline: 'center' });\r\n        el.click();\r\n        return true;\r\n      }\r\n    }\r\n  }\r\n  el = document.querySelector('div.UBrD9d[data-color=\"#086ef4\"], div.UBrD9d[data-color=\"#1699fd\"], div.UBrD9d[data-color=\"#0870fd\"], div.UBrD9d[data-color=\"#509beb\"], div.UBrD9d[data-color=\"#4f9beb\"]');\r\n  if (!el) return false;\r\n  el.scrollIntoView({ block: 'center', inline: 'center' });\r\n  el.click();\r\n  return true;\r\n}");
 								if (jsPick)
 								{
 									try
@@ -4309,8 +4313,17 @@ public partial class Form1 : Form
 							{
 								try
 								{
-									SetText(vitri, "STATUS", "[Form] Theme: không thấy preset — thử Add custom color #1699fd...");
-									ILocator addCustomBtn = formPage.Locator("div.UBrD9d[data-label='Add custom color'][aria-label='Add custom color']").First;
+									SetText(vitri, "STATUS", "[Form] Theme: không thấy preset — mở Add custom color #086EF4...");
+									int dialogsBefore = await formPage.Locator("div[role='dialog']").CountAsync();
+									ILocator addCustomBtn = themeDialog.Locator("div.UBrD9d[aria-label='Add custom color'], div[aria-label='Add custom color'][role='button']").First;
+									if (await addCustomBtn.CountAsync() == 0)
+									{
+										addCustomBtn = formPage.Locator("div.UBrD9d[data-label='Add custom color'][aria-label='Add custom color']").First;
+									}
+									if (await addCustomBtn.CountAsync() == 0)
+									{
+										addCustomBtn = formPage.Locator("div.UBrD9d[aria-label='Add custom color']").First;
+									}
 									if (await addCustomBtn.CountAsync() == 0)
 									{
 										addCustomBtn = formPage.Locator("div[aria-label='Add custom color'][role='button']").First;
@@ -4328,84 +4341,147 @@ public partial class Form1 : Form
 										Timeout = 15000f
 									});
 									await addCustomBtn.ScrollIntoViewIfNeededAsync();
-									await PageWaitCancellableAsync(formPage, 200f);
+									await PageWaitCancellableAsync(formPage, 300f);
 									await addCustomBtn.ClickAsync(new LocatorClickOptions
 									{
 										Timeout = 15000f,
 										Force = true
 									});
-									await PageWaitCancellableAsync(formPage, 900f);
-									ILocator hexInput = formPage.Locator("input[aria-label='Hex']").First;
-									if (await hexInput.CountAsync() == 0)
+									SetText(vitri, "STATUS", "[Form] Theme: chờ dialog 'Custom color' mở...");
+									DateTime waitDlgDeadline = DateTime.UtcNow.AddMilliseconds(8000.0);
+									while (DateTime.UtcNow < waitDlgDeadline)
 									{
-										hexInput = formPage.Locator("input[jsname='YPqjbf']").First;
-									}
-									if (await hexInput.CountAsync() == 0)
-									{
-										hexInput = formPage.Locator("div[role='dialog'] input[type='text']").Last;
-									}
-									await hexInput.WaitForAsync(new LocatorWaitForOptions
-									{
-										State = WaitForSelectorState.Visible,
-										Timeout = 10000f
-									});
-									await hexInput.ClickAsync(new LocatorClickOptions
-									{
-										Force = true,
-										Timeout = 8000f
-									});
-									try
-									{
-										await hexInput.FillAsync("");
-									}
-									catch
-									{
-									}
-									try
-									{
-										await hexInput.PressAsync("Control+A");
-										await hexInput.PressAsync("Delete");
-									}
-									catch
-									{
-									}
-									await hexInput.FillAsync("1699FD");
-									await PageWaitCancellableAsync(formPage, 200f);
-									await hexInput.PressAsync("Enter");
-									await PageWaitCancellableAsync(formPage, 500f);
-									ILocator okBtn = formPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
-									{
-										Name = "OK"
-									}).Last;
-									if (await okBtn.CountAsync() == 0)
-									{
-										okBtn = formPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+										int dialogsNow = await formPage.Locator("div[role='dialog']").CountAsync();
+										if (dialogsNow > dialogsBefore)
 										{
-											Name = "Apply"
-										}).Last;
+											break;
+										}
+										await PageWaitCancellableAsync(formPage, 200f);
 									}
-									if (await okBtn.CountAsync() == 0)
-									{
-										okBtn = formPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
-										{
-											Name = "Done"
-										}).Last;
-									}
-									if (await okBtn.CountAsync() > 0)
+									await PageWaitCancellableAsync(formPage, 600f);
+									string hexJs = "(hex) => {\r\n"
+										+ "  const dialogs = Array.from(document.querySelectorAll('div[role=\"dialog\"]'));\r\n"
+										+ "  const scopes = dialogs.length ? dialogs.slice().reverse() : [document];\r\n"
+										+ "  let input = null;\r\n"
+										+ "  for (const root of scopes) {\r\n"
+										+ "    input = root.querySelector('input[aria-label=\"Hex\"]')\r\n"
+										+ "      || root.querySelector('input[aria-label=\"HEX\"]')\r\n"
+										+ "      || root.querySelector('input[aria-label=\"Hex color\"]')\r\n"
+										+ "      || root.querySelector('input[aria-label*=\"ex\"]');\r\n"
+										+ "    if (input) break;\r\n"
+										+ "    const textInputs = Array.from(root.querySelectorAll('input[type=\"text\"], input:not([type])'));\r\n"
+										+ "    const hexCandidates = textInputs.filter(i => i.maxLength > 0 && i.maxLength <= 8);\r\n"
+										+ "    if (hexCandidates.length) { input = hexCandidates[hexCandidates.length - 1]; break; }\r\n"
+										+ "    if (textInputs.length) { input = textInputs[textInputs.length - 1]; break; }\r\n"
+										+ "  }\r\n"
+										+ "  if (!input) return false;\r\n"
+										+ "  const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;\r\n"
+										+ "  input.scrollIntoView({ block: 'center' });\r\n"
+										+ "  input.focus();\r\n"
+										+ "  setter.call(input, '');\r\n"
+										+ "  input.dispatchEvent(new Event('input', { bubbles: true }));\r\n"
+										+ "  setter.call(input, hex);\r\n"
+										+ "  input.dispatchEvent(new Event('input', { bubbles: true }));\r\n"
+										+ "  input.dispatchEvent(new Event('change', { bubbles: true }));\r\n"
+										+ "  input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));\r\n"
+										+ "  input.dispatchEvent(new KeyboardEvent('keypress', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));\r\n"
+										+ "  input.dispatchEvent(new KeyboardEvent('keyup', { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true }));\r\n"
+										+ "  input.blur();\r\n"
+										+ "  return true;\r\n"
+										+ "}";
+									bool hexSet = false;
+									for (int attempt = 0; attempt < 3 && !hexSet; attempt++)
 									{
 										try
 										{
-											await okBtn.ClickAsync(new LocatorClickOptions
+											hexSet = await formPage.EvaluateAsync<bool>(hexJs, "086EF4");
+										}
+										catch
+										{
+										}
+										if (!hexSet)
+										{
+											await PageWaitCancellableAsync(formPage, 400f);
+										}
+									}
+									if (!hexSet)
+									{
+										try
+										{
+											ILocator fallbackInput = formPage.Locator("div[role='dialog'] input[aria-label='Hex']").Last;
+											if (await fallbackInput.CountAsync() == 0)
 											{
-												Timeout = 10000f,
-												Force = true
-											});
+												fallbackInput = formPage.Locator("div[role='dialog'] input[type='text']").Last;
+											}
+											if (await fallbackInput.CountAsync() > 0)
+											{
+												await fallbackInput.ClickAsync(new LocatorClickOptions { Force = true, Timeout = 6000f });
+												await fallbackInput.PressAsync("Control+A");
+												await fallbackInput.PressAsync("Delete");
+												await fallbackInput.TypeAsync("086EF4", new LocatorTypeOptions { Delay = 40f });
+												await fallbackInput.PressAsync("Tab");
+												hexSet = true;
+											}
 										}
 										catch
 										{
 										}
 									}
-									await PageWaitCancellableAsync(formPage, 600f);
+									if (!hexSet)
+									{
+										throw new Exception("Không tìm thấy input HEX trong dialog Custom color.");
+									}
+									await PageWaitCancellableAsync(formPage, 500f);
+									SetText(vitri, "STATUS", "[Form] Theme: đã nhập HEX 086EF4 — click OK/Save...");
+									bool okClicked = false;
+									string[] okNames = new string[4] { "OK", "Save", "Done", "Apply" };
+									foreach (string okName in okNames)
+									{
+										ILocator okCand = formPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+										{
+											Name = okName
+										});
+										int okCount = await okCand.CountAsync();
+										if (okCount > 0)
+										{
+											try
+											{
+												await okCand.Last.ClickAsync(new LocatorClickOptions
+												{
+													Timeout = 10000f,
+													Force = true
+												});
+												okClicked = true;
+												break;
+											}
+											catch
+											{
+											}
+										}
+									}
+									if (!okClicked)
+									{
+										ILocator okSpan = formPage.Locator("div[role='dialog'] span.snByac").Filter(new LocatorFilterOptions
+										{
+											HasTextRegex = new Regex("^(OK|Save|Done|Apply)$", RegexOptions.IgnoreCase)
+										});
+										if (await okSpan.CountAsync() > 0)
+										{
+											try
+											{
+												await okSpan.Last.ClickAsync(new LocatorClickOptions
+												{
+													Timeout = 10000f,
+													Force = true
+												});
+												okClicked = true;
+											}
+											catch
+											{
+											}
+										}
+									}
+									await PageWaitCancellableAsync(formPage, 900f);
 									ILocator finalApply = themeDialog.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
 									{
 										Name = "Apply"
@@ -4446,7 +4522,7 @@ public partial class Form1 : Form
 										}
 									}
 									colorApplied = true;
-									SetText(vitri, "STATUS", "[Form] Theme: đã thêm & áp dụng custom color #1699fd");
+									SetText(vitri, "STATUS", "[Form] Theme: đã thêm & áp dụng custom color #086EF4");
 								}
 								catch (Exception exCustom)
 								{
@@ -4455,7 +4531,7 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								throw new Exception("Không tìm thấy ô màu #1699fd / #0870fd / #509beb / #4f9beb (dialog Theme hoặc sidebar lOsMle/kiQbk) và không thể thêm custom color.");
+								throw new Exception("Không tìm thấy ô màu #086ef4 / #1699fd / #0870fd / #509beb / #4f9beb (dialog Theme hoặc sidebar lOsMle/kiQbk) và không thể thêm custom color.");
 							}
 							await PageWaitCancellableAsync(formPage, 1000f);
 							SetText(vitri, "STATUS", "[Form] Theme: đã Apply màu / hoàn tất tùy chỉnh");

