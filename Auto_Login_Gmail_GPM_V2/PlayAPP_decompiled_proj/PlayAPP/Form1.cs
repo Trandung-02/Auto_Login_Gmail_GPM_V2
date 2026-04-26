@@ -1172,7 +1172,7 @@ public partial class Form1 : Form
 	}
 
 	/// <summary>Ghi email bị coi chết do màn Google reCAPTCHA / Verify (một dòng một lần phát hiện).</summary>
-	private static void AppendDeadRecaptchaVerifyAccountLine(string email)
+	private static void AppendDeadRecaptchaVerifyAccountLine(string email, string reason = "Google reCAPTCHA/Verify — tài khoản chết (không tự động được)")
 	{
 		try
 		{
@@ -1183,7 +1183,12 @@ public partial class Form1 : Form
 			{
 				return;
 			}
-			string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\t" + e + "\tGoogle reCAPTCHA/Verify — tài khoản chết (không tự động được)";
+			string r = (reason ?? "").Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ').Trim();
+			if (string.IsNullOrEmpty(r))
+			{
+				r = "Google reCAPTCHA/Verify — tài khoản chết (không tự động được)";
+			}
+			string line = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "\t" + e + "\t" + r;
 			lock (DeadRecaptchaVerifyLogSync)
 			{
 				if (!File.Exists(DeadRecaptchaVerifyLogPath))
@@ -1506,17 +1511,15 @@ public partial class Form1 : Form
 			try
 			{
 				context = (browser.Contexts.Count > 0) ? browser.Contexts[0] : await browser.NewContextAsync();
-				if (logCuSlotCycleIndex > 0 || context.Pages.Count == 0)
+				page2 = context.Pages.FirstOrDefault();
+				if (page2 == null)
 				{
 					page2 = await context.NewPageAsync();
-				}
-				else
-				{
-					page2 = context.Pages[0];
 				}
 				if (!object.ReferenceEquals(playwrightContextHardened, context))
 				{
 					await context.GrantPermissionsAsync(new string[2] { "clipboard-read", "clipboard-write" });
+					await ForceGoogleEnglishUiAsync(context);
 					await context.AddInitScriptAsync("Object.defineProperty(navigator, 'webdriver', {get: () => undefined});");
 					await context.AddInitScriptAsync($"\r\n                    window.__AUTO_ID = '{rowIndex + 1}';\r\n\r\n                    function forceTitle() {{\r\n                        document.title = '#' + window.__AUTO_ID;\r\n                    }}\r\n\r\n                    setInterval(forceTitle, 1000);\r\n                ");
 					playwrightContextHardened = context;
@@ -1532,7 +1535,7 @@ public partial class Form1 : Form
 					}
 				});
 				await page2.BringToFrontAsync();
-				await page2.GotoAsync("https://accounts.google.com/", new PageGotoOptions
+				await page2.GotoAsync("https://accounts.google.com/?hl=en", new PageGotoOptions
 				{
 					WaitUntil = WaitUntilState.NetworkIdle
 				});
@@ -2045,6 +2048,96 @@ public partial class Form1 : Form
 		}
 	}
 
+	/// <summary>Màn nhập mật khẩu báo "Your password was changed..." — coi như không thể login bằng password hiện tại.</summary>
+	private static async Task<bool> PageShowsGooglePasswordChangedAfterPasswordAsync(IPage page)
+	{
+		if (page == null)
+		{
+			return false;
+		}
+		try
+		{
+			string url = "";
+			try
+			{
+				url = page.Url ?? "";
+			}
+			catch
+			{
+			}
+			if (string.IsNullOrEmpty(url) || url.IndexOf("accounts.google.com", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			bool hasPasswordField = false;
+			try
+			{
+				hasPasswordField = await page.Locator("input[name='Passwd']").CountAsync() > 0;
+			}
+			catch
+			{
+			}
+			ILocator invalidPassword = page.Locator("input[name='Passwd'][aria-invalid='true']");
+			try
+			{
+				if (await invalidPassword.CountAsync() > 0 && await invalidPassword.First.IsVisibleAsync())
+				{
+					hasPasswordField = true;
+				}
+			}
+			catch
+			{
+			}
+			ILocator messageLoc = page.Locator("#c0, #c1, div[jsname='B34EJ'], div[jsname='NuIDSd'], [aria-live]");
+			int count = 0;
+			try
+			{
+				count = await messageLoc.CountAsync();
+			}
+			catch
+			{
+			}
+			for (int i = 0; i < count && i < 10; i++)
+			{
+				try
+				{
+					string text = await messageLoc.Nth(i).InnerTextAsync();
+					if (TextLooksLikeGooglePasswordChanged(text) && hasPasswordField)
+					{
+						return true;
+					}
+				}
+				catch
+				{
+				}
+			}
+			string html = await page.ContentAsync();
+			if (string.IsNullOrEmpty(html) || !TextLooksLikeGooglePasswordChanged(html))
+			{
+				return false;
+			}
+			return hasPasswordField || html.IndexOf("identity-signin-password", StringComparison.OrdinalIgnoreCase) >= 0 || html.IndexOf("name=\"Passwd\"", StringComparison.OrdinalIgnoreCase) >= 0 || html.IndexOf("name='Passwd'", StringComparison.OrdinalIgnoreCase) >= 0;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static bool TextLooksLikeGooglePasswordChanged(string text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		string tl = text.ToLowerInvariant();
+		if (tl.Contains("your password was changed") || (tl.Contains("password was changed") && tl.Contains("ago")))
+		{
+			return true;
+		}
+		return tl.Contains("mật khẩu") && tl.Contains("đã") && tl.Contains("thay đổi");
+	}
+
 	private bool UseLogMailMoiPolicyForBatch()
 	{
 		return _batchLogMailMoi;
@@ -2057,6 +2150,31 @@ public partial class Form1 : Form
 		{
 			_googleDeadSignInStopRow[vitri] = 1;
 		}
+	}
+
+	private async Task<bool> TryMarkGoogleTotpWrongCodeDeadForLogMailCuAsync(IPage page, int vitri, string email)
+	{
+		if (UseLogMailMoiPolicyForBatch() || vitri < 0 || vitri >= LogMailCuPrimarySlotCount)
+		{
+			return false;
+		}
+		if (!await PageShowsGoogleTotpWrongCodeAsync(page))
+		{
+			return false;
+		}
+		MarkGoogleDeadSignInStopForLogMailCuSlot(vitri);
+		SetText(vitri, "STATUS", "Tài khoản chết — Google: mã 2FA sai (Wrong code)");
+		AppendAutomationLog("WARN", vitri, email, "Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.");
+		_keepChromeOpenForDead[vitri] = 1;
+		AppendDeadRecaptchaVerifyAccountLine(email, "Google 2-Step Verification wrong code — tài khoản chết");
+		try
+		{
+			await TryCaptureFailureScreenshotAsync(page, vitri, "google_totp_wrong_code");
+		}
+		catch
+		{
+		}
+		return true;
 	}
 
 	private async Task<bool> TryAbortIfGoogleAccountDisabledAsync(IPage page, int vitri, string email)
@@ -2096,10 +2214,51 @@ public partial class Form1 : Form
 		return true;
 	}
 
+	private async Task<bool> TryAbortIfGooglePasswordChangedDeadAsync(IPage page, int vitri, string email)
+	{
+		if (!await PageShowsGooglePasswordChangedAfterPasswordAsync(page))
+		{
+			return false;
+		}
+		if (UseLogMailMoiPolicyForBatch())
+		{
+			SetText(vitri, "STATUS", "Log mail mới: Password changed — dừng (giữ tab để kiểm tra)");
+			AppendAutomationLog("WARN", vitri, email, "Dừng: Google báo Your password was changed ở bước nhập mật khẩu — Log mail mới: không ghi dead_*.log, không xóa profile GPM; ghi chú GPM; GIỮ tab/Chrome cho người dùng kiểm tra.");
+			_keepChromeOpenForDead[vitri] = 1;
+			string pid = ResolveGpmProfileIdForRow(vitri, null);
+			await TryGpmSetProfileNoteAsync(pid, vitri, "Google password was changed recently — cần kiểm tra thủ công");
+			try
+			{
+				await TryCaptureFailureScreenshotAsync(page, vitri, "google_password_changed_recently");
+			}
+			catch
+			{
+			}
+			return true;
+		}
+		MarkGoogleDeadSignInStopForLogMailCuSlot(vitri);
+		SetText(vitri, "STATUS", "Tài khoản chết — Google: password đã đổi");
+		AppendAutomationLog("WARN", vitri, email, "Dừng: Google báo Your password was changed ở bước nhập mật khẩu — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.");
+		_keepChromeOpenForDead[vitri] = 1;
+		AppendDeadRecaptchaVerifyAccountLine(email, "Google password was changed recently — tài khoản chết");
+		try
+		{
+			await TryCaptureFailureScreenshotAsync(page, vitri, "google_password_changed_recently");
+		}
+		catch
+		{
+		}
+		return true;
+	}
+
 	/// <summary>reCAPTCHA/Verify chết hoặc Account disabled — dừng luồng đăng nhập.</summary>
 	private async Task<bool> TryAbortIfGoogleSignInDeadAccountBlockingAsync(IPage page, int vitri, string email)
 	{
 		if (await TryAbortIfGoogleAccountDisabledAsync(page, vitri, email))
+		{
+			return true;
+		}
+		if (await TryAbortIfGooglePasswordChangedDeadAsync(page, vitri, email))
 		{
 			return true;
 		}
@@ -2770,6 +2929,22 @@ public partial class Form1 : Form
 				{
 				}
 			}
+			ILocator describedError = page.Locator("#c7, div[jsname='NuIDSd']");
+			int dc = await describedError.CountAsync();
+			for (int i = 0; i < dc && i < 4; i++)
+			{
+				try
+				{
+					string t = await describedError.Nth(i).InnerTextAsync();
+					if (TextLooksLikeGoogleTotpWrongCode(t))
+					{
+						return true;
+					}
+				}
+				catch
+				{
+				}
+			}
 			ILocator alerts = page.Locator("[role='alert']");
 			int ac = await alerts.CountAsync();
 			for (int i = 0; i < ac && i < 6; i++)
@@ -2777,16 +2952,7 @@ public partial class Form1 : Form
 				try
 				{
 					string t = await alerts.Nth(i).InnerTextAsync();
-					if (string.IsNullOrEmpty(t))
-					{
-						continue;
-					}
-					string tl = t.ToLowerInvariant();
-					if ((tl.Contains("wrong") && tl.Contains("code")) || tl.Contains("incorrect code") || tl.Contains("didn't work") || tl.Contains("didn’t work"))
-					{
-						return true;
-					}
-					if (tl.Contains("mã") && (tl.Contains("không đúng") || tl.Contains("sai") || tl.Contains("chính xác")))
+					if (TextLooksLikeGoogleTotpWrongCode(t))
 					{
 						return true;
 					}
@@ -2835,6 +3001,134 @@ public partial class Form1 : Form
 		return false;
 	}
 
+	private static bool TextLooksLikeGoogleTotpWrongCode(string text)
+	{
+		if (string.IsNullOrWhiteSpace(text))
+		{
+			return false;
+		}
+		string tl = text.ToLowerInvariant();
+		if ((tl.Contains("wrong") && tl.Contains("code")) || tl.Contains("incorrect code") || tl.Contains("didn't work") || tl.Contains("didn’t work"))
+		{
+			return true;
+		}
+		return tl.Contains("mã") && (tl.Contains("không đúng") || tl.Contains("sai") || tl.Contains("chính xác"));
+	}
+
+	private static async Task ForceGoogleEnglishUiAsync(IBrowserContext context)
+	{
+		if (context == null)
+		{
+			return;
+		}
+		try
+		{
+			await context.SetExtraHTTPHeadersAsync(new Dictionary<string, string>
+			{
+				["Accept-Language"] = "en-US,en;q=0.9"
+			});
+		}
+		catch
+		{
+		}
+		try
+		{
+			await context.AddCookiesAsync(new Microsoft.Playwright.Cookie[1]
+			{
+				new Microsoft.Playwright.Cookie
+				{
+					Name = "PREF",
+					Value = "hl=en",
+					Domain = ".google.com",
+					Path = "/"
+				}
+			});
+		}
+		catch
+		{
+		}
+	}
+
+	private static string GoogleUrlEn(string url)
+	{
+		if (string.IsNullOrWhiteSpace(url))
+		{
+			return url;
+		}
+		if (url.IndexOf("hl=", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			return url;
+		}
+		string sep = url.Contains("?") ? "&" : "?";
+		return url + sep + "hl=en";
+	}
+
+	private static ILocator GooglePrimaryActionButton(IPage page)
+	{
+		return page.Locator("#knowledgePreregisteredEmailNext, #next, main div[jsname='Njthtb'] button[jsname='LgbsSe'], main [data-primary-action-label] div[jsname='Njthtb'] button[jsname='LgbsSe'], main [data-primary-action-label] button[jsname='LgbsSe']");
+	}
+
+	private static ILocator GoogleSecondaryActionButton(IPage page)
+	{
+		return page.Locator("main div[jsname='eBSUOb'] button[jsname='LgbsSe'], main .FO2vFd button[jsname='LgbsSe'], [data-secondary-action-label] div[jsname='eBSUOb'] button[jsname='LgbsSe'], [data-secondary-action-label] button[jsname='LgbsSe']");
+	}
+
+	private async Task<bool> TryClickLocatorHardAsync(IPage page, ILocator locator, int timeoutMs = 15000)
+	{
+		if (page == null || locator == null)
+		{
+			return false;
+		}
+		try
+		{
+			if (await locator.CountAsync() <= 0)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
+			await locator.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = timeoutMs });
+		}
+		catch
+		{
+		}
+		try
+		{
+			await locator.First.ScrollIntoViewIfNeededAsync();
+		}
+		catch
+		{
+		}
+		try
+		{
+			await locator.First.ClickAsync(new LocatorClickOptions { Timeout = timeoutMs, Force = true });
+			return true;
+		}
+		catch
+		{
+			try
+			{
+				var box = await locator.First.BoundingBoxAsync();
+				if (box != null)
+				{
+					float cx = (float)(box.X + box.Width / 2.0);
+					float cy = (float)(box.Y + box.Height / 2.0);
+					await page.Mouse.ClickAsync(cx, cy);
+					return true;
+				}
+			}
+			catch
+			{
+			}
+		}
+		return false;
+	}
+
 	/// <summary>Sau bấm #totpNext: chỉ OK khi URL không còn màn challenge/totp; ngược lại phát hiện banner lỗi hoặc hết thời gian vẫn kẹt totp → false.</summary>
 	private async Task<bool> WaitForGoogleTotpSubmitOutcomeSuccessAsync(IPage page, int vitri)
 	{
@@ -2851,10 +3145,6 @@ public partial class Form1 : Form
 			catch
 			{
 			}
-			if (!UrlIsGoogleTotpChallengePage(url))
-			{
-				return true;
-			}
 			if (await PageShowsGoogleTotpWrongCodeAsync(page))
 			{
 				try
@@ -2865,6 +3155,10 @@ public partial class Form1 : Form
 				{
 				}
 				return false;
+			}
+			if (!UrlIsGoogleTotpChallengePage(url))
+			{
+				return true;
 			}
 			await DelayBatchAsync(stepMs);
 			elapsed += stepMs;
@@ -2949,80 +3243,15 @@ public partial class Form1 : Form
 		catch
 		{
 		}
-		ILocator notNowBtn = page.Locator("[data-secondary-action-label='Not now'] div[jsname='eBSUOb'] button[jsname='LgbsSe']");
-		if (await notNowBtn.CountAsync() == 0)
-		{
-			notNowBtn = page.Locator("[data-secondary-action-label='Not now'] button[jsname='LgbsSe']:has(span[jsname='V67aGc']:has-text(\"Not now\"))");
-		}
-		if (await notNowBtn.CountAsync() == 0)
-		{
-			notNowBtn = page.Locator("[data-secondary-action-label='Not now'] button:has(span[jsname='V67aGc']:has-text(\"Not now\"))");
-		}
-		if (await notNowBtn.CountAsync() == 0)
-		{
-			notNowBtn = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions
-			{
-				Name = "Not now"
-			});
-		}
-		try
-		{
-			await notNowBtn.First.WaitForAsync(new LocatorWaitForOptions
-			{
-				State = WaitForSelectorState.Visible,
-				Timeout = 12000f
-			});
-		}
-		catch
-		{
-		}
-		bool clicked = false;
-		try
-		{
-			if (await notNowBtn.CountAsync() > 0)
-			{
-				try
-				{
-					await notNowBtn.First.ScrollIntoViewIfNeededAsync();
-				}
-				catch
-				{
-				}
-				await notNowBtn.First.ClickAsync(new LocatorClickOptions
-				{
-					Timeout = 15000f,
-					Force = true
-				});
-				clicked = true;
-			}
-		}
-		catch
-		{
-			try
-			{
-				var box3 = await notNowBtn.First.BoundingBoxAsync();
-				if (box3 != null)
-				{
-					float cx3 = (float)(box3.X + box3.Width / 2.0);
-					float cy3 = (float)(box3.Y + box3.Height / 2.0);
-					await page.Mouse.ClickAsync(cx3, cy3);
-					clicked = true;
-				}
-			}
-			catch
-			{
-			}
-		}
+		ILocator notNowBtn = GoogleSecondaryActionButton(page);
+		bool clicked = await TryClickLocatorHardAsync(page, notNowBtn, 15000);
 		if (!clicked)
 		{
 			try
 			{
 				clicked = await page.EvaluateAsync<bool>(
 					@"() => {
-					  const spans = Array.from(document.querySelectorAll('span[jsname=""V67aGc""]'));
-					  const s = spans.find(x => (x.textContent || '').trim() === 'Not now');
-					  if (!s) return false;
-					  const btn = s.closest('button');
+					  const btn = document.querySelector('main div[jsname=""eBSUOb""] button[jsname=""LgbsSe""], main .FO2vFd button[jsname=""LgbsSe""]');
 					  if (!btn) return false;
 					  btn.click();
 					  return true;
@@ -3237,37 +3466,9 @@ public partial class Form1 : Form
 							SetText(vitri, "STATUS", "STEP 2.5: Gặp passkey enrollment — bấm Not now...");
 							try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
 
-							ILocator notNow = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Not now" });
-							if (await notNow.CountAsync() == 0)
-								notNow = page.Locator("button:has-text(\"Not now\")");
-							if (await notNow.CountAsync() == 0)
-								notNow = page.Locator("span[jsname='V67aGc']:has-text(\"Not now\")");
-							if (await notNow.CountAsync() == 0)
-								notNow = page.Locator("[data-secondary-action-label='Not now'] button, [data-secondary-action-label='Not now']");
-
-							if (await notNow.CountAsync() > 0)
+							ILocator notNow = GoogleSecondaryActionButton(page);
+							if (await TryClickLocatorHardAsync(page, notNow, 15000))
 							{
-								try { await notNow.First.ScrollIntoViewIfNeededAsync(); } catch { }
-								try
-								{
-									await notNow.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f, Force = true });
-								}
-								catch
-								{
-									try
-									{
-										var box2 = await notNow.First.BoundingBoxAsync();
-										if (box2 != null)
-										{
-											float cx2 = (float)(box2.X + (box2.Width / 2.0));
-											float cy2 = (float)(box2.Y + (box2.Height / 2.0));
-											await page.Mouse.ClickAsync(cx2, cy2);
-										}
-									}
-									catch
-									{
-									}
-								}
 								try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
 								await DelayBatchAsync(1500);
 								try { SetText(vitri, "STATUS", "STEP 2.5: Đã bấm Not now"); } catch { }
@@ -3316,66 +3517,20 @@ public partial class Form1 : Form
 								SetText(vitri, "STATUS", "STEP 3.0: Gặp Sign in faster — bấm Not now...");
 								try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
 
-								// Click đúng nút "Not now" (button). Tránh bị nhầm với nút "Continue" (cũng jsname="LgbsSe").
-								// Ưu tiên theo container có data-secondary-action-label="Not now", và div jsname="eBSUOb" (khối action phụ).
-								ILocator notNowBtn = page.Locator("[data-secondary-action-label='Not now'] div[jsname='eBSUOb'] button[jsname='LgbsSe']");
-								if (await notNowBtn.CountAsync() == 0)
-									notNowBtn = page.Locator("[data-secondary-action-label='Not now'] button[jsname='LgbsSe']:has(span[jsname='V67aGc']:has-text(\"Not now\"))");
-								if (await notNowBtn.CountAsync() == 0)
-									notNowBtn = page.Locator("[data-secondary-action-label='Not now'] button:has(span[jsname='V67aGc']:has-text(\"Not now\"))");
-								if (await notNowBtn.CountAsync() == 0)
-									notNowBtn = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Not now" });
+								// Click đúng nút action phụ (Not now), không phụ thuộc text/ngôn ngữ hiển thị.
+								ILocator notNowBtn = GoogleSecondaryActionButton(page);
 								// log nhanh để biết có tìm thấy đúng nút không
 								try { SetText(vitri, "STATUS", "STEP 3.0 [LOG]: notNowBtn.count=" + (await notNowBtn.CountAsync())); } catch { }
-								try
-								{
-									// đợi nút xuất hiện (tối đa 10s) để tránh check CountAsync quá sớm
-									await notNowBtn.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 10000f });
-								}
-								catch
-								{
-								}
+								bool clicked = await TryClickLocatorHardAsync(page, notNowBtn, 15000);
 
-								// Click thẳng đúng locator đã tìm được. Tránh tự "biến hình" locator gây mất nút.
-								bool clicked = false;
-								try
-								{
-									if (await notNowBtn.CountAsync() > 0)
-									{
-										try { await notNowBtn.First.ScrollIntoViewIfNeededAsync(); } catch { }
-										await notNowBtn.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f, Force = true });
-										clicked = true;
-									}
-								}
-								catch
-								{
-									try
-									{
-										var box3 = await notNowBtn.First.BoundingBoxAsync();
-										if (box3 != null)
-										{
-											float cx3 = (float)(box3.X + (box3.Width / 2.0));
-											float cy3 = (float)(box3.Y + (box3.Height / 2.0));
-											await page.Mouse.ClickAsync(cx3, cy3);
-											clicked = true;
-										}
-									}
-									catch
-									{
-									}
-								}
-
-								// Fallback JS: click đúng button chứa span "Not now"
+								// Fallback JS: click đúng button action phụ theo jsname, không theo chữ "Not now".
 								if (!clicked)
 								{
 									try
 									{
 										bool jsClicked = await page.EvaluateAsync<bool>(
 											@"() => {
-											  const spans = Array.from(document.querySelectorAll('span[jsname=""V67aGc""]'));
-											  const s = spans.find(x => (x.textContent || '').trim() === 'Not now');
-											  if (!s) return false;
-											  const btn = s.closest('button');
+											  const btn = document.querySelector('main div[jsname=""eBSUOb""] button[jsname=""LgbsSe""], main .FO2vFd button[jsname=""LgbsSe""]');
 											  if (!btn) return false;
 											  btn.click();
 											  return true;
@@ -3447,7 +3602,7 @@ public partial class Form1 : Form
 						{
 							await RunStepWithReloadRetryAsync(page, vitri, "Goto myaccount/language (sau passkey)", async delegate
 							{
-								await page.GotoAsync("https://myaccount.google.com/language");
+								await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"));
 							});
 						}
 						catch
@@ -3497,17 +3652,9 @@ public partial class Form1 : Form
 						// Nếu đang đứng ở màn totpPin thì bấm "Try another way" để về danh sách lựa chọn
 						if (hasTotpInput)
 						{
-							ILocator tryAnotherWay = page.GetByRole(AriaRole.Link, new PageGetByRoleOptions
+							ILocator tryAnotherWay = page.Locator("[data-action='tryAnotherWay']").Or(GoogleSecondaryActionButton(page));
+							if (await TryClickLocatorHardAsync(page, tryAnotherWay, 15000))
 							{
-								Name = "Try another way"
-							});
-							if (await tryAnotherWay.CountAsync() == 0)
-							{
-								tryAnotherWay = page.Locator("[data-action='tryAnotherWay'], a:has-text(\"Try another way\"), div[role='link']:has-text(\"Try another way\"), button:has-text(\"Try another way\")");
-							}
-							if (await tryAnotherWay.CountAsync() > 0)
-							{
-								try { await tryAnotherWay.First.ClickAsync(); } catch { }
 								try { await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded); } catch { }
 								try
 								{
@@ -3591,12 +3738,8 @@ public partial class Form1 : Form
 								{
 									SetText(vitri, "STATUS", "STEP 3: Nhập recovery email");
 									await recInput.First.FillAsync(recoveryEmailTrim);
-									// Nút Next ở step này thường là "Next"
-									ILocator nextBtn = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Next" });
-									if (await nextBtn.CountAsync() == 0)
-										nextBtn = page.Locator("button:has-text(\"Next\"), #knowledgePreregisteredEmailNext, #next");
-									if (await nextBtn.CountAsync() > 0)
-										await nextBtn.First.ClickAsync();
+									// Nút tiếp tục ở màn recovery dùng action chính của Google, không phụ thuộc chữ "Next".
+									await TryClickLocatorHardAsync(page, GooglePrimaryActionButton(page), 15000);
 								}
 							}
 							catch
@@ -3634,6 +3777,10 @@ public partial class Form1 : Form
 						verifyDone = await WaitForGoogleTotpSubmitOutcomeSuccessAsync(page, vitri);
 						if (!verifyDone)
 						{
+							if (await TryMarkGoogleTotpWrongCodeDeadForLogMailCuAsync(page, vitri, email))
+							{
+								return false;
+							}
 							AppendAutomationLog("WARN", vitri, email, "Dừng: mã 2FA không được chấp nhận hoặc vẫn kẹt màn TOTP.");
 							SetText(vitri, "STATUS", "Lỗi: Mã 2FA không đúng hoặc Google chưa chấp nhận — kết thúc đăng nhập.");
 							return false;
@@ -3722,6 +3869,10 @@ public partial class Form1 : Form
 							verifyDone = await WaitForGoogleTotpSubmitOutcomeSuccessAsync(page, vitri);
 							if (!verifyDone)
 							{
+								if (await TryMarkGoogleTotpWrongCodeDeadForLogMailCuAsync(page, vitri, email))
+								{
+									return false;
+								}
 								AppendAutomationLog("WARN", vitri, email, "Dừng: mã 2FA không được chấp nhận hoặc vẫn kẹt màn TOTP.");
 								SetText(vitri, "STATUS", "Lỗi: Mã 2FA không đúng hoặc Google chưa chấp nhận — kết thúc đăng nhập.");
 								return false;
@@ -3774,7 +3925,7 @@ public partial class Form1 : Form
 						await DelayBatchAsync(5000);
 						await RunStepWithReloadRetryAsync(page, vitri, "Goto myaccount/language (sau 2FA)", async delegate
 						{
-							await page.GotoAsync("https://myaccount.google.com/language");
+							await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"));
 						});
 					}
 					else
@@ -3820,7 +3971,7 @@ public partial class Form1 : Form
 								{
 									await RunStepWithReloadRetryAsync(page, vitri, "Goto myaccount/language (sau recovery)", async delegate
 									{
-										await page.GotoAsync("https://myaccount.google.com/language");
+										await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"));
 									});
 								}
 								catch
@@ -3864,7 +4015,7 @@ public partial class Form1 : Form
 				IPage inbox = await context.NewPageAsync();
 				await RunStepWithReloadRetryAsync(inbox, vitri, "Mở Gmail Inbox", async delegate
 				{
-					await inbox.GotoAsync("https://mail.google.com/mail/u/0/", new PageGotoOptions
+					await inbox.GotoAsync(GoogleUrlEn("https://mail.google.com/mail/u/0/"), new PageGotoOptions
 					{
 						WaitUntil = WaitUntilState.DOMContentLoaded
 					});
@@ -3893,7 +4044,7 @@ public partial class Form1 : Form
 					await RunStepWithReloadRetryAsync(page, vitri, "STEP 4–5 (đổi avatar)", async delegate
 					{
 						SetText(vitri, "STATUS", "STEP 4: Mở trang Personal Info");
-						await page.GotoAsync("https://myaccount.google.com/personal-info");
+						await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/personal-info"));
 						await DelayBatchAsync(2000);
 						SetText(vitri, "STATUS", "STEP 5: Click Change Avatar");
 						await page.GetByLabel("Change profile photo").ClickAsync();
@@ -3977,7 +4128,7 @@ public partial class Form1 : Form
 					IPage formPage = await context.NewPageAsync();
 					await RunStepWithReloadRetryAsync(formPage, vitri, "[Form] Mở trang tạo Form", async delegate
 					{
-						await formPage.GotoAsync("https://docs.google.com/forms/u/0/create?usp=forms_home&ths=true", new PageGotoOptions
+						await formPage.GotoAsync(GoogleUrlEn("https://docs.google.com/forms/u/0/create?usp=forms_home&ths=true"), new PageGotoOptions
 						{
 							WaitUntil = WaitUntilState.DOMContentLoaded,
 							Timeout = 120000f
@@ -4620,7 +4771,7 @@ public partial class Form1 : Form
 					IPage sheetPage = await context.NewPageAsync();
 					await RunStepWithReloadRetryAsync(sheetPage, vitri, "[Sheet] Mở Sheets + chờ tab", async delegate
 					{
-						await sheetPage.GotoAsync("https://docs.google.com/spreadsheets/u/0/create?usp=sheets_home&ths=true", new PageGotoOptions
+						await sheetPage.GotoAsync(GoogleUrlEn("https://docs.google.com/spreadsheets/u/0/create?usp=sheets_home&ths=true"), new PageGotoOptions
 						{
 							WaitUntil = WaitUntilState.DOMContentLoaded,
 							Timeout = 120000f
