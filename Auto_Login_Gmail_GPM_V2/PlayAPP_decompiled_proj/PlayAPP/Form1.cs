@@ -4121,6 +4121,7 @@ public partial class Form1 : Form
 				}
 				noidung nd = _noidung[0];
 				string formLink = "";
+				string formOuid = "";
 				if (wantTaoForm)
 				{
 					SetText(vitri, "STATUS", "[Form] Bước 1/3: Tab mới → tạo Google Form...");
@@ -4241,12 +4242,12 @@ public partial class Form1 : Form
 						SetText(vitri, "STATUS", "[Form] Theme: ảnh header đã áp dụng (Done)");
 						try
 						{
-							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn màu #086ef4 / #1699fd / #0870fd / #509beb / #4f9beb...");
+							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn màu #0e72ea / #076ff6...");
 							await PageWaitCancellableAsync(formPage, 2000f);
 							bool colorApplied = false;
 							LocatorFilterOptions hasThemeBlue = new LocatorFilterOptions
 							{
-								Has = formPage.Locator("div.UBrD9d[data-color='#086ef4'], div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']")
+								Has = formPage.Locator("div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#076ff6']")
 							};
 							ILocator themeDialog = formPage.Locator("div[role='dialog'][aria-label='Theme']");
 							try
@@ -4256,7 +4257,7 @@ public partial class Form1 : Form
 									State = WaitForSelectorState.Visible,
 									Timeout = 18000f
 								});
-								ILocator colorSwatch = themeDialog.Locator("div.UBrD9d[data-color='#086ef4'], div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
+								ILocator colorSwatch = themeDialog.Locator("div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#076ff6']").First;
 								await colorSwatch.WaitForAsync(new LocatorWaitForOptions
 								{
 									State = WaitForSelectorState.Visible,
@@ -4319,40 +4320,28 @@ public partial class Form1 : Form
 											State = WaitForSelectorState.Visible,
 											Timeout = 12000f
 										});
-										ILocator colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#086ef4'][data-label='#086ef4'], div.UBrD9d[role='listitem'][data-color='#1699fd'][data-label='#1699fd'], div.UBrD9d[role='listitem'][data-color='#0870fd'][data-label='#0870fd'], div.UBrD9d[role='listitem'][data-color='#509beb'][data-label='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb'][data-label='#4f9beb']").First;
+										ILocator colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#0e72ea'][data-label='#0e72ea'], div.UBrD9d[role='listitem'][data-color='#076ff6'][data-label='#076ff6']").First;
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#086ef4'], div.UBrD9d[role='listitem'][data-color='#1699fd'], div.UBrD9d[role='listitem'][data-color='#0870fd'], div.UBrD9d[role='listitem'][data-color='#509beb'], div.UBrD9d[role='listitem'][data-color='#4f9beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#0e72ea'], div.UBrD9d[role='listitem'][data-color='#076ff6']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#086ef4'][data-label='#086ef4'], div.UBrD9d[data-color='#1699fd'][data-label='#1699fd'], div.UBrD9d[data-color='#0870fd'][data-label='#0870fd'], div.UBrD9d[data-color='#509beb'][data-label='#509beb'], div.UBrD9d[data-color='#4f9beb'][data-label='#4f9beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[data-color='#0e72ea'][data-label='#0e72ea'], div.UBrD9d[data-color='#076ff6'][data-label='#076ff6']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#086ef4'], div.UBrD9d[data-color='#1699fd'], div.UBrD9d[data-color='#0870fd'], div.UBrD9d[data-color='#509beb'], div.UBrD9d[data-color='#4f9beb']").First;
+											colorItem = themePanel.Locator("div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#076ff6']").First;
 										}
 										if (await colorItem.CountAsync() == 0)
 										{
 											colorItem = themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
 											{
-												Name = "#086ef4",
+												Name = "#0e72ea",
 												Exact = true
 											}).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
 											{
-												Name = "#1699fd",
-												Exact = true
-											})).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
-											{
-												Name = "#0870fd",
-												Exact = true
-											})).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
-											{
-												Name = "#509beb",
-												Exact = true
-											})).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
-											{
-												Name = "#4f9beb",
+												Name = "#076ff6",
 												Exact = true
 											})).First;
 										}
@@ -4406,7 +4395,7 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								bool jsPick = await formPage.EvaluateAsync<bool>("() => {\r\n  const colors = ['#086ef4', '#1699fd', '#0870fd', '#509beb', '#4f9beb'];\r\n  const pick = (root) => {\r\n    if (!root) return null;\r\n    for (let j = 0; j < colors.length; j++) {\r\n      const c = colors[j];\r\n      let hit = root.querySelector('div.UBrD9d[role=\"listitem\"][data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"]');\r\n      if (hit) return hit;\r\n    }\r\n    return null;\r\n  };\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Theme\"]');\r\n  let el = pick(dlg);\r\n  if (el) {\r\n    el.scrollIntoView({ block: 'center', inline: 'center' });\r\n    el.click();\r\n    return true;\r\n  }\r\n  const sideSels = ['div[role=\"complementary\"][aria-roledescription=\"sidebar\"]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];\r\n  for (let s = 0; s < sideSels.length; s++) {\r\n    const nodes = document.querySelectorAll(sideSels[s]);\r\n    for (let i = 0; i < nodes.length; i++) {\r\n      el = pick(nodes[i]);\r\n      if (el) {\r\n        el.scrollIntoView({ block: 'center', inline: 'center' });\r\n        el.click();\r\n        return true;\r\n      }\r\n    }\r\n  }\r\n  el = document.querySelector('div.UBrD9d[data-color=\"#086ef4\"], div.UBrD9d[data-color=\"#1699fd\"], div.UBrD9d[data-color=\"#0870fd\"], div.UBrD9d[data-color=\"#509beb\"], div.UBrD9d[data-color=\"#4f9beb\"]');\r\n  if (!el) return false;\r\n  el.scrollIntoView({ block: 'center', inline: 'center' });\r\n  el.click();\r\n  return true;\r\n}");
+								bool jsPick = await formPage.EvaluateAsync<bool>("() => {\r\n  const colors = ['#0e72ea', '#076ff6'];\r\n  const pick = (root) => {\r\n    if (!root) return null;\r\n    for (let j = 0; j < colors.length; j++) {\r\n      const c = colors[j];\r\n      let hit = root.querySelector('div.UBrD9d[role=\"listitem\"][data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"]');\r\n      if (hit) return hit;\r\n    }\r\n    return null;\r\n  };\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Theme\"]');\r\n  let el = pick(dlg);\r\n  if (el) {\r\n    el.scrollIntoView({ block: 'center', inline: 'center' });\r\n    el.click();\r\n    return true;\r\n  }\r\n  const sideSels = ['div[role=\"complementary\"][aria-roledescription=\"sidebar\"]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];\r\n  for (let s = 0; s < sideSels.length; s++) {\r\n    const nodes = document.querySelectorAll(sideSels[s]);\r\n    for (let i = 0; i < nodes.length; i++) {\r\n      el = pick(nodes[i]);\r\n      if (el) {\r\n        el.scrollIntoView({ block: 'center', inline: 'center' });\r\n        el.click();\r\n        return true;\r\n      }\r\n    }\r\n  }\r\n  el = document.querySelector('div.UBrD9d[data-color=\"#0e72ea\"], div.UBrD9d[data-color=\"#076ff6\"]');\r\n  if (!el) return false;\r\n  el.scrollIntoView({ block: 'center', inline: 'center' });\r\n  el.click();\r\n  return true;\r\n}");
 								if (jsPick)
 								{
 									try
@@ -4464,7 +4453,7 @@ public partial class Form1 : Form
 							{
 								try
 								{
-									SetText(vitri, "STATUS", "[Form] Theme: không thấy preset — mở Add custom color #086EF4...");
+									SetText(vitri, "STATUS", "[Form] Theme: không thấy preset — mở Add custom color #0E72EA (fallback)...");
 									int dialogsBefore = await formPage.Locator("div[role='dialog']").CountAsync();
 									ILocator addCustomBtn = themeDialog.Locator("div.UBrD9d[aria-label='Add custom color'], div[aria-label='Add custom color'][role='button']").First;
 									if (await addCustomBtn.CountAsync() == 0)
@@ -4545,7 +4534,7 @@ public partial class Form1 : Form
 									{
 										try
 										{
-											hexSet = await formPage.EvaluateAsync<bool>(hexJs, "086EF4");
+											hexSet = await formPage.EvaluateAsync<bool>(hexJs, "0E72EA");
 										}
 										catch
 										{
@@ -4569,7 +4558,7 @@ public partial class Form1 : Form
 												await fallbackInput.ClickAsync(new LocatorClickOptions { Force = true, Timeout = 6000f });
 												await fallbackInput.PressAsync("Control+A");
 												await fallbackInput.PressAsync("Delete");
-												await fallbackInput.TypeAsync("086EF4", new LocatorTypeOptions { Delay = 40f });
+												await fallbackInput.TypeAsync("0E72EA", new LocatorTypeOptions { Delay = 40f });
 												await fallbackInput.PressAsync("Tab");
 												hexSet = true;
 											}
@@ -4583,7 +4572,7 @@ public partial class Form1 : Form
 										throw new Exception("Không tìm thấy input HEX trong dialog Custom color.");
 									}
 									await PageWaitCancellableAsync(formPage, 500f);
-									SetText(vitri, "STATUS", "[Form] Theme: đã nhập HEX 086EF4 — click OK/Save...");
+									SetText(vitri, "STATUS", "[Form] Theme: đã nhập HEX 0E72EA — click OK/Save...");
 									bool okClicked = false;
 									string[] okNames = new string[4] { "OK", "Save", "Done", "Apply" };
 									foreach (string okName in okNames)
@@ -4673,7 +4662,7 @@ public partial class Form1 : Form
 										}
 									}
 									colorApplied = true;
-									SetText(vitri, "STATUS", "[Form] Theme: đã thêm & áp dụng custom color #086EF4");
+									SetText(vitri, "STATUS", "[Form] Theme: đã thêm & áp dụng custom color #0E72EA");
 								}
 								catch (Exception exCustom)
 								{
@@ -4682,7 +4671,7 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								throw new Exception("Không tìm thấy ô màu #086ef4 / #1699fd / #0870fd / #509beb / #4f9beb (dialog Theme hoặc sidebar lOsMle/kiQbk) và không thể thêm custom color.");
+								throw new Exception("Không tìm thấy ô màu #0e72ea / #076ff6 (dialog Theme hoặc sidebar lOsMle/kiQbk) và không thể thêm custom color.");
 							}
 							await PageWaitCancellableAsync(formPage, 1000f);
 							SetText(vitri, "STATUS", "[Form] Theme: đã Apply màu / hoàn tất tùy chỉnh");
@@ -4755,6 +4744,39 @@ public partial class Form1 : Form
 					{
 						SetText(vitri, "STATUS", "[Form] Xong: link phản hồi = " + formLink);
 					}
+					try
+					{
+						string extractOuidJs = "() => {\n" +
+							"  try {\n" +
+							"    const html = document.documentElement.outerHTML;\n" +
+							"    const patterns = [\n" +
+							"      /[?&]ouid=(\\d{15,})/,\n" +
+							"      /\"ouid\"\\s*:\\s*\"(\\d{15,})\"/,\n" +
+							"      /\"S06Grb\"\\s*:\\s*\"(\\d{15,})\"/,\n" +
+							"      /\"obfuscatedGaiaId\"\\s*:\\s*\"(\\d{15,})\"/,\n" +
+							"      /\"gaia_id\"\\s*:\\s*\"(\\d{15,})\"/\n" +
+							"    ];\n" +
+							"    for (const re of patterns) {\n" +
+							"      const m = html.match(re);\n" +
+							"      if (m && m[1]) return m[1];\n" +
+							"    }\n" +
+							"  } catch (e) {}\n" +
+							"  return '';\n" +
+							"}";
+						formOuid = (await formPage.EvaluateAsync<string>(extractOuidJs) ?? "").Trim();
+						if (!string.IsNullOrWhiteSpace(formOuid))
+						{
+							SetText(vitri, "STATUS", "[Form] OUID người dùng: " + formOuid);
+						}
+						else
+						{
+							SetText(vitri, "STATUS", "[Form] Không trích được OUID từ trang Form (sẽ bỏ tham số ouid trong link).");
+						}
+					}
+					catch (Exception exOuid)
+					{
+						SetText(vitri, "STATUS", "[Form] Lỗi trích OUID: " + exOuid.Message);
+					}
 				}
 					catch (Exception ex6)
 					{
@@ -4824,10 +4846,24 @@ public partial class Form1 : Form
 					string formUrlNorm = (formLink ?? "").Trim();
 					if (!string.IsNullOrEmpty(formUrlNorm))
 					{
-						int indexVf = formUrlNorm.IndexOf("viewform");
+						string ouidValue = (formOuid ?? "").Trim();
+						if (string.IsNullOrWhiteSpace(ouidValue))
+						{
+							Match ouidMatch = Regex.Match(formUrlNorm, "(?:\\?|&)ouid=([^&#]+)", RegexOptions.IgnoreCase);
+							if (ouidMatch.Success)
+							{
+								ouidValue = Uri.UnescapeDataString(ouidMatch.Groups[1].Value);
+							}
+						}
+						int indexVf = formUrlNorm.IndexOf("viewform", StringComparison.OrdinalIgnoreCase);
 						if (indexVf != -1)
 						{
 							formUrlNorm = formUrlNorm.Substring(0, indexVf + "viewform".Length);
+							formUrlNorm += "?usp=sharing";
+							if (!string.IsNullOrWhiteSpace(ouidValue))
+							{
+								formUrlNorm += "&ouid=" + Uri.EscapeDataString(ouidValue);
+							}
 						}
 					}
 					string sheetUrlNorm = (url3 ?? "").Trim();

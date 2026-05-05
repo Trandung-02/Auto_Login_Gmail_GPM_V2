@@ -7535,3 +7535,424 @@
 2026-04-25 23:28:50.341	INFO	hàng 21	t***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
 2026-04-25 23:29:04.383	INFO	hàng 23	V***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
 2026-04-25 23:29:04.788	INFO	-		Kết thúc batch: OK=12 Fail=13 (Playwright đã đóng).
+2026-05-05 15:25:49.957	INFO	-		Bắt đầu batch: 25 slot (dòng 1–25), mail dự phòng (dòng 26+)=37, chỉ tiêu log đúng=25, luồng 10, nhóm GPM log="66", Log mail=cũ (dead log; chết không xóa profile; thử mail dự phòng trên cùng profile).
+2026-05-05 15:26:29.086	WARN	hàng 6	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:29.215	WARN	hàng 8	N***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:29.276	WARN	hàng 5	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:29.328	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang6_20260505_152629106.png
+2026-05-05 15:26:29.333	INFO	hàng 6	s***@gmail.com	Log mail cũ: lấy UID dòng 26 đăng lại trên cùng profile GPM (proxy hàng 6).
+2026-05-05 15:26:29.389	WARN	hàng 9	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:29.510	WARN	hàng 3	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:29.543	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang9_20260505_152629390.png
+2026-05-05 15:26:29.546	INFO	hàng 9	S***@gmail.com	Log mail cũ: lấy UID dòng 27 đăng lại trên cùng profile GPM (proxy hàng 9).
+2026-05-05 15:26:29.575	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang8_20260505_152629217.png
+2026-05-05 15:26:29.577	INFO	hàng 8	T***@gmail.com	Log mail cũ: lấy UID dòng 28 đăng lại trên cùng profile GPM (proxy hàng 8).
+2026-05-05 15:26:29.617	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260505_152629277.png
+2026-05-05 15:26:29.619	INFO	hàng 5	t***@gmail.com	Log mail cũ: lấy UID dòng 29 đăng lại trên cùng profile GPM (proxy hàng 5).
+2026-05-05 15:26:29.640	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260505_152629512.png
+2026-05-05 15:26:29.641	INFO	hàng 3	T***@gmail.com	Log mail cũ: lấy UID dòng 30 đăng lại trên cùng profile GPM (proxy hàng 3).
+2026-05-05 15:26:29.713	WARN	hàng 2	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:29.818	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang2_20260505_152629714.png
+2026-05-05 15:26:29.820	INFO	hàng 2	v***@gmail.com	Log mail cũ: lấy UID dòng 31 đăng lại trên cùng profile GPM (proxy hàng 2).
+2026-05-05 15:26:30.080	WARN	hàng 4	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:30.217	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang4_20260505_152630081.png
+2026-05-05 15:26:30.218	INFO	hàng 4	l***@gmail.com	Log mail cũ: lấy UID dòng 32 đăng lại trên cùng profile GPM (proxy hàng 4).
+2026-05-05 15:26:32.621	WARN	hàng 10	P***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:32.896	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang10_20260505_152632623.png
+2026-05-05 15:26:32.896	INFO	hàng 10	l***@gmail.com	Log mail cũ: lấy UID dòng 33 đăng lại trên cùng profile GPM (proxy hàng 10).
+2026-05-05 15:26:33.484	WARN	hàng 7	m***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:33.648	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang7_20260505_152633485.png
+2026-05-05 15:26:33.650	INFO	hàng 7	g***@gmail.com	Log mail cũ: lấy UID dòng 34 đăng lại trên cùng profile GPM (proxy hàng 7).
+2026-05-05 15:26:34.718	WARN	hàng 1	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:34.842	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260505_152634719.png
+2026-05-05 15:26:34.843	INFO	hàng 1	f***@gmail.com	Log mail cũ: lấy UID dòng 35 đăng lại trên cùng profile GPM (proxy hàng 1).
+2026-05-05 15:26:35.957	WARN	hàng 6	s***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:36.110	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang6_20260505_152635958.png
+2026-05-05 15:26:36.113	INFO	hàng 6	c***@gmail.com	Log mail cũ: lấy UID dòng 36 đăng lại trên cùng profile GPM (proxy hàng 6).
+2026-05-05 15:26:36.767	WARN	hàng 4	l***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:36.897	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang4_20260505_152636768.png
+2026-05-05 15:26:36.898	INFO	hàng 4	s***@gmail.com	Log mail cũ: lấy UID dòng 37 đăng lại trên cùng profile GPM (proxy hàng 4).
+2026-05-05 15:26:37.944	WARN	hàng 2	v***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:38.154	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang2_20260505_152637946.png
+2026-05-05 15:26:38.156	INFO	hàng 2	c***@gmail.com	Log mail cũ: lấy UID dòng 38 đăng lại trên cùng profile GPM (proxy hàng 2).
+2026-05-05 15:26:38.246	WARN	hàng 8	T***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:38.344	WARN	hàng 5	t***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:38.477	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang8_20260505_152638248.png
+2026-05-05 15:26:38.479	INFO	hàng 8	l***@gmail.com	Log mail cũ: lấy UID dòng 39 đăng lại trên cùng profile GPM (proxy hàng 8).
+2026-05-05 15:26:38.573	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang5_20260505_152638346.png
+2026-05-05 15:26:38.573	INFO	hàng 5	s***@gmail.com	Log mail cũ: lấy UID dòng 40 đăng lại trên cùng profile GPM (proxy hàng 5).
+2026-05-05 15:26:38.924	WARN	hàng 3	T***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:39.278	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang3_20260505_152638925.png
+2026-05-05 15:26:39.279	INFO	hàng 3	a***@gmail.com	Log mail cũ: lấy UID dòng 41 đăng lại trên cùng profile GPM (proxy hàng 3).
+2026-05-05 15:26:41.823	WARN	hàng 7	g***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:41.918	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang7_20260505_152641824.png
+2026-05-05 15:26:41.920	INFO	hàng 7	d***@gmail.com	Log mail cũ: lấy UID dòng 42 đăng lại trên cùng profile GPM (proxy hàng 7).
+2026-05-05 15:26:42.166	WARN	hàng 1	f***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:42.317	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260505_152642168.png
+2026-05-05 15:26:42.318	INFO	hàng 1	s***@gmail.com	Log mail cũ: lấy UID dòng 43 đăng lại trên cùng profile GPM (proxy hàng 1).
+2026-05-05 15:26:42.473	WARN	hàng 6	c***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:42.681	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang6_20260505_152642475.png
+2026-05-05 15:26:42.682	INFO	hàng 6	f***@gmail.com	Log mail cũ: lấy UID dòng 44 đăng lại trên cùng profile GPM (proxy hàng 6).
+2026-05-05 15:26:42.839	WARN	hàng 4	s***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:42.999	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang4_20260505_152642841.png
+2026-05-05 15:26:43.000	INFO	hàng 4	b***@gmail.com	Log mail cũ: lấy UID dòng 45 đăng lại trên cùng profile GPM (proxy hàng 4).
+2026-05-05 15:26:44.339	WARN	hàng 8	l***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:44.599	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang8_20260505_152644341.png
+2026-05-05 15:26:44.601	INFO	hàng 8	k***@gmail.com	Log mail cũ: lấy UID dòng 46 đăng lại trên cùng profile GPM (proxy hàng 8).
+2026-05-05 15:26:44.781	WARN	hàng 5	s***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:44.925	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260505_152644782.png
+2026-05-05 15:26:44.926	INFO	hàng 5	b***@gmail.com	Log mail cũ: lấy UID dòng 47 đăng lại trên cùng profile GPM (proxy hàng 5).
+2026-05-05 15:26:45.616	WARN	hàng 3	a***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:45.751	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260505_152645617.png
+2026-05-05 15:26:45.752	INFO	hàng 3	m***@gmail.com	Log mail cũ: lấy UID dòng 48 đăng lại trên cùng profile GPM (proxy hàng 3).
+2026-05-05 15:26:46.099	WARN	hàng 2	c***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:46.241	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang2_20260505_152646101.png
+2026-05-05 15:26:46.243	INFO	hàng 2	c***@gmail.com	Log mail cũ: lấy UID dòng 49 đăng lại trên cùng profile GPM (proxy hàng 2).
+2026-05-05 15:26:48.330	WARN	hàng 7	d***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:48.488	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang7_20260505_152648332.png
+2026-05-05 15:26:48.488	INFO	hàng 7	g***@gmail.com	Log mail cũ: lấy UID dòng 50 đăng lại trên cùng profile GPM (proxy hàng 7).
+2026-05-05 15:26:48.756	WARN	hàng 4	b***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:48.888	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang4_20260505_152648758.png
+2026-05-05 15:26:48.889	INFO	hàng 4	c***@gmail.com	Log mail cũ: lấy UID dòng 51 đăng lại trên cùng profile GPM (proxy hàng 4).
+2026-05-05 15:26:50.254	WARN	hàng 8	k***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:50.529	WARN	hàng 5	b***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:50.531	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang8_20260505_152650255.png
+2026-05-05 15:26:50.532	INFO	hàng 8	l***@gmail.com	Log mail cũ: lấy UID dòng 52 đăng lại trên cùng profile GPM (proxy hàng 8).
+2026-05-05 15:26:50.767	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260505_152650531.png
+2026-05-05 15:26:50.769	INFO	hàng 5	l***@gmail.com	Log mail cũ: lấy UID dòng 53 đăng lại trên cùng profile GPM (proxy hàng 5).
+2026-05-05 15:26:50.850	WARN	hàng 6	f***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:51.083	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang6_20260505_152650851.png
+2026-05-05 15:26:51.084	INFO	hàng 6	l***@gmail.com	Log mail cũ: lấy UID dòng 54 đăng lại trên cùng profile GPM (proxy hàng 6).
+2026-05-05 15:26:51.812	WARN	hàng 3	m***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:51.952	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260505_152651813.png
+2026-05-05 15:26:51.954	INFO	hàng 3	s***@gmail.com	Log mail cũ: lấy UID dòng 55 đăng lại trên cùng profile GPM (proxy hàng 3).
+2026-05-05 15:26:52.388	WARN	hàng 2	c***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:52.498	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang2_20260505_152652389.png
+2026-05-05 15:26:52.499	INFO	hàng 2	r***@gmail.com	Log mail cũ: lấy UID dòng 56 đăng lại trên cùng profile GPM (proxy hàng 2).
+2026-05-05 15:26:54.648	WARN	hàng 4	c***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:54.845	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang4_20260505_152654649.png
+2026-05-05 15:26:54.846	INFO	hàng 4	s***@gmail.com	Log mail cũ: lấy UID dòng 57 đăng lại trên cùng profile GPM (proxy hàng 4).
+2026-05-05 15:26:56.174	WARN	hàng 8	l***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:56.342	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang8_20260505_152656175.png
+2026-05-05 15:26:56.344	INFO	hàng 8	n***@gmail.com	Log mail cũ: lấy UID dòng 58 đăng lại trên cùng profile GPM (proxy hàng 8).
+2026-05-05 15:26:56.585	WARN	hàng 5	l***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:56.759	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260505_152656587.png
+2026-05-05 15:26:56.761	INFO	hàng 5	k***@gmail.com	Log mail cũ: lấy UID dòng 59 đăng lại trên cùng profile GPM (proxy hàng 5).
+2026-05-05 15:26:56.926	WARN	hàng 7	g***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:57.249	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang7_20260505_152656927.png
+2026-05-05 15:26:57.251	INFO	hàng 7	g***@gmail.com	Log mail cũ: lấy UID dòng 60 đăng lại trên cùng profile GPM (proxy hàng 7).
+2026-05-05 15:26:57.316	WARN	hàng 6	l***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:57.420	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang6_20260505_152657318.png
+2026-05-05 15:26:57.421	INFO	hàng 6	b***@gmail.com	Log mail cũ: lấy UID dòng 61 đăng lại trên cùng profile GPM (proxy hàng 6).
+2026-05-05 15:26:58.195	WARN	hàng 3	s***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:58.304	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260505_152658196.png
+2026-05-05 15:26:58.304	INFO	hàng 3	e***@gmail.com	Log mail cũ: lấy UID dòng 62 đăng lại trên cùng profile GPM (proxy hàng 3).
+2026-05-05 15:26:58.385	WARN	hàng 2	r***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:26:58.561	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang2_20260505_152658387.png
+2026-05-05 15:26:58.561	WARN	hàng 2	r***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 2.
+2026-05-05 15:26:58.672	INFO	hàng 2		GPM: đã xóa profile (tài khoản chết) id=78b18a51-0e4e-4b7a-9bd1-225103f7e090
+2026-05-05 15:27:03.375	WARN	hàng 7	g***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:27:03.416	WARN	hàng 5	k***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:27:03.599	INFO	hàng 7		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang7_20260505_152703377.png
+2026-05-05 15:27:03.599	WARN	hàng 7	g***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 7.
+2026-05-05 15:27:03.673	INFO	hàng 7		GPM: đã xóa profile (tài khoản chết) id=d5979c82-77fc-481f-b4e4-80cadeba5c29
+2026-05-05 15:27:03.689	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang5_20260505_152703418.png
+2026-05-05 15:27:03.689	WARN	hàng 5	k***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 5.
+2026-05-05 15:27:03.845	INFO	hàng 5		GPM: đã xóa profile (tài khoản chết) id=7104235a-9c70-42d1-b553-22bc6c801fef
+2026-05-05 15:27:04.292	WARN	hàng 3	e***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:27:04.446	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260505_152704293.png
+2026-05-05 15:27:04.446	WARN	hàng 3	e***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 3.
+2026-05-05 15:27:04.515	INFO	hàng 3		GPM: đã xóa profile (tài khoản chết) id=e2e50237-832c-4ea9-8e92-21665c03fc7e
+2026-05-05 15:27:04.595	WARN	hàng 8	n***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:27:04.703	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang8_20260505_152704597.png
+2026-05-05 15:27:04.704	WARN	hàng 8	n***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 8.
+2026-05-05 15:27:04.749	WARN	hàng 4	s***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:27:04.775	INFO	hàng 8		GPM: đã xóa profile (tài khoản chết) id=ff23d711-770f-4a0c-8b85-34a6f283efa9
+2026-05-05 15:27:04.864	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang4_20260505_152704750.png
+2026-05-05 15:27:04.864	WARN	hàng 4	s***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 4.
+2026-05-05 15:27:04.930	INFO	hàng 4		GPM: đã xóa profile (tài khoản chết) id=17f59630-8dc9-4b0f-be14-fbd98ffc4ec5
+2026-05-05 15:27:07.021	WARN	hàng 6	b***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:27:07.119	INFO	hàng 6		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang6_20260505_152707021.png
+2026-05-05 15:27:07.119	WARN	hàng 6	b***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 6.
+2026-05-05 15:27:07.183	INFO	hàng 6		GPM: đã xóa profile (tài khoản chết) id=57f851f8-1a83-4060-ad9b-88b3687a410c
+2026-05-05 15:28:06.785	WARN	hàng 9	S***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:06.896	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang9_20260505_152806786.png
+2026-05-05 15:28:06.897	WARN	hàng 9	S***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 9.
+2026-05-05 15:28:06.965	INFO	hàng 9		GPM: đã xóa profile (tài khoản chết) id=2987aa64-dec1-4ba0-8e6e-c709fb07e868
+2026-05-05 15:28:10.735	WARN	hàng 10	l***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:10.844	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang10_20260505_152810737.png
+2026-05-05 15:28:10.845	WARN	hàng 10	l***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 10.
+2026-05-05 15:28:10.920	INFO	hàng 10		GPM: đã xóa profile (tài khoản chết) id=a3ec8654-67ed-4ed5-a855-ebe8dad857b6
+2026-05-05 15:28:21.188	WARN	hàng 1	s***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:21.311	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260505_152821189.png
+2026-05-05 15:28:21.311	WARN	hàng 1	s***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 1.
+2026-05-05 15:28:21.386	INFO	hàng 1		GPM: đã xóa profile (tài khoản chết) id=94d77373-a08d-4aa3-a1ca-63fb3273aaca
+2026-05-05 15:28:52.380	WARN	hàng 14	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:52.522	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang14_20260505_152852382.png
+2026-05-05 15:28:52.522	WARN	hàng 14	p***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 14.
+2026-05-05 15:28:52.676	INFO	hàng 14		GPM: đã xóa profile (tài khoản chết) id=c9bff995-9dcd-4696-8960-4e5baef3ead3
+2026-05-05 15:28:52.770	WARN	hàng 13	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:52.969	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260505_152852773.png
+2026-05-05 15:28:52.970	WARN	hàng 13	p***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 13.
+2026-05-05 15:28:53.041	WARN	hàng 11	P***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:53.042	INFO	hàng 13		GPM: đã xóa profile (tài khoản chết) id=0d7b4831-cf91-4ccd-b54a-548e5232eaee
+2026-05-05 15:28:53.287	INFO	hàng 11		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang11_20260505_152853042.png
+2026-05-05 15:28:53.287	WARN	hàng 11	P***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 11.
+2026-05-05 15:28:53.350	INFO	hàng 11		GPM: đã xóa profile (tài khoản chết) id=f8eae81a-84dd-4622-8a74-3f9ad773aa01
+2026-05-05 15:28:53.744	WARN	hàng 15	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:53.790	WARN	hàng 20	R***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:53.889	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang15_20260505_152853745.png
+2026-05-05 15:28:53.889	WARN	hàng 15	p***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 15.
+2026-05-05 15:28:53.957	INFO	hàng 15		GPM: đã xóa profile (tài khoản chết) id=fc45d6f9-5dd7-453a-9120-3bf0e4d8842f
+2026-05-05 15:28:54.134	INFO	hàng 20		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang20_20260505_152853792.png
+2026-05-05 15:28:54.135	WARN	hàng 20	R***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 20.
+2026-05-05 15:28:54.192	INFO	hàng 20		GPM: đã xóa profile (tài khoản chết) id=2d4bc65a-f04b-417b-896f-b03e30c0abc9
+2026-05-05 15:28:54.272	WARN	hàng 18	R***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:54.313	WARN	hàng 12	p***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:54.362	WARN	hàng 19	R***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:54.485	INFO	hàng 12		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang12_20260505_152854315.png
+2026-05-05 15:28:54.486	WARN	hàng 12	p***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 12.
+2026-05-05 15:28:54.487	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang18_20260505_152854273.png
+2026-05-05 15:28:54.487	WARN	hàng 18	R***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 18.
+2026-05-05 15:28:54.496	INFO	hàng 19		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang19_20260505_152854363.png
+2026-05-05 15:28:54.496	WARN	hàng 19	R***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 19.
+2026-05-05 15:28:54.560	INFO	hàng 12		GPM: đã xóa profile (tài khoản chết) id=4d0260f1-e62b-48d4-bf51-fabadc123f06
+2026-05-05 15:28:54.560	INFO	hàng 18		GPM: đã xóa profile (tài khoản chết) id=dfa098e7-4e65-4939-9d14-e421fb4bb133
+2026-05-05 15:28:54.574	INFO	hàng 19		GPM: đã xóa profile (tài khoản chết) id=e7a57ec1-1995-4fa7-b59b-446a05249bbc
+2026-05-05 15:28:57.169	WARN	hàng 17	R***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:57.330	INFO	hàng 17		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang17_20260505_152857171.png
+2026-05-05 15:28:57.330	WARN	hàng 17	R***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 17.
+2026-05-05 15:28:57.395	INFO	hàng 17		GPM: đã xóa profile (tài khoản chết) id=77807213-a7e0-40d5-b66a-7e376493a9dd
+2026-05-05 15:28:58.401	WARN	hàng 16	p***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:28:58.541	INFO	hàng 16		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang16_20260505_152858401.png
+2026-05-05 15:28:58.541	WARN	hàng 16	p***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 16.
+2026-05-05 15:28:58.597	INFO	hàng 16		GPM: đã xóa profile (tài khoản chết) id=2fba4c8c-d4e9-43d0-9915-843fadc6fd95
+2026-05-05 15:29:18.067	WARN	hàng 22	s***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:29:18.190	INFO	hàng 22		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang22_20260505_152918068.png
+2026-05-05 15:29:18.191	WARN	hàng 22	s***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 22.
+2026-05-05 15:29:18.258	INFO	hàng 22		GPM: đã xóa profile (tài khoản chết) id=69148388-615d-40bd-afce-6f45c7fc9331
+2026-05-05 15:29:18.784	WARN	hàng 21	s***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:29:18.878	INFO	hàng 21		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang21_20260505_152918785.png
+2026-05-05 15:29:18.879	WARN	hàng 21	s***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 21.
+2026-05-05 15:29:18.940	INFO	hàng 21		GPM: đã xóa profile (tài khoản chết) id=4e0f8a4e-e140-48f2-8788-3117540184c3
+2026-05-05 15:29:21.002	WARN	hàng 25	s***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:29:21.125	INFO	hàng 25		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang25_20260505_152921003.png
+2026-05-05 15:29:21.125	WARN	hàng 25	s***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 25.
+2026-05-05 15:29:21.244	INFO	hàng 25		GPM: đã xóa profile (tài khoản chết) id=aff0d711-2c5b-444f-9825-05d55cecdece
+2026-05-05 15:29:21.749	WARN	hàng 23	s***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:29:21.897	INFO	hàng 23		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang23_20260505_152921749.png
+2026-05-05 15:29:21.897	WARN	hàng 23	s***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 23.
+2026-05-05 15:29:21.958	INFO	hàng 23		GPM: đã xóa profile (tài khoản chết) id=105d47f9-da5e-4761-8b93-a884e3917a86
+2026-05-05 15:29:22.241	WARN	hàng 24	s***@gmail.com	Dừng: Google báo Wrong code/Try again ở bước 2-Step Verification — Log mail cũ coi tài khoản chết; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:29:22.386	INFO	hàng 24		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_totp_wrong_code_hang24_20260505_152922242.png
+2026-05-05 15:29:22.386	WARN	hàng 24	s***@gmail.com	Log mail cũ: Google dead và không còn UID dự phòng từ dòng 26+ — đóng tab/Chrome + xóa profile GPM cho hàng 24.
+2026-05-05 15:29:22.442	INFO	hàng 24		GPM: đã xóa profile (tài khoản chết) id=8b97d2b7-9914-454e-bdbc-c860b34c6826
+2026-05-05 15:29:22.805	INFO	-		Kết thúc batch: OK=0 Fail=25 (Playwright đã đóng).
+2026-05-05 15:37:33.775	INFO	-		Bắt đầu batch: 25 slot (dòng 1–25), mail dự phòng (dòng 26+)=102, chỉ tiêu log đúng=25, luồng 10, nhóm GPM log="66", Log mail=cũ (dead log; chết không xóa profile; thử mail dự phòng trên cùng profile).
+2026-05-05 15:38:07.398	WARN	hàng 1	R***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:38:07.728	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang1_20260505_153807423.png
+2026-05-05 15:38:07.733	INFO	hàng 1	R***@gmail.com	Log mail cũ: lấy UID dòng 26 đăng lại trên cùng profile GPM (proxy hàng 1).
+2026-05-05 15:38:07.978	WARN	hàng 8	D***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:38:08.142	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang8_20260505_153807980.png
+2026-05-05 15:38:08.143	INFO	hàng 8	M***@gmail.com	Log mail cũ: lấy UID dòng 27 đăng lại trên cùng profile GPM (proxy hàng 8).
+2026-05-05 15:38:08.210	WARN	hàng 9	C***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:38:08.346	WARN	hàng 3	V***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:38:08.459	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang9_20260505_153808212.png
+2026-05-05 15:38:08.460	INFO	hàng 9	M***@gmail.com	Log mail cũ: lấy UID dòng 28 đăng lại trên cùng profile GPM (proxy hàng 9).
+2026-05-05 15:38:08.513	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang3_20260505_153808348.png
+2026-05-05 15:38:08.514	INFO	hàng 3	P***@gmail.com	Log mail cũ: lấy UID dòng 29 đăng lại trên cùng profile GPM (proxy hàng 3).
+2026-05-05 15:38:08.839	WARN	hàng 2	C***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:38:09.001	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang2_20260505_153808841.png
+2026-05-05 15:38:09.004	INFO	hàng 2	A***@gmail.com	Log mail cũ: lấy UID dòng 30 đăng lại trên cùng profile GPM (proxy hàng 2).
+2026-05-05 15:38:09.587	WARN	hàng 10	D***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:38:09.689	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang10_20260505_153809588.png
+2026-05-05 15:38:09.690	INFO	hàng 10	K***@gmail.com	Log mail cũ: lấy UID dòng 31 đăng lại trên cùng profile GPM (proxy hàng 10).
+2026-05-05 15:38:15.223	WARN	hàng 9	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:38:15.280	WARN	hàng 2	A***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:38:15.393	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang9_20260505_153815225.png
+2026-05-05 15:38:15.394	INFO	hàng 9	S***@gmail.com	Log mail cũ: lấy UID dòng 32 đăng lại trên cùng profile GPM (proxy hàng 9).
+2026-05-05 15:38:15.408	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang2_20260505_153815281.png
+2026-05-05 15:38:15.410	INFO	hàng 2	C***@gmail.com	Log mail cũ: lấy UID dòng 33 đăng lại trên cùng profile GPM (proxy hàng 2).
+2026-05-05 15:38:53.350	INFO	hàng 7	P***@gmail.com	Mở Gmail chuyển sang myaccount.google.com/.../restrictions — đã cập nhật Trạng thái và ghi chú GPM profile.
+2026-05-05 15:38:53.361	INFO	hàng 7		GPM: đã ghi chú profile id=a741bb66-cfab-4b3f-b66f-9ddd7e3aa225 — "Google: myaccount/restrictions" | API trả: {"success": true,"data":{},"message": "OK"}
+2026-05-05 15:40:18.772	INFO	hàng 5	S***@gmail.com	Mở Gmail chuyển sang myaccount.google.com/.../restrictions — đã cập nhật Trạng thái và ghi chú GPM profile.
+2026-05-05 15:40:18.779	INFO	hàng 5		GPM: đã ghi chú profile id=2edda3cc-9219-486c-9804-df15f1a25ed1 — "Google: myaccount/restrictions" | API trả: {"success": true,"data":{},"message": "OK"}
+2026-05-05 15:40:21.742	INFO	hàng 4	M***@gmail.com	Mở Gmail chuyển sang myaccount.google.com/.../restrictions — đã cập nhật Trạng thái và ghi chú GPM profile.
+2026-05-05 15:40:21.749	INFO	hàng 4		GPM: đã ghi chú profile id=b4dcb9de-c2d9-406f-ae21-46d8f94d1dcc — "Google: myaccount/restrictions" | API trả: {"success": true,"data":{},"message": "OK"}
+2026-05-05 15:43:31.211	WARN	hàng 2	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:43:31.211	WARN	hàng 2	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:43:54.418	WARN	hàng 1	R***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:43:54.419	WARN	hàng 1	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:44:10.355	WARN	hàng 7	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:44:10.355	WARN	hàng 7	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:44:16.344	WARN	hàng 6	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:44:16.344	WARN	hàng 6	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:44:19.712	WARN	hàng 10	K***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:44:19.712	WARN	hàng 10	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:44:19.814	WARN	hàng 3	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:44:19.814	WARN	hàng 3	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:44:35.888	WARN	hàng 8	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:44:35.888	WARN	hàng 8	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:45:06.208	WARN	hàng 2	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:45:06.208	WARN	hàng 2	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:45:11.887	WARN	hàng 5	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:45:11.887	WARN	hàng 5	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:45:16.866	WARN	hàng 4	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:45:16.866	WARN	hàng 4	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:45:30.525	WARN	hàng 1	R***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:45:30.525	WARN	hàng 1	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:45:47.451	WARN	hàng 7	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:45:47.451	WARN	hàng 7	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:45:51.928	WARN	hàng 6	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:45:51.928	WARN	hàng 6	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:45:55.196	WARN	hàng 10	K***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:45:55.196	WARN	hàng 10	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:45:55.477	WARN	hàng 3	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:45:55.478	WARN	hàng 3	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:45:56.804	WARN	hàng 9	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:45:56.804	WARN	hàng 9	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:46:12.007	WARN	hàng 8	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:46:12.011	WARN	hàng 8	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:46:46.674	WARN	hàng 5	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:46:46.674	WARN	hàng 5	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:46:52.780	WARN	hàng 4	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:46:52.780	WARN	hàng 4	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:47:15.443	INFO	hàng 2	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:47:32.375	WARN	hàng 9	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:47:32.375	WARN	hàng 9	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:47:46.562	INFO	hàng 1	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:48:00.761	INFO	hàng 7	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:48:02.032	INFO	hàng 6	F***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:48:03.880	INFO	hàng 10	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:48:04.119	INFO	hàng 3	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:48:23.522	INFO	hàng 8	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:48:54.249	INFO	hàng 5	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:49:02.388	INFO	hàng 4	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:49:42.475	INFO	hàng 9	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:50:15.492	WARN	hàng 15	L***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:15.580	WARN	hàng 14	Y***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:15.715	WARN	hàng 13	N***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:15.768	WARN	hàng 19	O***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:15.772	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang14_20260505_155015582.png
+2026-05-05 15:50:15.775	INFO	hàng 14	D***@gmail.com	Log mail cũ: lấy UID dòng 34 đăng lại trên cùng profile GPM (proxy hàng 14).
+2026-05-05 15:50:15.776	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang15_20260505_155015494.png
+2026-05-05 15:50:15.788	INFO	hàng 15	M***@gmail.com	Log mail cũ: lấy UID dòng 35 đăng lại trên cùng profile GPM (proxy hàng 15).
+2026-05-05 15:50:15.941	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260505_155015717.png
+2026-05-05 15:50:15.944	INFO	hàng 13	K***@gmail.com	Log mail cũ: lấy UID dòng 36 đăng lại trên cùng profile GPM (proxy hàng 13).
+2026-05-05 15:50:15.944	INFO	hàng 19		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang19_20260505_155015772.png
+2026-05-05 15:50:15.956	INFO	hàng 19	B***@gmail.com	Log mail cũ: lấy UID dòng 37 đăng lại trên cùng profile GPM (proxy hàng 19).
+2026-05-05 15:50:16.271	WARN	hàng 11	V***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:16.542	INFO	hàng 11		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang11_20260505_155016273.png
+2026-05-05 15:50:16.543	INFO	hàng 11	H***@gmail.com	Log mail cũ: lấy UID dòng 38 đăng lại trên cùng profile GPM (proxy hàng 11).
+2026-05-05 15:50:21.394	WARN	hàng 11	H***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:21.580	INFO	hàng 11		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang11_20260505_155021395.png
+2026-05-05 15:50:21.583	INFO	hàng 11	P***@gmail.com	Log mail cũ: lấy UID dòng 39 đăng lại trên cùng profile GPM (proxy hàng 11).
+2026-05-05 15:50:22.379	WARN	hàng 14	D***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:22.489	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang14_20260505_155022381.png
+2026-05-05 15:50:22.492	INFO	hàng 14	Y***@gmail.com	Log mail cũ: lấy UID dòng 40 đăng lại trên cùng profile GPM (proxy hàng 14).
+2026-05-05 15:50:23.148	WARN	hàng 19	B***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:23.209	WARN	hàng 15	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:23.308	INFO	hàng 19		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang19_20260505_155023150.png
+2026-05-05 15:50:23.311	INFO	hàng 19	E***@gmail.com	Log mail cũ: lấy UID dòng 41 đăng lại trên cùng profile GPM (proxy hàng 19).
+2026-05-05 15:50:23.373	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang15_20260505_155023212.png
+2026-05-05 15:50:23.374	INFO	hàng 15	E***@gmail.com	Log mail cũ: lấy UID dòng 42 đăng lại trên cùng profile GPM (proxy hàng 15).
+2026-05-05 15:50:28.360	WARN	hàng 14	Y***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:28.487	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang14_20260505_155028361.png
+2026-05-05 15:50:28.488	INFO	hàng 14	V***@gmail.com	Log mail cũ: lấy UID dòng 43 đăng lại trên cùng profile GPM (proxy hàng 14).
+2026-05-05 15:50:29.491	WARN	hàng 15	E***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:29.598	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang15_20260505_155029492.png
+2026-05-05 15:50:29.599	INFO	hàng 15	S***@gmail.com	Log mail cũ: lấy UID dòng 44 đăng lại trên cùng profile GPM (proxy hàng 15).
+2026-05-05 15:50:33.937	WARN	hàng 14	V***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:34.041	INFO	hàng 14		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang14_20260505_155033938.png
+2026-05-05 15:50:34.044	INFO	hàng 14	I***@gmail.com	Log mail cũ: lấy UID dòng 45 đăng lại trên cùng profile GPM (proxy hàng 14).
+2026-05-05 15:50:36.713	WARN	hàng 15	S***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:50:36.842	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang15_20260505_155036714.png
+2026-05-05 15:50:36.845	INFO	hàng 15	D***@gmail.com	Log mail cũ: lấy UID dòng 46 đăng lại trên cùng profile GPM (proxy hàng 15).
+2026-05-05 15:51:53.597	WARN	hàng 13	K***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:51:53.729	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260505_155153599.png
+2026-05-05 15:51:53.730	INFO	hàng 13	B***@gmail.com	Log mail cũ: lấy UID dòng 47 đăng lại trên cùng profile GPM (proxy hàng 13).
+2026-05-05 15:52:00.354	WARN	hàng 13	B***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:52:00.455	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260505_155200355.png
+2026-05-05 15:52:00.456	INFO	hàng 13	Y***@gmail.com	Log mail cũ: lấy UID dòng 48 đăng lại trên cùng profile GPM (proxy hàng 13).
+2026-05-05 15:52:00.833	INFO	hàng 15	D***@gmail.com	Mở Gmail chuyển sang myaccount.google.com/.../restrictions — đã cập nhật Trạng thái và ghi chú GPM profile.
+2026-05-05 15:52:00.840	INFO	hàng 15		GPM: đã ghi chú profile id=65f3bdbd-99b3-4180-98f6-1a4096fa2b35 — "Google: myaccount/restrictions" | API trả: {"success": true,"data":{},"message": "OK"}
+2026-05-05 15:52:06.186	WARN	hàng 13	Y***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:52:06.328	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260505_155206187.png
+2026-05-05 15:52:06.332	INFO	hàng 13	M***@gmail.com	Log mail cũ: lấy UID dòng 49 đăng lại trên cùng profile GPM (proxy hàng 13).
+2026-05-05 15:53:44.404	WARN	hàng 13	M***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:53:44.524	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260505_155344405.png
+2026-05-05 15:53:44.525	INFO	hàng 13	K***@gmail.com	Log mail cũ: lấy UID dòng 50 đăng lại trên cùng profile GPM (proxy hàng 13).
+2026-05-05 15:53:50.716	WARN	hàng 13	K***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:53:50.825	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260505_155350718.png
+2026-05-05 15:53:50.826	INFO	hàng 13	B***@gmail.com	Log mail cũ: lấy UID dòng 51 đăng lại trên cùng profile GPM (proxy hàng 13).
+2026-05-05 15:53:56.699	WARN	hàng 13	B***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 15:53:56.875	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang13_20260505_155356701.png
+2026-05-05 15:53:56.876	INFO	hàng 13	V***@gmail.com	Log mail cũ: lấy UID dòng 52 đăng lại trên cùng profile GPM (proxy hàng 13).
+2026-05-05 15:55:27.997	WARN	hàng 19	E***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:55:27.997	WARN	hàng 19	E***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:56:14.307	WARN	hàng 11	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:56:14.307	WARN	hàng 11	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:56:19.530	WARN	hàng 12	R***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:56:19.531	WARN	hàng 12	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:56:31.426	WARN	hàng 14	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:56:31.426	WARN	hàng 14	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:56:43.427	WARN	hàng 16	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:56:43.427	WARN	hàng 16	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:56:43.741	WARN	hàng 15	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:56:43.741	WARN	hàng 15	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:56:43.800	WARN	hàng 17	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:56:43.800	WARN	hàng 17	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:56:44.078	WARN	hàng 18	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:56:44.078	WARN	hàng 18	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:57:03.590	WARN	hàng 19	E***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:57:03.591	WARN	hàng 19	E***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:57:49.654	WARN	hàng 11	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:57:49.654	WARN	hàng 11	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:58:00.959	WARN	hàng 12	R***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:58:00.960	WARN	hàng 12	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:58:02.076	WARN	hàng 20	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:58:02.076	WARN	hàng 20	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:58:07.357	WARN	hàng 14	I***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:58:07.357	WARN	hàng 14	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:58:19.796	WARN	hàng 15	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:58:19.796	WARN	hàng 15	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:58:20.989	WARN	hàng 17	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:58:20.989	WARN	hàng 17	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:58:21.377	WARN	hàng 18	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:58:21.377	WARN	hàng 18	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:58:21.682	WARN	hàng 16	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:58:21.682	WARN	hàng 16	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:59:06.290	WARN	hàng 13	V***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 15:59:06.290	WARN	hàng 13	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:59:13.960	INFO	hàng 19	E***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 15:59:36.976	WARN	hàng 20	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 15:59:36.976	WARN	hàng 20	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 15:59:59.148	INFO	hàng 11	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:00:17.896	INFO	hàng 12	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:00:18.980	INFO	hàng 14	I***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:00:30.834	INFO	hàng 15	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:00:35.368	INFO	hàng 17	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:00:36.962	INFO	hàng 18	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:00:37.807	INFO	hàng 16	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:00:42.393	WARN	hàng 13	V***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 16:00:42.393	WARN	hàng 13	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:01:46.634	INFO	hàng 20	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:02:53.004	INFO	hàng 13	V***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:03:15.263	WARN	hàng 22	C***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 16:03:15.417	INFO	hàng 22		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang22_20260505_160315265.png
+2026-05-05 16:03:15.418	INFO	hàng 22	N***@gmail.com	Log mail cũ: lấy UID dòng 53 đăng lại trên cùng profile GPM (proxy hàng 22).
+2026-05-05 16:03:16.433	WARN	hàng 21	A***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 16:03:16.595	INFO	hàng 21		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang21_20260505_160316435.png
+2026-05-05 16:03:16.595	INFO	hàng 21	H***@gmail.com	Log mail cũ: lấy UID dòng 54 đăng lại trên cùng profile GPM (proxy hàng 21).
+2026-05-05 16:03:22.284	WARN	hàng 22	N***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 16:03:22.378	INFO	hàng 22		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang22_20260505_160322285.png
+2026-05-05 16:03:22.379	INFO	hàng 22	N***@gmail.com	Log mail cũ: lấy UID dòng 55 đăng lại trên cùng profile GPM (proxy hàng 22).
+2026-05-05 16:03:24.226	WARN	hàng 21	H***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 16:03:24.340	INFO	hàng 21		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang21_20260505_160324227.png
+2026-05-05 16:03:24.341	INFO	hàng 21	G***@gmail.com	Log mail cũ: lấy UID dòng 56 đăng lại trên cùng profile GPM (proxy hàng 21).
+2026-05-05 16:03:29.243	WARN	hàng 22	N***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 16:03:29.364	INFO	hàng 22		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang22_20260505_160329244.png
+2026-05-05 16:03:29.365	INFO	hàng 22	Q***@gmail.com	Log mail cũ: lấy UID dòng 57 đăng lại trên cùng profile GPM (proxy hàng 22).
+2026-05-05 16:03:30.334	WARN	hàng 21	G***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
+2026-05-05 16:03:30.435	INFO	hàng 21		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang21_20260505_160330335.png
+2026-05-05 16:03:30.436	INFO	hàng 21	N***@gmail.com	Log mail cũ: lấy UID dòng 58 đăng lại trên cùng profile GPM (proxy hàng 21).
