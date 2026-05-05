@@ -662,7 +662,7 @@ public partial class Form1
 				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
 				continue;
 			}
-			string debugAddress = startRoot?["data"]?["remote_debugging_address"]?.ToString();
+			string debugAddress = (startRoot?["data"] as JObject)?["remote_debugging_address"]?.ToString();
 			if (string.IsNullOrWhiteSpace(debugAddress))
 			{
 				string gpmMessage = startRoot?["message"]?.ToString();
