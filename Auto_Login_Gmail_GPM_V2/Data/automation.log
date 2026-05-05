@@ -7956,3 +7956,35 @@
 2026-05-05 16:03:30.334	WARN	hàng 21	G***@gmail.com	Dừng: màn reCAPTCHA / Verify — coi tài khoản chết, GIỮ tab để kiểm tra; ghi dead_*.log + thử mail dự phòng cùng profile.
 2026-05-05 16:03:30.435	INFO	hàng 21		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\google_signin_recaptcha_dead_hang21_20260505_160330335.png
 2026-05-05 16:03:30.436	INFO	hàng 21	N***@gmail.com	Log mail cũ: lấy UID dòng 58 đăng lại trên cùng profile GPM (proxy hàng 21).
+2026-05-05 16:03:57.629	INFO	hàng 25	M***@gmail.com	Mở Gmail chuyển sang myaccount.google.com/.../restrictions — đã cập nhật Trạng thái và ghi chú GPM profile.
+2026-05-05 16:03:57.637	INFO	hàng 25		GPM: đã ghi chú profile id=0c3958dd-43be-4678-80d9-f204e4414acf — "Google: myaccount/restrictions" | API trả: {"success": true,"data":{},"message": "OK"}
+2026-05-05 16:04:02.558	INFO	hàng 23	R***@gmail.com	Mở Gmail chuyển sang myaccount.google.com/.../restrictions — đã cập nhật Trạng thái và ghi chú GPM profile.
+2026-05-05 16:04:02.564	INFO	hàng 23		GPM: đã ghi chú profile id=4929c910-2514-4977-ac3a-b07cfc59305b — "Google: myaccount/restrictions" | API trả: {"success": true,"data":{},"message": "OK"}
+2026-05-05 16:04:25.437	INFO	hàng 21	N***@gmail.com	Mở Gmail chuyển sang myaccount.google.com/.../restrictions — đã cập nhật Trạng thái và ghi chú GPM profile.
+2026-05-05 16:04:25.444	INFO	hàng 21		GPM: đã ghi chú profile id=958599b4-d0c9-4ffa-95e0-f9d4d9427329 — "Google: myaccount/restrictions" | API trả: {"success": true,"data":{},"message": "OK"}
+2026-05-05 16:08:59.106	WARN	hàng 25	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 16:08:59.106	WARN	hàng 25	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:09:12.265	WARN	hàng 23	R***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 16:09:12.265	WARN	hàng 23	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:09:30.038	WARN	hàng 24	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 16:09:30.038	WARN	hàng 24	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:09:33.823	WARN	hàng 21	N***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 16:09:33.823	WARN	hàng 21	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:09:39.359	WARN	hàng 22	Q***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 16:09:39.359	WARN	hàng 22	Q***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:10:35.602	WARN	hàng 25	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 16:10:35.602	WARN	hàng 25	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:10:52.149	WARN	hàng 23	R***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 16:10:52.149	WARN	hàng 23	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:11:06.250	WARN	hàng 24	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 16:11:06.250	WARN	hàng 24	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:11:09.336	WARN	hàng 21	N***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 16:11:09.336	WARN	hàng 21	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:11:19.513	WARN	hàng 22	Q***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 16:11:19.513	WARN	hàng 22	Q***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 16:12:43.578	INFO	hàng 25	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:13:02.662	INFO	hàng 23	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:13:17.632	INFO	hàng 24	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:13:20.476	INFO	hàng 21	N***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:13:34.205	INFO	hàng 22	Q***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 16:13:34.641	INFO	-		Kết thúc batch: OK=25 Fail=0 (Playwright đã đóng).

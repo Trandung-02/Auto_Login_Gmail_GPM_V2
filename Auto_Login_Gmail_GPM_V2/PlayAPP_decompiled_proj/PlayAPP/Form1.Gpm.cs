@@ -649,13 +649,72 @@ public partial class Form1
 			string profileId = _profileIds[item.rowIndex];
 			_gpmProfileIdOpenedForRow[item.rowIndex] = profileId;
 			string startUrl = BuildGpmProfileStartUrl(profileId, bi, tileCols, tileW, tileH, tileGap);
-			dynamic json = JsonConvert.DeserializeObject(await client.GetStringAsync(startUrl));
-			string debugAddress = json.data.remote_debugging_address;
+			string startResp = await client.GetStringAsync(startUrl);
+			JObject startRoot = null;
+			try
+			{
+				startRoot = JObject.Parse(startResp);
+			}
+			catch (Exception ex)
+			{
+				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile: response không phải JSON hợp lệ. " + ex.Message);
+				SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
+				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+				continue;
+			}
+			string debugAddress = startRoot?["data"]?["remote_debugging_address"]?.ToString();
+			if (string.IsNullOrWhiteSpace(debugAddress))
+			{
+				string gpmMessage = startRoot?["message"]?.ToString();
+				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile không trả remote_debugging_address. " + (string.IsNullOrWhiteSpace(gpmMessage) ? startResp : gpmMessage));
+				SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
+				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+				try
+				{
+					await TryGpmCloseProfileByRowAsync(item.rowIndex);
+				}
+				catch
+				{
+				}
+				continue;
+			}
 			string versionJson = await client.GetStringAsync("http://" + debugAddress + "/json/version");
 			Console.WriteLine("VERSION JSON:");
 			Console.WriteLine(versionJson);
-			dynamic version = JsonConvert.DeserializeObject(versionJson);
-			string wsEndpoint = version.webSocketDebuggerUrl;
+			JObject versionRoot = null;
+			try
+			{
+				versionRoot = JObject.Parse(versionJson);
+			}
+			catch (Exception ex)
+			{
+				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "json/version không hợp lệ: " + ex.Message);
+				SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
+				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+				try
+				{
+					await TryGpmCloseProfileByRowAsync(item.rowIndex);
+				}
+				catch
+				{
+				}
+				continue;
+			}
+			string wsEndpoint = versionRoot?["webSocketDebuggerUrl"]?.ToString();
+			if (string.IsNullOrWhiteSpace(wsEndpoint))
+			{
+				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "json/version không có webSocketDebuggerUrl.");
+				SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
+				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+				try
+				{
+					await TryGpmCloseProfileByRowAsync(item.rowIndex);
+				}
+				catch
+				{
+				}
+				continue;
+			}
 			Console.WriteLine("WS ENDPOINT: " + wsEndpoint);
 			IBrowser browser;
 			try
