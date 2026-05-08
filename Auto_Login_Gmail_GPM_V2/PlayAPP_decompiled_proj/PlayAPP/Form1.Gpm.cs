@@ -642,102 +642,151 @@ public partial class Form1
 			{
 				break;
 			}
-			if (item.rowIndex < 0 || item.rowIndex >= _profileIds.Count)
-			{
-				throw new Exception($"Hàng account {item.rowIndex + 1} không có profile tương ứng trong nhóm (nhóm có {_profileIds.Count} profile).");
-			}
-			string profileId = _profileIds[item.rowIndex];
-			_gpmProfileIdOpenedForRow[item.rowIndex] = profileId;
-			string startUrl = BuildGpmProfileStartUrl(profileId, bi, tileCols, tileW, tileH, tileGap);
-			string startResp = await client.GetStringAsync(startUrl);
-			JObject startRoot = null;
+			string profileId = null;
 			try
 			{
-				startRoot = JObject.Parse(startResp);
-			}
-			catch (Exception ex)
-			{
-				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile: response không phải JSON hợp lệ. " + ex.Message);
-				SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
-				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
-				continue;
-			}
-			string debugAddress = (startRoot?["data"] as JObject)?["remote_debugging_address"]?.ToString();
-			if (string.IsNullOrWhiteSpace(debugAddress))
-			{
-				string gpmMessage = startRoot?["message"]?.ToString();
-				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile không trả remote_debugging_address. " + (string.IsNullOrWhiteSpace(gpmMessage) ? startResp : gpmMessage));
-				SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
-				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+				if (item.rowIndex < 0 || item.rowIndex >= _profileIds.Count)
+				{
+					AppendAutomationLog("ERROR", item.rowIndex, item.uid, $"Hàng account {item.rowIndex + 1} không có profile tương ứng trong nhóm (nhóm có {_profileIds.Count} profile).");
+					SetText(item.rowIndex, "STATUS", "Thiếu profile GPM");
+					continue;
+				}
+				profileId = _profileIds[item.rowIndex];
+				_gpmProfileIdOpenedForRow[item.rowIndex] = profileId;
+				string startUrl = BuildGpmProfileStartUrl(profileId, bi, tileCols, tileW, tileH, tileGap);
+				string startResp = await client.GetStringAsync(startUrl);
+				JObject startRoot = null;
 				try
 				{
-					await TryGpmCloseProfileByRowAsync(item.rowIndex);
+					startRoot = JObject.Parse(startResp);
 				}
-				catch
+				catch (Exception ex)
 				{
+					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile: response không phải JSON hợp lệ. " + ex.Message);
+					SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
+					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+					continue;
 				}
-				continue;
-			}
-			string versionJson = await client.GetStringAsync("http://" + debugAddress + "/json/version");
-			Console.WriteLine("VERSION JSON:");
-			Console.WriteLine(versionJson);
-			JObject versionRoot = null;
-			try
-			{
-				versionRoot = JObject.Parse(versionJson);
-			}
-			catch (Exception ex)
-			{
-				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "json/version không hợp lệ: " + ex.Message);
-				SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
-				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+				string debugAddress;
 				try
 				{
-					await TryGpmCloseProfileByRowAsync(item.rowIndex);
+					JToken startData = startRoot?["data"];
+					debugAddress = (startData as JObject)?["remote_debugging_address"]?.ToString();
 				}
-				catch
+				catch (Exception ex)
 				{
+					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile: dữ liệu data không hợp lệ (" + ex.Message + ").");
+					SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
+					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+					try
+					{
+						await TryGpmCloseProfileByRowAsync(item.rowIndex);
+					}
+					catch
+					{
+					}
+					continue;
 				}
-				continue;
-			}
-			string wsEndpoint = versionRoot?["webSocketDebuggerUrl"]?.ToString();
-			if (string.IsNullOrWhiteSpace(wsEndpoint))
-			{
-				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "json/version không có webSocketDebuggerUrl.");
-				SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
-				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+				if (string.IsNullOrWhiteSpace(debugAddress))
+				{
+					string gpmMessage = startRoot?["message"]?.ToString();
+					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile không trả remote_debugging_address. " + (string.IsNullOrWhiteSpace(gpmMessage) ? startResp : gpmMessage));
+					SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
+					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+					try
+					{
+						await TryGpmCloseProfileByRowAsync(item.rowIndex);
+					}
+					catch
+					{
+					}
+					continue;
+				}
+				string versionJson = await client.GetStringAsync("http://" + debugAddress + "/json/version");
+				Console.WriteLine("VERSION JSON:");
+				Console.WriteLine(versionJson);
+				JObject versionRoot = null;
 				try
 				{
-					await TryGpmCloseProfileByRowAsync(item.rowIndex);
+					versionRoot = JObject.Parse(versionJson);
 				}
-				catch
+				catch (Exception ex)
 				{
+					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "json/version không hợp lệ: " + ex.Message);
+					SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
+					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+					try
+					{
+						await TryGpmCloseProfileByRowAsync(item.rowIndex);
+					}
+					catch
+					{
+					}
+					continue;
 				}
-				continue;
-			}
-			Console.WriteLine("WS ENDPOINT: " + wsEndpoint);
-			IBrowser browser;
-			try
-			{
-				browser = await _playwright.Chromium.ConnectOverCDPAsync(wsEndpoint);
-			}
-			catch (Exception ex)
-			{
-				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "ConnectOverCDP: " + ex.Message);
-				SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
-				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+				string wsEndpoint = versionRoot?["webSocketDebuggerUrl"]?.ToString();
+				if (string.IsNullOrWhiteSpace(wsEndpoint))
+				{
+					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "json/version không có webSocketDebuggerUrl.");
+					SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
+					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+					try
+					{
+						await TryGpmCloseProfileByRowAsync(item.rowIndex);
+					}
+					catch
+					{
+					}
+					continue;
+				}
+				Console.WriteLine("WS ENDPOINT: " + wsEndpoint);
+				IBrowser browser;
 				try
 				{
-					await TryGpmCloseProfileByRowAsync(item.rowIndex);
+					browser = await _playwright.Chromium.ConnectOverCDPAsync(wsEndpoint);
 				}
-				catch
+				catch (Exception ex)
 				{
+					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "ConnectOverCDP: " + ex.Message);
+					SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
+					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+					try
+					{
+						await TryGpmCloseProfileByRowAsync(item.rowIndex);
+					}
+					catch
+					{
+					}
+					continue;
 				}
-				continue;
-			}
-			try
-			{
-				if (!await TryVerifyChromeVersionProxyMatchesGridAsync(browser, item.rowIndex, item.uid))
+				try
+				{
+					if (!await TryVerifyChromeVersionProxyMatchesGridAsync(browser, item.rowIndex, item.uid))
+					{
+						try
+						{
+							await browser.CloseAsync();
+						}
+						catch
+						{
+						}
+						_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
+						try
+						{
+							await TryGpmCloseProfileByRowAsync(item.rowIndex);
+						}
+						catch
+						{
+						}
+						SetText(item.rowIndex, "STATUS", GpmProxyMismatchStatus);
+						AppendAutomationLog("WARN", item.rowIndex, item.uid, "Đã đóng profile: chrome://version không khớp PROXY lưới.");
+						continue;
+					}
+					_browsers.Add(browser);
+					okSlice.Add(item);
+					Console.WriteLine("Opened profile: " + profileId);
+				}
+				catch (Exception ex)
 				{
 					try
 					{
@@ -754,23 +803,15 @@ public partial class Form1
 					catch
 					{
 					}
-					SetText(item.rowIndex, "STATUS", GpmProxyMismatchStatus);
-					AppendAutomationLog("WARN", item.rowIndex, item.uid, "Đã đóng profile: chrome://version không khớp PROXY lưới.");
+					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "Sau CDP (chrome://version): " + ex.Message);
+					SetText(item.rowIndex, "STATUS", "Lỗi kiểm tra proxy GPM");
 					continue;
 				}
-				_browsers.Add(browser);
-				okSlice.Add(item);
-				Console.WriteLine("Opened profile: " + profileId);
 			}
 			catch (Exception ex)
 			{
-				try
-				{
-					await browser.CloseAsync();
-				}
-				catch
-				{
-				}
+				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "Lỗi không mong đợi khi mở profile GPM: " + ex.Message);
+				SetText(item.rowIndex, "STATUS", "Lỗi mở profile (đã bỏ qua)");
 				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
 				try
 				{
@@ -779,8 +820,6 @@ public partial class Form1
 				catch
 				{
 				}
-				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "Sau CDP (chrome://version): " + ex.Message);
-				SetText(item.rowIndex, "STATUS", "Lỗi kiểm tra proxy GPM");
 				continue;
 			}
 		}

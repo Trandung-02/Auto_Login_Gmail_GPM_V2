@@ -3073,6 +3073,107 @@ public partial class Form1 : Form
 		return page.Locator("main div[jsname='eBSUOb'] button[jsname='LgbsSe'], main .FO2vFd button[jsname='LgbsSe'], [data-secondary-action-label] div[jsname='eBSUOb'] button[jsname='LgbsSe'], [data-secondary-action-label] button[jsname='LgbsSe']");
 	}
 
+	/// <summary>Màn recovery email không qua danh sách challenge: ô knowledgePreregisteredEmailResponse (“Enter recovery email address”). Điền cột Mail Backup và bấm Next.</summary>
+	private async Task<bool> TryHandleGoogleDirectRecoveryEmailPromptAsync(IPage page, string recoveryEmailTrim, int vitri)
+	{
+		if (page == null)
+		{
+			return false;
+		}
+		ILocator box = page.Locator("#knowledge-preregistered-email-response, input[name='knowledgePreregisteredEmailResponse']");
+		try
+		{
+			if (await box.CountAsync() == 0)
+			{
+				box = page.GetByLabel("Enter recovery email address");
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			if (await box.CountAsync() == 0)
+			{
+				return false;
+			}
+		}
+		catch
+		{
+			return false;
+		}
+		bool visible = false;
+		try
+		{
+			await box.First.WaitForAsync(new LocatorWaitForOptions
+			{
+				State = WaitForSelectorState.Visible,
+				Timeout = 5000f
+			});
+			visible = await box.First.IsVisibleAsync();
+		}
+		catch
+		{
+		}
+		if (!visible)
+		{
+			try
+			{
+				visible = await box.First.IsVisibleAsync();
+			}
+			catch
+			{
+			}
+		}
+		if (!visible)
+		{
+			return false;
+		}
+		if (string.IsNullOrEmpty(recoveryEmailTrim))
+		{
+			try
+			{
+				SetText(vitri, "STATUS", "STEP 3: Google yêu cầu recovery email — nhập cột Mail Backup và chạy lại.");
+			}
+			catch
+			{
+			}
+			return false;
+		}
+		try
+		{
+			SetText(vitri, "STATUS", "STEP 3: Recovery email (Mail Backup) — nhập và Next");
+			await box.First.ClickAsync(new LocatorClickOptions
+			{
+				Timeout = 5000f
+			});
+		}
+		catch
+		{
+		}
+		try
+		{
+			await box.First.FillAsync(recoveryEmailTrim);
+		}
+		catch
+		{
+			return false;
+		}
+		await DelayBatchAsync(300);
+		bool nextOk = await TryClickLocatorHardAsync(page, GooglePrimaryActionButton(page), 15000);
+		if (!nextOk)
+		{
+			try
+			{
+				await box.First.PressAsync("Enter");
+			}
+			catch
+			{
+			}
+		}
+		return true;
+	}
+
 	private async Task<bool> TryClickLocatorHardAsync(IPage page, ILocator locator, int timeoutMs = 15000)
 	{
 		if (page == null || locator == null)
@@ -3632,15 +3733,24 @@ public partial class Form1 : Form
 					bool hasTotpInput = await totpInput.CountAsync() > 0;
 					try { SetText(vitri, "STATUS", "STEP 3 [LOG]: hasTotpInput=" + hasTotpInput); } catch { }
 
+					// Google đôi khi hiện thẳng ô "Enter recovery email address" (không qua danh sách challenge).
+					bool directRecoveryEmailHandled = await TryHandleGoogleDirectRecoveryEmailPromptAsync(page, recoveryEmailTrim, vitri);
+					if (directRecoveryEmailHandled)
+					{
+						clickedRecoveryChoice = true;
+						switchedToRecoveryEmail = true;
+						verifyDone = false;
+					}
+
 					// Nếu cột 2FA trống: luôn ưu tiên "Confirm your recovery email" (challenge type 12)
-					if (string.IsNullOrEmpty(ma2faTrim))
+					if (string.IsNullOrEmpty(ma2faTrim) && !directRecoveryEmailHandled)
 					{
 						SetText(vitri, "STATUS", "STEP 3: Không có 2FA — chọn Recovery email");
 
-						// Chờ UI verify render: hoặc ô totpPin, hoặc danh sách challenge (type 12) xuất hiện.
+						// Chờ UI verify: totpPin, challenge, hoặc ô recovery trực tiếp (knowledgePreregisteredEmailResponse).
 						try
 						{
-							await page.WaitForSelectorAsync("input[name='totpPin'], div[jsname='EBHGs'][data-action='selectchallenge']", new PageWaitForSelectorOptions
+							await page.WaitForSelectorAsync("input[name='totpPin'], div[jsname='EBHGs'][data-action='selectchallenge'], #knowledge-preregistered-email-response, input[name='knowledgePreregisteredEmailResponse']", new PageWaitForSelectorOptions
 							{
 								Timeout = 20000f
 							});
@@ -3649,8 +3759,22 @@ public partial class Form1 : Form
 						{
 						}
 
+						if (!directRecoveryEmailHandled)
+						{
+							directRecoveryEmailHandled = await TryHandleGoogleDirectRecoveryEmailPromptAsync(page, recoveryEmailTrim, vitri);
+							if (directRecoveryEmailHandled)
+							{
+								clickedRecoveryChoice = true;
+								switchedToRecoveryEmail = true;
+								verifyDone = false;
+							}
+						}
+
+						totpInput = page.Locator("input[name='totpPin']");
+						hasTotpInput = await totpInput.CountAsync() > 0;
+
 						// Nếu đang đứng ở màn totpPin thì bấm "Try another way" để về danh sách lựa chọn
-						if (hasTotpInput)
+						if (!directRecoveryEmailHandled && hasTotpInput)
 						{
 							ILocator tryAnotherWay = page.Locator("[data-action='tryAnotherWay']").Or(GoogleSecondaryActionButton(page));
 							if (await TryClickLocatorHardAsync(page, tryAnotherWay, 15000))
@@ -3669,96 +3793,98 @@ public partial class Form1 : Form
 							}
 						}
 
-						// Màn "Verify it's you" / "Choose how you want to sign in"
-						// Ưu tiên click đúng option challenge type 12: Confirm your recovery email
-						ILocator recovery = page.Locator("div.VV3oRb[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
-						ILocator recovery2 = page.Locator("div[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
-						ILocator recovery3 = page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Confirm your recovery email" });
-						ILocator recovery4 = page.Locator("div[jsname='EBHGs'][role='link']").Filter(new LocatorFilterOptions { HasTextString = "Confirm your recovery email" });
-
-						int c1 = 0, c2 = 0, c3 = 0, c4 = 0;
-						try { c1 = await recovery.CountAsync(); } catch { }
-						try { c2 = await recovery2.CountAsync(); } catch { }
-						try { c3 = await recovery3.CountAsync(); } catch { }
-						try { c4 = await recovery4.CountAsync(); } catch { }
-						SetText(vitri, "STATUS", "STEP 3 [LOG]: recovery counts => css1=" + c1 + " css2=" + c2 + " role=" + c3 + " textFilter=" + c4);
-
-						if (c1 == 0) recovery = recovery2;
-						if ((await recovery.CountAsync()) == 0) recovery = recovery3;
-						if ((await recovery.CountAsync()) == 0) recovery = recovery4;
-						if (await recovery.CountAsync() > 0)
+						if (!directRecoveryEmailHandled)
 						{
-							SetText(vitri, "STATUS", "STEP 3: Chọn Confirm recovery email");
-							try { await recovery.First.ScrollIntoViewIfNeededAsync(); } catch { }
-							try
+							// Màn "Verify it's you" / "Choose how you want to sign in"
+							// Ưu tiên click đúng option challenge type 12: Confirm your recovery email
+							ILocator recovery = page.Locator("div.VV3oRb[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
+							ILocator recovery2 = page.Locator("div[jsname='EBHGs'][data-action='selectchallenge'][data-challengetype='12']");
+							ILocator recovery3 = page.GetByRole(AriaRole.Link, new PageGetByRoleOptions { Name = "Confirm your recovery email" });
+							ILocator recovery4 = page.Locator("div[jsname='EBHGs'][role='link']").Filter(new LocatorFilterOptions { HasTextString = "Confirm your recovery email" });
+
+							int c1 = 0, c2 = 0, c3 = 0, c4 = 0;
+							try { c1 = await recovery.CountAsync(); } catch { }
+							try { c2 = await recovery2.CountAsync(); } catch { }
+							try { c3 = await recovery3.CountAsync(); } catch { }
+							try { c4 = await recovery4.CountAsync(); } catch { }
+							SetText(vitri, "STATUS", "STEP 3 [LOG]: recovery counts => css1=" + c1 + " css2=" + c2 + " role=" + c3 + " textFilter=" + c4);
+
+							if (c1 == 0) recovery = recovery2;
+							if ((await recovery.CountAsync()) == 0) recovery = recovery3;
+							if ((await recovery.CountAsync()) == 0) recovery = recovery4;
+							if (await recovery.CountAsync() > 0)
 							{
-								await recovery.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 15000f });
-							}
-							catch
-							{
-							}
-							// Click "cứng": thử force click, nếu fail thì click theo tọa độ bounding box.
-							try
-							{
-								await recovery.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f, Force = true });
-								clickedRecoveryChoice = true;
-							}
-							catch
-							{
+								SetText(vitri, "STATUS", "STEP 3: Chọn Confirm recovery email");
+								try { await recovery.First.ScrollIntoViewIfNeededAsync(); } catch { }
 								try
 								{
-									var box = await recovery.First.BoundingBoxAsync();
-									if (box != null)
-									{
-										float cx = (float)(box.X + (box.Width / 2.0));
-										float cy = (float)(box.Y + (box.Height / 2.0));
-										await page.Mouse.ClickAsync(cx, cy);
-										clickedRecoveryChoice = true;
-									}
+									await recovery.First.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 15000f });
 								}
 								catch
 								{
 								}
-							}
-							SetText(vitri, "STATUS", "STEP 3 [LOG]: clickedRecoveryChoice=" + clickedRecoveryChoice);
-							switchedToRecoveryEmail = true;
-
-							// Đợi trang/step chuyển sang màn nhập recovery email (để không nhảy sang bước khác)
-							try
-							{
-								// input ở step recovery email thường là email input, có thể khác với identifier.
-								ILocator recInput = page.Locator("input[type='email'], input[type='email'][name], input[autocomplete='email']");
-								await recInput.First.WaitForAsync(new LocatorWaitForOptions
+								// Click "cứng": thử force click, nếu fail thì click theo tọa độ bounding box.
+								try
 								{
-									State = WaitForSelectorState.Visible,
-									Timeout = 15000f
-								});
-
-								if (!string.IsNullOrEmpty(recoveryEmailTrim))
+									await recovery.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f, Force = true });
+									clickedRecoveryChoice = true;
+								}
+								catch
 								{
-									SetText(vitri, "STATUS", "STEP 3: Nhập recovery email");
-									await recInput.First.FillAsync(recoveryEmailTrim);
-									// Nút tiếp tục ở màn recovery dùng action chính của Google, không phụ thuộc chữ "Next".
-									await TryClickLocatorHardAsync(page, GooglePrimaryActionButton(page), 15000);
+									try
+									{
+										var box = await recovery.First.BoundingBoxAsync();
+										if (box != null)
+										{
+											float cx = (float)(box.X + (box.Width / 2.0));
+											float cy = (float)(box.Y + (box.Height / 2.0));
+											await page.Mouse.ClickAsync(cx, cy);
+											clickedRecoveryChoice = true;
+										}
+									}
+									catch
+									{
+									}
+								}
+								SetText(vitri, "STATUS", "STEP 3 [LOG]: clickedRecoveryChoice=" + clickedRecoveryChoice);
+								switchedToRecoveryEmail = true;
+
+								// Đợi trang/step chuyển sang màn nhập recovery email (để không nhảy sang bước khác)
+								try
+								{
+									ILocator recInput = page.Locator("#knowledge-preregistered-email-response, input[name='knowledgePreregisteredEmailResponse']").Or(page.Locator("input[type='email'], input[type='email'][name], input[autocomplete='email']"));
+									await recInput.First.WaitForAsync(new LocatorWaitForOptions
+									{
+										State = WaitForSelectorState.Visible,
+										Timeout = 15000f
+									});
+
+									if (!string.IsNullOrEmpty(recoveryEmailTrim))
+									{
+										SetText(vitri, "STATUS", "STEP 3: Nhập recovery email");
+										await recInput.First.FillAsync(recoveryEmailTrim);
+										// Nút tiếp tục ở màn recovery dùng action chính của Google, không phụ thuộc chữ "Next".
+										await TryClickLocatorHardAsync(page, GooglePrimaryActionButton(page), 15000);
+									}
+								}
+								catch
+								{
+									// ignore: Google UI thay đổi; ít nhất đã click option
 								}
 							}
-							catch
-							{
-								// ignore: Google UI thay đổi; ít nhất đã click option
-							}
-						}
 
-						// Khi không có 2FA: chỉ hợp lệ nếu click được recovery choice (type 12).
-						// Nếu không tìm/click được thì dừng lại để tránh nhảy sang STEP 4.
-						if (!clickedRecoveryChoice)
-						{
-							try { SetText(vitri, "STATUS", "STEP 3 [LOG]: KHÔNG click được challengetype=12 => BỎ QUA, QUA BƯỚC TIẾP THEO"); } catch { }
-							goto AFTER_VERIFY_STEP_3;
+							// Khi không có 2FA: chỉ hợp lệ nếu click được recovery choice (type 12).
+							// Nếu không tìm/click được thì dừng lại để tránh nhảy sang STEP 4.
+							if (!clickedRecoveryChoice)
+							{
+								try { SetText(vitri, "STATUS", "STEP 3 [LOG]: KHÔNG click được challengetype=12 => BỎ QUA, QUA BƯỚC TIẾP THEO"); } catch { }
+								goto AFTER_VERIFY_STEP_3;
+							}
 						}
 
 						verifyDone = false; // đang ở flow recovery email, chưa verify xong
 					}
-					else if (hasTotpInput)
+					else if (!directRecoveryEmailHandled && hasTotpInput)
 					{
 						// Có secret 2FA và có ô totpPin: nhập 2FA bình thường
 						SetText(vitri, "STATUS", "STEP 3: Nhập mã 2FA");
@@ -3786,7 +3912,7 @@ public partial class Form1 : Form
 							return false;
 						}
 					}
-					else
+					else if (!directRecoveryEmailHandled)
 					{
 						// Có 2FA nhưng không thấy ô totpPin: có thể đang ở màn "2-Step Verification" / "Choose how you want to sign in"
 						// (chưa có input) — cần bấm "Get a verification code from the Google Authenticator app" (data-challengetype="6").
@@ -4770,7 +4896,7 @@ public partial class Form1 : Form
 						}
 						else
 						{
-							SetText(vitri, "STATUS", "[Form] Không trích được OUID từ trang Form (sẽ bỏ tham số ouid trong link).");
+							SetText(vitri, "STATUS", "[Form] Không trích được OUID từ trang Form (chỉ log; [LINK_FORM] dùng URL /viewform không query).");
 						}
 					}
 					catch (Exception exOuid)
@@ -4846,23 +4972,18 @@ public partial class Form1 : Form
 					string formUrlNorm = (formLink ?? "").Trim();
 					if (!string.IsNullOrEmpty(formUrlNorm))
 					{
-						string ouidValue = (formOuid ?? "").Trim();
-						if (string.IsNullOrWhiteSpace(ouidValue))
+						// Chuẩn hóa về dạng: https://docs.google.com/forms/d/e/<id>/viewform (không query)
+						Match idMatch = Regex.Match(formUrlNorm, @"docs\.google\.com/forms(?:/u/\d+)?/d/e/([^/?#]+)", RegexOptions.IgnoreCase);
+						if (idMatch.Success)
 						{
-							Match ouidMatch = Regex.Match(formUrlNorm, "(?:\\?|&)ouid=([^&#]+)", RegexOptions.IgnoreCase);
-							if (ouidMatch.Success)
-							{
-								ouidValue = Uri.UnescapeDataString(ouidMatch.Groups[1].Value);
-							}
+							formUrlNorm = "https://docs.google.com/forms/d/e/" + idMatch.Groups[1].Value + "/viewform";
 						}
-						int indexVf = formUrlNorm.IndexOf("viewform", StringComparison.OrdinalIgnoreCase);
-						if (indexVf != -1)
+						else
 						{
-							formUrlNorm = formUrlNorm.Substring(0, indexVf + "viewform".Length);
-							formUrlNorm += "?usp=sharing";
-							if (!string.IsNullOrWhiteSpace(ouidValue))
+							int indexVf = formUrlNorm.IndexOf("viewform", StringComparison.OrdinalIgnoreCase);
+							if (indexVf != -1)
 							{
-								formUrlNorm += "&ouid=" + Uri.EscapeDataString(ouidValue);
+								formUrlNorm = formUrlNorm.Substring(0, indexVf + "viewform".Length);
 							}
 						}
 					}

@@ -7988,3 +7988,506 @@
 2026-05-05 16:13:20.476	INFO	hàng 21	N***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
 2026-05-05 16:13:34.205	INFO	hàng 22	Q***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
 2026-05-05 16:13:34.641	INFO	-		Kết thúc batch: OK=25 Fail=0 (Playwright đã đóng).
+2026-05-05 17:33:03.822	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="65", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-05-05 17:34:01.710	ERROR	hàng 1	b***@gmail.com	Exception: TimeoutException — Timeout 30000ms exceeded. Call log:   - navigating to "https://accounts.google.com/?hl=en", waiting until "networkidle"
+2026-05-05 17:34:02.003	INFO	hàng 1		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\exception_hang1_20260505_173401716.png
+2026-05-05 17:38:05.192	WARN	hàng 9	h***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:38:05.192	WARN	hàng 9	h***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:38:05.279	WARN	hàng 2	n***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:38:05.279	WARN	hàng 2	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:38:21.540	WARN	hàng 4	t***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:38:21.540	WARN	hàng 4	t***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:38:24.187	WARN	hàng 3	n***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:38:24.187	WARN	hàng 3	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:38:25.741	WARN	hàng 6	m***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:38:25.741	WARN	hàng 6	m***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:38:27.125	WARN	hàng 7	n***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:38:27.125	WARN	hàng 7	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:38:28.680	WARN	hàng 10	t***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:38:28.680	WARN	hàng 10	t***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:38:45.448	WARN	hàng 8	l***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:38:45.448	WARN	hàng 8	l***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:39:40.182	WARN	hàng 2	n***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:39:40.182	WARN	hàng 2	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:39:40.728	WARN	hàng 9	h***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:39:40.728	WARN	hàng 9	h***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:39:48.315	WARN	hàng 5	s***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:39:48.315	WARN	hàng 5	s***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:39:56.999	WARN	hàng 4	t***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:39:56.999	WARN	hàng 4	t***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:40:00.057	WARN	hàng 3	n***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:40:00.057	WARN	hàng 3	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:40:01.258	WARN	hàng 6	m***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:40:01.258	WARN	hàng 6	m***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:40:03.094	WARN	hàng 7	n***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:40:03.094	WARN	hàng 7	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:40:04.508	WARN	hàng 10	t***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:40:04.508	WARN	hàng 10	t***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:40:20.164	WARN	hàng 8	l***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:40:20.164	WARN	hàng 8	l***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:41:23.123	WARN	hàng 5	s***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:41:23.123	WARN	hàng 5	s***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:41:49.924	INFO	hàng 9	h***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:41:50.281	INFO	hàng 2	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:41:55.823	INFO	hàng 3	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:42:06.086	INFO	hàng 4	t***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:42:11.728	INFO	hàng 6	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:42:12.733	INFO	hàng 7	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:42:17.569	INFO	hàng 10	t***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:42:35.883	INFO	hàng 8	l***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:43:31.103	INFO	hàng 5	s***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:48:41.471	WARN	hàng 16	t***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:48:41.472	WARN	hàng 16	t***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:48:44.034	WARN	hàng 19	k***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:48:44.035	WARN	hàng 19	k***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:48:46.938	WARN	hàng 15	c***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:48:46.938	WARN	hàng 15	c***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:48:51.123	WARN	hàng 12	n***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:48:51.123	WARN	hàng 12	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:48:57.007	WARN	hàng 17	g***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:48:57.007	WARN	hàng 17	g***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:49:01.874	WARN	hàng 18	0***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:49:01.874	WARN	hàng 18	0***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:49:16.945	WARN	hàng 20	b***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:49:16.945	WARN	hàng 20	b***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:50:17.045	WARN	hàng 16	t***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:50:17.045	WARN	hàng 16	t***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:50:19.511	WARN	hàng 19	k***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:50:19.511	WARN	hàng 19	k***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:50:22.031	WARN	hàng 15	c***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:50:22.031	WARN	hàng 15	c***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:50:22.765	WARN	hàng 11	h***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:50:22.765	WARN	hàng 11	h***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:50:27.534	WARN	hàng 12	n***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:50:27.535	WARN	hàng 12	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:50:32.628	WARN	hàng 17	g***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:50:32.628	WARN	hàng 17	g***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:50:38.719	WARN	hàng 18	0***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:50:38.719	WARN	hàng 18	0***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:50:52.026	WARN	hàng 20	b***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:50:52.026	WARN	hàng 20	b***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:50:55.067	WARN	hàng 13	m***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:50:55.067	WARN	hàng 13	m***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:51:05.361	WARN	hàng 14	n***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 17:51:05.361	WARN	hàng 14	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:51:58.938	WARN	hàng 11	h***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:51:58.938	WARN	hàng 11	h***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:52:28.700	INFO	hàng 19	k***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:52:29.363	INFO	hàng 16	t***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:52:32.341	WARN	hàng 13	m***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:52:32.341	WARN	hàng 13	m***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:52:34.610	INFO	hàng 15	c***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:52:40.448	INFO	hàng 12	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:52:41.695	WARN	hàng 14	n***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 17:52:41.695	WARN	hàng 14	n***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 17:52:45.757	INFO	hàng 17	g***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:52:52.855	INFO	hàng 18	0***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:53:01.223	INFO	hàng 20	b***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:54:10.573	INFO	hàng 11	h***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:54:44.429	INFO	hàng 13	m***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 17:54:53.851	INFO	hàng 14	n***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 18:00:03.891	WARN	hàng 24	l***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 18:00:03.891	WARN	hàng 24	l***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:00:06.486	WARN	hàng 23	k***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 18:00:06.486	WARN	hàng 23	k***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:00:09.813	WARN	hàng 21	do***	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 18:00:09.813	WARN	hàng 21	do***	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:00:15.128	WARN	hàng 25	o***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 18:00:15.128	WARN	hàng 25	o***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:00:21.698	WARN	hàng 22	0***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-05 18:00:21.698	WARN	hàng 22	0***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:01:38.874	WARN	hàng 24	l***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 18:01:38.874	WARN	hàng 24	l***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:01:41.991	WARN	hàng 23	k***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 18:01:41.991	WARN	hàng 23	k***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:01:45.579	WARN	hàng 21	do***	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 18:01:45.579	WARN	hàng 21	do***	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:01:53.392	WARN	hàng 25	o***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 18:01:53.393	WARN	hàng 25	o***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:01:56.779	WARN	hàng 22	0***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-05 18:01:56.779	WARN	hàng 22	0***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-05 18:03:54.489	INFO	hàng 24	l***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 18:03:56.865	INFO	hàng 23	k***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 18:03:58.438	INFO	hàng 21	do***	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 18:04:06.799	INFO	hàng 22	0***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 18:04:09.787	INFO	hàng 25	o***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-05 18:04:10.310	INFO	-		Kết thúc batch: OK=24 Fail=1 (Playwright đã đóng).
+2026-05-07 11:19:15.915	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="67", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-05-07 11:21:13.115	WARN	hàng 8	G***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:21:13.422	INFO	hàng 8		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang8_20260507_112113120.png
+2026-05-07 11:23:28.241	WARN	hàng 7	Y***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:23:28.241	WARN	hàng 7	Y***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:23:50.114	WARN	hàng 6	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:23:50.114	WARN	hàng 6	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:23:50.338	WARN	hàng 9	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:23:50.338	WARN	hàng 9	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:23:50.971	WARN	hàng 2	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:23:50.971	WARN	hàng 2	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:23:51.565	WARN	hàng 3	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:23:51.565	WARN	hàng 3	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:23:54.173	WARN	hàng 10	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:23:54.173	WARN	hàng 10	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:24:17.914	WARN	hàng 4	I***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:24:20.465	INFO	hàng 4		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang4_20260507_112417915.png
+2026-05-07 11:25:04.232	WARN	hàng 7	Y***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:25:04.232	WARN	hàng 7	Y***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:25:08.442	WARN	hàng 5	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:25:08.442	WARN	hàng 5	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:25:26.040	WARN	hàng 6	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:25:26.040	WARN	hàng 6	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:25:27.000	WARN	hàng 9	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:25:27.000	WARN	hàng 9	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:25:27.997	WARN	hàng 2	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:25:27.997	WARN	hàng 2	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:25:28.220	WARN	hàng 3	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:25:28.220	WARN	hàng 3	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:25:30.142	WARN	hàng 10	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:25:30.142	WARN	hàng 10	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:26:44.129	WARN	hàng 5	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:26:44.129	WARN	hàng 5	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:27:32.149	INFO	hàng 7	Y***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-07 11:27:54.315	INFO	hàng 6	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-07 11:28:11.790	WARN	hàng 9	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:28:11.821	WARN	hàng 2	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:28:11.878	INFO	hàng 9		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang9_20260507_112811791.png
+2026-05-07 11:28:11.913	INFO	hàng 2		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang2_20260507_112811822.png
+2026-05-07 11:28:13.155	WARN	hàng 3	T***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:28:13.237	INFO	hàng 3		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang3_20260507_112813155.png
+2026-05-07 11:28:15.141	WARN	hàng 10	A***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:28:15.228	INFO	hàng 10		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang10_20260507_112815142.png
+2026-05-07 11:28:28.846	INFO	hàng 1	V***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-07 11:29:25.634	WARN	hàng 5	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:29:25.717	INFO	hàng 5		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang5_20260507_112925635.png
+2026-05-07 11:33:22.123	WARN	hàng 12	t***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:33:22.123	WARN	hàng 12	t***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:33:36.641	WARN	hàng 11	R***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:33:36.641	WARN	hàng 11	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:33:43.986	WARN	hàng 15	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:33:43.986	WARN	hàng 15	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:33:48.212	WARN	hàng 18	r***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:33:48.212	WARN	hàng 18	r***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:33:55.450	WARN	hàng 16	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:33:55.450	WARN	hàng 16	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:34:14.184	WARN	hàng 13	T***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:34:16.682	INFO	hàng 13		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang13_20260507_113414185.png
+2026-05-07 11:34:37.120	WARN	hàng 17	G***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:34:39.645	INFO	hàng 17		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang17_20260507_113437121.png
+2026-05-07 11:34:45.854	WARN	hàng 20	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:34:45.854	WARN	hàng 20	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:34:58.147	WARN	hàng 12	t***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:34:58.148	WARN	hàng 12	t***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:35:12.488	WARN	hàng 11	R***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:35:12.488	WARN	hàng 11	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:35:20.703	WARN	hàng 15	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:35:20.703	WARN	hàng 15	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:35:25.176	WARN	hàng 18	r***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:35:25.176	WARN	hàng 18	r***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:35:32.543	WARN	hàng 16	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:35:32.543	WARN	hàng 16	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:36:22.166	WARN	hàng 20	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:36:22.166	WARN	hàng 20	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:37:01.939	WARN	hàng 19	g***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:37:01.939	WARN	hàng 19	g***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:37:03.334	WARN	hàng 14	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:37:03.334	WARN	hàng 14	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:37:39.025	INFO	hàng 11	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-07 11:37:42.327	WARN	hàng 12	t***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:37:42.427	INFO	hàng 12		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang12_20260507_113742328.png
+2026-05-07 11:38:03.506	WARN	hàng 15	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:38:03.596	INFO	hàng 15		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang15_20260507_113803507.png
+2026-05-07 11:38:10.350	WARN	hàng 18	r***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:38:10.434	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang18_20260507_113810351.png
+2026-05-07 11:38:17.194	WARN	hàng 16	F***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:38:17.301	INFO	hàng 16		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang16_20260507_113817195.png
+2026-05-07 11:38:37.793	WARN	hàng 19	g***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:38:37.793	WARN	hàng 19	g***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:38:39.346	WARN	hàng 14	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:38:39.346	WARN	hàng 14	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:39:04.645	WARN	hàng 20	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:39:04.757	INFO	hàng 20		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang20_20260507_113904647.png
+2026-05-07 11:41:04.581	INFO	hàng 19	g***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-07 11:41:05.975	INFO	hàng 14	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-07 11:45:04.312	WARN	hàng 22	r***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:45:04.312	WARN	hàng 22	r***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:45:04.874	WARN	hàng 25	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:45:04.874	WARN	hàng 25	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:45:15.191	WARN	hàng 21	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:45:15.191	WARN	hàng 21	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:45:15.404	WARN	hàng 24	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:45:15.404	WARN	hàng 24	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:45:16.667	WARN	hàng 23	L***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-07 11:45:16.667	WARN	hàng 23	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:46:40.187	WARN	hàng 22	r***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:46:40.187	WARN	hàng 22	r***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:46:41.294	WARN	hàng 25	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:46:41.294	WARN	hàng 25	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:46:51.077	WARN	hàng 21	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:46:51.077	WARN	hàng 21	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:46:51.707	WARN	hàng 24	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:46:51.707	WARN	hàng 24	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:46:52.638	WARN	hàng 23	L***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-07 11:46:52.638	WARN	hàng 23	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-07 11:49:05.809	INFO	hàng 22	r***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-07 11:49:18.291	INFO	hàng 21	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-07 11:49:21.671	INFO	hàng 23	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-07 11:49:24.612	WARN	hàng 25	H***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:49:24.701	INFO	hàng 25		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang25_20260507_114924613.png
+2026-05-07 11:49:35.171	WARN	hàng 24	A***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-07 11:49:35.268	INFO	hàng 24		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang24_20260507_114935172.png
+2026-05-07 11:49:35.807	INFO	-		Kết thúc batch: OK=9 Fail=16 (Playwright đã đóng).
+2026-05-08 08:02:09.264	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="68", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-05-08 08:06:21.062	WARN	hàng 3	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:06:21.063	WARN	hàng 3	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:06:22.623	WARN	hàng 9	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:06:22.623	WARN	hàng 9	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:06:38.641	WARN	hàng 6	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:06:38.641	WARN	hàng 6	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:06:40.097	WARN	hàng 2	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:06:40.097	WARN	hàng 2	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:06:43.502	WARN	hàng 10	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:06:43.502	WARN	hàng 10	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:06:43.737	WARN	hàng 7	N***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:06:43.737	WARN	hàng 7	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:06:45.929	WARN	hàng 1	J***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:06:45.929	WARN	hàng 1	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:07:59.166	WARN	hàng 3	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:07:59.166	WARN	hàng 3	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:07:59.763	WARN	hàng 9	I***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:07:59.763	WARN	hàng 9	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:08:14.572	WARN	hàng 6	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:08:14.572	WARN	hàng 6	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:08:17.297	WARN	hàng 2	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:08:17.297	WARN	hàng 2	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:08:19.528	WARN	hàng 10	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:08:19.528	WARN	hàng 10	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:08:21.399	WARN	hàng 7	N***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:08:21.399	WARN	hàng 7	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:08:23.951	WARN	hàng 1	J***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:08:23.951	WARN	hàng 1	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:08:40.407	WARN	hàng 4	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:08:40.407	WARN	hàng 4	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:09:49.587	WARN	hàng 8	Y***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:09:49.587	WARN	hàng 8	Y***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:09:49.798	WARN	hàng 5	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:09:49.798	WARN	hàng 5	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:10:16.881	WARN	hàng 4	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:10:16.881	WARN	hàng 4	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:10:21.960	INFO	hàng 3	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:10:25.866	INFO	hàng 9	I***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:10:28.622	INFO	hàng 2	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:10:30.470	INFO	hàng 10	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:10:37.023	INFO	hàng 6	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:10:38.461	INFO	hàng 7	N***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:10:43.816	INFO	hàng 1	J***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:11:25.516	WARN	hàng 5	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:11:25.516	WARN	hàng 5	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:11:25.776	WARN	hàng 8	Y***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:11:25.776	WARN	hàng 8	Y***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:12:29.574	INFO	hàng 4	F***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:13:37.332	INFO	hàng 5	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:13:40.607	INFO	hàng 8	Y***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:17:42.486	WARN	hàng 16	J***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:17:42.486	WARN	hàng 16	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:17:57.618	WARN	hàng 19	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:17:57.619	WARN	hàng 19	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:17:58.074	WARN	hàng 15	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:17:58.074	WARN	hàng 15	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:18:00.515	WARN	hàng 14	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:18:00.515	WARN	hàng 14	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:18:06.683	WARN	hàng 13	P***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-08 08:18:30.758	WARN	hàng 18	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:18:30.758	WARN	hàng 18	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:18:36.714	DEBUG	hàng 13		Không chụp screenshot: Timeout 30000ms exceeded. Call log:   - taking page screenshot     - disabled all CSS animations   - waiting for fonts to load...   - fonts loaded
+2026-05-08 08:19:15.906	WARN	hàng 12	K***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:19:15.906	WARN	hàng 12	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:19:19.454	WARN	hàng 16	J***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:19:19.454	WARN	hàng 16	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:19:28.103	WARN	hàng 20	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:19:28.103	WARN	hàng 20	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:19:34.068	WARN	hàng 19	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:19:34.068	WARN	hàng 19	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:19:35.072	WARN	hàng 15	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:19:35.072	WARN	hàng 15	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:19:37.503	WARN	hàng 14	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:19:37.503	WARN	hàng 14	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:20:07.680	WARN	hàng 18	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:20:07.680	WARN	hàng 18	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:20:52.411	WARN	hàng 12	K***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:20:52.411	WARN	hàng 12	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:21:03.720	WARN	hàng 20	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:21:03.720	WARN	hàng 20	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:21:05.194	WARN	hàng 11	J***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:21:05.194	WARN	hàng 11	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:21:31.979	WARN	hàng 17	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:21:31.979	WARN	hàng 17	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:21:32.079	INFO	hàng 16	J***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:21:45.629	INFO	hàng 19	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:21:46.391	INFO	hàng 15	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:21:50.051	INFO	hàng 14	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:22:19.703	INFO	hàng 18	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:22:42.049	WARN	hàng 11	J***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:22:42.049	WARN	hàng 11	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:23:08.301	WARN	hàng 17	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:23:08.301	WARN	hàng 17	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:23:09.985	INFO	hàng 12	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:23:13.674	INFO	hàng 20	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:24:51.903	INFO	hàng 11	J***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:25:19.781	INFO	hàng 17	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:29:20.696	WARN	hàng 22	K***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:29:20.696	WARN	hàng 22	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:29:25.476	WARN	hàng 24	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:29:25.476	WARN	hàng 24	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:30:12.934	WARN	hàng 23	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:30:12.934	WARN	hàng 23	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:30:57.001	WARN	hàng 22	K***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:30:57.001	WARN	hàng 22	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:31:02.439	WARN	hàng 24	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:31:02.439	WARN	hàng 24	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:31:20.128	WARN	hàng 25	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:31:20.128	WARN	hàng 25	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:31:51.176	WARN	hàng 23	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:31:51.176	WARN	hàng 23	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:32:37.519	WARN	hàng 21	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 08:32:37.519	WARN	hàng 21	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:32:56.915	WARN	hàng 25	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:32:56.916	WARN	hàng 25	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:33:09.005	INFO	hàng 22	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:33:17.020	INFO	hàng 24	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:34:14.347	WARN	hàng 21	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 08:34:14.347	WARN	hàng 21	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 08:34:16.896	INFO	hàng 23	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:35:07.796	INFO	hàng 25	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:36:27.410	INFO	hàng 21	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 08:36:27.861	INFO	-		Kết thúc batch: OK=24 Fail=1 (Playwright đã đóng).
+2026-05-08 13:40:59.432	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="69", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-05-08 13:45:18.701	WARN	hàng 10	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:45:18.702	WARN	hàng 10	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:45:20.505	WARN	hàng 2	E***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:45:20.505	WARN	hàng 2	E***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:45:21.503	WARN	hàng 3	J***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:45:21.503	WARN	hàng 3	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:45:27.373	WARN	hàng 7	Z***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:45:27.373	WARN	hàng 7	Z***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:45:28.638	WARN	hàng 9	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:45:28.638	WARN	hàng 9	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:45:45.156	WARN	hàng 5	R***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:45:45.156	WARN	hàng 5	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:46:49.790	WARN	hàng 6	K***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:46:49.790	WARN	hàng 6	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:46:54.667	WARN	hàng 10	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:46:54.667	WARN	hàng 10	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:46:55.497	WARN	hàng 2	E***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:46:55.497	WARN	hàng 2	E***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:46:59.310	WARN	hàng 3	J***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:46:59.310	WARN	hàng 3	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:47:02.947	WARN	hàng 7	Z***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:47:02.947	WARN	hàng 7	Z***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:47:04.640	WARN	hàng 9	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:47:04.640	WARN	hàng 9	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:47:20.462	WARN	hàng 5	R***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:47:20.462	WARN	hàng 5	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:47:21.400	WARN	hàng 8	K***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:47:21.400	WARN	hàng 8	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:48:25.087	WARN	hàng 6	K***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:48:25.087	WARN	hàng 6	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:48:26.316	WARN	hàng 4	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:48:26.316	WARN	hàng 4	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:48:56.397	WARN	hàng 8	K***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:48:56.398	WARN	hàng 8	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:49:03.941	INFO	hàng 10	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:49:05.177	INFO	hàng 2	E***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:49:13.085	INFO	hàng 7	Z***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:49:14.810	INFO	hàng 9	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:49:19.306	INFO	hàng 3	J***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:49:28.203	INFO	hàng 5	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:50:01.366	WARN	hàng 4	I***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:50:01.366	WARN	hàng 4	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:50:11.217	WARN	hàng 1	L***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:50:11.217	WARN	hàng 1	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:50:34.007	INFO	hàng 6	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:51:03.814	INFO	hàng 8	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:51:48.735	WARN	hàng 1	L***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:51:48.736	WARN	hàng 1	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:52:10.121	INFO	hàng 4	I***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:54:08.823	INFO	hàng 1	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 13:57:15.750	WARN	hàng 17	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-05-08 13:57:42.836	INFO	hàng 17		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang17_20260508_135715756.png
+2026-05-08 13:58:17.957	WARN	hàng 20	W***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:58:17.974	WARN	hàng 20	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:58:20.524	WARN	hàng 14	W***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:58:20.525	WARN	hàng 14	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:58:22.824	WARN	hàng 18	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:58:22.824	WARN	hàng 18	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:58:27.592	WARN	hàng 16	L***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:58:27.593	WARN	hàng 16	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:59:46.810	WARN	hàng 13	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 13:59:46.810	WARN	hàng 13	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:59:52.873	WARN	hàng 20	W***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:59:52.873	WARN	hàng 20	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:59:55.561	WARN	hàng 14	W***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:59:55.561	WARN	hàng 14	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 13:59:58.528	WARN	hàng 18	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 13:59:58.529	WARN	hàng 18	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:00:03.151	WARN	hàng 16	L***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:00:03.151	WARN	hàng 16	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:00:16.460	WARN	hàng 15	R***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 14:00:16.460	WARN	hàng 15	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:00:17.400	WARN	hàng 11	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 14:00:17.400	WARN	hàng 11	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:00:20.556	WARN	hàng 12	R***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 14:00:20.556	WARN	hàng 12	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:00:21.219	WARN	hàng 19	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 14:00:21.219	WARN	hàng 19	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:01:22.196	WARN	hàng 13	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:01:22.196	WARN	hàng 13	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:01:52.098	WARN	hàng 15	R***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:01:52.098	WARN	hàng 15	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:01:52.539	WARN	hàng 11	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:01:52.540	WARN	hàng 11	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:01:55.519	WARN	hàng 12	R***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:01:55.519	WARN	hàng 12	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:01:56.788	WARN	hàng 19	I***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:01:56.788	WARN	hàng 19	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:02:01.346	INFO	hàng 20	W***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:02:06.160	INFO	hàng 14	W***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:02:12.287	INFO	hàng 18	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:02:13.496	INFO	hàng 16	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:03:32.898	INFO	hàng 13	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:04:00.578	INFO	hàng 11	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:04:01.663	INFO	hàng 15	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:04:06.143	INFO	hàng 12	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:04:06.409	INFO	hàng 19	I***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:08:01.835	WARN	hàng 22	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 14:08:01.835	WARN	hàng 22	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:08:03.232	WARN	hàng 21	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 14:08:03.232	WARN	hàng 21	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:08:06.907	WARN	hàng 23	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 14:08:06.907	WARN	hàng 23	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:08:07.495	WARN	hàng 24	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 14:08:07.495	WARN	hàng 24	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:09:36.538	WARN	hàng 22	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:09:36.538	WARN	hàng 22	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:09:39.078	WARN	hàng 21	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:09:39.078	WARN	hàng 21	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:09:42.346	WARN	hàng 23	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:09:42.346	WARN	hàng 23	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:09:42.884	WARN	hàng 24	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:09:42.884	WARN	hàng 24	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:11:13.357	WARN	hàng 25	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-08 14:11:13.357	WARN	hàng 25	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:11:50.666	INFO	hàng 22	F***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:11:55.114	INFO	hàng 21	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:11:56.798	INFO	hàng 24	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:11:57.499	INFO	hàng 23	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:12:49.066	WARN	hàng 25	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-08 14:12:49.066	WARN	hàng 25	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-08 14:15:01.165	INFO	hàng 25	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-08 14:15:01.591	INFO	-		Kết thúc batch: OK=24 Fail=1 (Playwright đã đóng).
+2026-05-09 02:09:50.046	INFO	-		Bắt đầu batch: 1 account, luồng 2, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="70", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-05-09 02:18:53.448	INFO	-		Bắt đầu batch: 1 account, luồng 2, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="70", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-05-09 02:24:26.701	WARN	hàng 1	l***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-05-09 02:24:26.701	WARN	hàng 1	l***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-09 02:26:06.393	WARN	hàng 1	l***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-05-09 02:26:06.393	WARN	hàng 1	l***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-05-09 02:28:16.769	INFO	hàng 1	l***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-05-09 02:28:17.173	INFO	-		Kết thúc batch: OK=1 Fail=0 (Playwright đã đóng).
