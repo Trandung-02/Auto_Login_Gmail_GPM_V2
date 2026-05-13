@@ -1,11 +1,13 @@
 const CONFIG = {
-  FORM_URL: "drive.google.com/file/d/1LdTTjuYLGxD3p6NosQ673bzCuCb7t82b/view",
+  FORM_URL: "[LINK_FORM]",
   SPREADSHEET_URL: "[LINK_SHEET]",
   SHEET_NAME: "Sheet1",
   SENDER_NAME: "Meta Verified Team",
+  WEBSITE: "https://www.facebook.com",
+  PHYSICAL_ADDRESS: "1 Meta Way, Menlo Park, CA 94025",
   BATCH_LIMIT: 4,
-  REST_MIN: 3,
-  REST_MAX: 7,
+  REST_MIN: 2,
+  REST_MAX: 6,
   MIN_SLEEP: 30000,
   MAX_SLEEP: 60000,
   MAX_EXECUTION_TIME: 280000,
@@ -17,60 +19,46 @@ const CONFIG = {
 function shareSingleFormToList(e) {
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(CONFIG.LOCK_TIMEOUT)) {
-    Logger.log("🔒 Instance khác đang chạy");
+    Logger.log("🔒 Script đang chạy ở instance khác");
     return;
   }
+
   try {
     _mainLogic(e);
   } catch (err) {
-    Logger.log("🔥 Lỗi: " + err.message);
+    Logger.log("🔥 Lỗi tổng: " + err.message);
   } finally {
     lock.releaseLock();
   }
-}
-
-function buildPlainText(intro, linkText, formUrl, email) {
-  return (
-`${intro}
-
-${linkText} ${formUrl}
-
-Grazie per esserti unito alla nostra community.
-
-Questo messaggio è stato inviato all’indirizzo ${email} perché hai scelto di ricevere aggiornamenti sui nostri servizi.`
-  );
 }
 
 function _mainLogic(e) {
   const startTime = Date.now();
   const props = PropertiesService.getScriptProperties();
   const userEmail = getEffectiveUserEmail();
-  const quota = MailApp.getRemainingDailyQuota();
 
-  Logger.log(`📊 Quota còn: ${quota}`);
+  const quota = MailApp.getRemainingDailyQuota();
+  Logger.log("📊 Quota còn: " + quota); // log quota
   if (quota <= CONFIG.QUOTA_RESERVE) {
-    Logger.log("⚠️ Không đủ quota, dừng");
+    Logger.log("⚠️ Không đủ quota");
     return;
   }
 
   if (e === undefined) {
     props.deleteProperty("LAST_SENT_ROW");
-    props.deleteProperty("SENT_EMAILS");
-    deleteTriggers("shareSingleFormToList");
-    Logger.log("🔄 Reset thủ công");
   }
 
   const ss = SpreadsheetApp.openById(extractSpreadsheetId(CONFIG.SPREADSHEET_URL));
   const sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
-  if (!sheet) throw new Error("Sheet không tồn tại: " + CONFIG.SHEET_NAME);
+
+  if (!sheet) throw new Error("❌ Sheet không tồn tại");
 
   const startRow = Number(props.getProperty("LAST_SENT_ROW")) || 2;
   const lastRow = sheet.getLastRow();
 
-  Logger.log(`📋 Row ${startRow} → ${lastRow}`);
   if (startRow > lastRow) {
     props.deleteProperty("LAST_SENT_ROW");
-    Logger.log("🎉 Gửi hết danh sách");
+    Logger.log("🎉 Hoàn tất toàn bộ");
     return;
   }
 
@@ -82,24 +70,26 @@ function _mainLogic(e) {
 
   const data = sheet.getRange(startRow, 1, rowsToProcess, 7).getValues();
   const output = [];
-  const sentCache = new Set(JSON.parse(props.getProperty("SENT_EMAILS") || "[]"));
-  const newlySent = [];
+
+  const sentCache = new Set();
   let processed = 0;
 
   for (let i = 0; i < data.length; i++) {
-    if (Date.now() - startTime > CONFIG.MAX_EXECUTION_TIME) {
-      Logger.log("⏱️ Gần timeout, dừng batch");
+
+    if (Date.now() - startTime > CONFIG.MAX_EXECUTION_TIME) break;
+
+    if (MailApp.getRemainingDailyQuota() <= CONFIG.QUOTA_RESERVE) {
+      Logger.log("⚠️ Hết quota giữa chừng");
       break;
     }
-    
-    const row      = startRow + i;
-    const email    = String(data[i][0]).trim();
+
+    const email = String(data[i][0]).trim();
     const pageName = String(data[i][1]).trim();
-    let subject    = String(data[i][2]).trim();
-    let intro      = String(data[i][3]).trim();
-    let linkText   = String(data[i][4]).trim();
-    const status   = String(data[i][5]).trim();
-    const oldTime  = data[i][6];
+    let subject = String(data[i][2]).trim();
+    let intro = String(data[i][3]).trim();
+    let linkText = String(data[i][4]).trim();
+    const status = String(data[i][5]).trim();
+    const oldTime = data[i][6];
 
     if (status === "✅ Sent") {
       output.push([status, oldTime]);
@@ -108,108 +98,122 @@ function _mainLogic(e) {
     }
 
     if (!isValidEmail(email) || !pageName) {
-      Logger.log(`🚫 Row ${row}: invalid — "${email}"`);
-      output.push(["🚫 Invalid", new Date()]);
+      output.push(["🚫 Invalid Data", new Date()]);
       processed++;
       continue;
     }
 
     if (sentCache.has(email)) {
-      Logger.log(`⚠️ Row ${row}: duplicate — ${email}`);
       output.push(["⚠️ Duplicate", new Date()]);
       processed++;
       continue;
     }
-    
-    subject  = subject.replace(/\[Name\]/g, pageName);
-    intro    = intro.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
+    sentCache.add(email);
+
+    subject = subject.replace(/\[Name\]/g, pageName);
+    intro = intro.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
     linkText = linkText.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
 
     const now = new Date();
-    const dateStr = Utilities.formatDate(now, "Europe/Rome", "dd/MM/yyyy HH:mm");
-    subject = `[${dateStr}] ${subject}`;
+    const dateStr = Utilities.formatDate(now, "Asia/Jerusalem", "dd/MM/yyyy HH:mm");
 
-    const body = buildPlainText(intro, linkText, CONFIG.FORM_URL, email);
+    const finalSubject = `[${dateStr}] ${subject}`;
 
-    const emailOptions = {
-      to: email,        
-      subject: subject,
-      body: body,
-      name: CONFIG.SENDER_NAME,
-      replyTo: userEmail  
-    };
+    const footer =
+`------------------------------
+🌐 ${CONFIG.WEBSITE}
+📍 ${CONFIG.PHYSICAL_ADDRESS}
 
-    let success = false, errorMsg = "";
+הודעה זו נשלחה אל ${email}. אם אינך מעוניין/ת לקבל הודעות דומות בעתיד, באפשרותך לבטל את ההרשמה או ליצור קשר דרך support@platform.com בקישור שלמטה.
+`;
+
+    const fullMessage =
+`${intro}
+
+${linkText} ${CONFIG.FORM_URL}
+
+אנו מודים לך על היותך חלק מהקהילה שלנו.
+
+בברכה,
+${footer}`;
+
+    const htmlMessage = fullMessage.replace(/\n/g, "<br>");
+    let success = false;
+    let errorMsg = "";
+
+    Logger.log(`📤 Sending to row ${startRow + i} | ${email} | ${pageName}`);
+
     for (let attempt = 1; attempt <= CONFIG.MAX_RETRY; attempt++) {
       try {
-        MailApp.sendEmail(emailOptions);
+        MailApp.sendEmail({
+          to: email,
+          subject: finalSubject,
+          body: fullMessage,
+          htmlBody: htmlMessage,
+          name: CONFIG.SENDER_NAME,
+          replyTo: userEmail
+        });
         success = true;
-        Logger.log(`✅ Row ${row} | ${email}`);
         break;
       } catch (err) {
         errorMsg = err.message;
-        Logger.log(`❌ Attempt ${attempt} | ${email} | ${errorMsg}`);
+        Logger.log(`❌ Attempt ${attempt}: ${email} | ${errorMsg}`);
         Utilities.sleep(5000);
       }
     }
 
     if (success) {
       output.push(["✅ Sent", new Date()]);
-      sentCache.add(email);
-      newlySent.push(email);
     } else {
-      output.push([`❌ ${errorMsg.substring(0, 50)}`, new Date()]);
+      output.push(["❌ " + errorMsg, new Date()]);
     }
 
-    if (i < data.length - 1) {
-      const sleepMs = Math.floor(
-        Math.random() * (CONFIG.MAX_SLEEP - CONFIG.MIN_SLEEP + 1)
-      ) + CONFIG.MIN_SLEEP;
-      Logger.log(`😴 Sleep ${(sleepMs / 1000).toFixed(0)}s`);
-      Utilities.sleep(sleepMs);
-    }
+    const sleepTime =
+      Math.floor(Math.random() * (CONFIG.MAX_SLEEP - CONFIG.MIN_SLEEP + 1)) +
+      CONFIG.MIN_SLEEP;
+    Logger.log(`😴 Sleep ${Math.round(sleepTime / 1000)}s trước email tiếp theo`);
+    Utilities.sleep(sleepTime);
 
     processed++;
   }
 
   if (output.length > 0) {
     sheet.getRange(startRow, 6, output.length, 2).setValues(output);
-    SpreadsheetApp.flush();
-  }
-
-  if (newlySent.length > 0) {
-    props.setProperty("SENT_EMAILS", JSON.stringify([...sentCache]));
   }
 
   const nextRow = startRow + processed;
+
   if (nextRow <= lastRow) {
     props.setProperty("LAST_SENT_ROW", nextRow.toString());
+
     deleteTriggers("shareSingleFormToList");
-    const restMin = Math.floor(Math.random() * (CONFIG.REST_MAX - CONFIG.REST_MIN + 1)) + CONFIG.REST_MIN;
+
+    const restMinutes = Math.floor(Math.random() * (CONFIG.REST_MAX - CONFIG.REST_MIN + 1)) + CONFIG.REST_MIN;
+
     ScriptApp.newTrigger("shareSingleFormToList")
       .timeBased()
-      .after(restMin * 60 * 1000)
+      .after(restMinutes * 60 * 1000)
       .create();
-    Logger.log(`⏳ Đã đặt lịch gửi tiếp theo tại row: ${nextRow} sau ${restMin} phút`);
+
+    Logger.log(`⏳ Batch xong. Trigger tiếp theo sau ${restMinutes} phút. Row tiếp: ${nextRow}`);
   } else {
     props.deleteProperty("LAST_SENT_ROW");
-    props.deleteProperty("SENT_EMAILS");
     deleteTriggers("shareSingleFormToList");
-    Logger.log("🎉 Hoàn thành gửi toàn bộ danh sách");
+    Logger.log("🎉 DONE toàn bộ");
   }
 }
 
 function getEffectiveUserEmail() {
   try {
-    return Session.getEffectiveUser().getEmail() || "";
-  } catch (e) {
-    return "";
-  }
+    const email = Session.getActiveUser().getEmail();
+    if (email) return email;
+  } catch (e) {}
+  return "fallback@gmail.com";
 }
 
 function extractSpreadsheetId(url) {
   const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (!match) throw new Error("URL Spreadsheet không hợp lệ");
+  if (!match) throw new Error("❌ Invalid Spreadsheet URL");
   return match[1];
 }
 
@@ -219,6 +223,8 @@ function isValidEmail(email) {
 
 function deleteTriggers(fn) {
   ScriptApp.getProjectTriggers().forEach(t => {
-    if (t.getHandlerFunction() === fn) ScriptApp.deleteTrigger(t);
+    if (t.getHandlerFunction() === fn) {
+      ScriptApp.deleteTrigger(t);
+    }
   });
 }

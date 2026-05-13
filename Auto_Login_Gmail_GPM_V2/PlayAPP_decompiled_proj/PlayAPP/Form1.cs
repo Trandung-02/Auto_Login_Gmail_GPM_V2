@@ -35,6 +35,30 @@ public partial class Form1 : Form
 	/// <summary>Tối đa số Chrome chạy song song mỗi đợt (sau mỗi đợt đóng hết rồi mở lô tiếp theo).</summary>
 	private const int MaxConcurrentBrowsers = 10;
 
+	/// <summary>Navigation Playwright (ms): nhiều luồng / proxy chậm — vượt mặc định 30s.</summary>
+	private const float PwNavTimeoutMs = 120000f;
+
+	/// <summary>Thao tác Playwright mặc định trên context (click, chờ selector…) — ms.</summary>
+	private const float PwActionTimeoutMs = 90000f;
+
+	/// <summary>Chụp screenshot lỗi: trang Google nặng hay vượt 30s mặc định.</summary>
+	private const float PwScreenshotTimeoutMs = 60000f;
+
+	/// <summary>Chờ ô email / bước sign-in Google khi mạng hoặc nhiều Chrome chậm.</summary>
+	private const float PwGoogleSignInEmailFieldMs = 28000f;
+
+	/// <summary>Tổng thời gian chờ ô mật khẩu hiện (vòng lặp poll trong STEP 2).</summary>
+	private const double PwGoogleSignInPasswordWaitMs = 40000.0;
+
+	private static PageGotoOptions PwGotoGoogleDomLoaded()
+	{
+		return new PageGotoOptions
+		{
+			WaitUntil = WaitUntilState.DOMContentLoaded,
+			Timeout = PwNavTimeoutMs
+		};
+	}
+
 	private static readonly int[] AllowedLuongValues = new int[3] { 2, 5, 10 };
 
 	private int BrowserCount = 1;
@@ -115,7 +139,7 @@ public partial class Form1 : Form
 	private int _waitSliceMs = 250;
 
 	/// <summary>Sau mỗi lần bấm Run trong editor Apps Script (chờ execution log).</summary>
-	private int _scriptRunPauseMs = 10000;
+	private int _scriptRunPauseMs = 5000;
 
 	/// <summary>Hệ số nhân thời gian chờ (DelayBatchAsync). 1.0 = mặc định; &lt;1 = nhanh hơn (mạng tốt); &gt;1 = chậm hơn (mạng kém).</summary>
 	private double _speedScale = 1.0;
@@ -1018,7 +1042,8 @@ public partial class Form1 : Form
 				Path = full,
 				FullPage = fullPage,
 				Type = ScreenshotType.Png,
-				Animations = ScreenshotAnimations.Disabled
+				Animations = ScreenshotAnimations.Disabled,
+				Timeout = PwScreenshotTimeoutMs
 			});
 			AppendAutomationLog("INFO", rowIndex, null, "Screenshot lỗi: " + full);
 		}
@@ -1524,6 +1549,14 @@ public partial class Form1 : Form
 					await context.AddInitScriptAsync($"\r\n                    window.__AUTO_ID = '{rowIndex + 1}';\r\n\r\n                    function forceTitle() {{\r\n                        document.title = '#' + window.__AUTO_ID;\r\n                    }}\r\n\r\n                    setInterval(forceTitle, 1000);\r\n                ");
 					playwrightContextHardened = context;
 				}
+				try
+				{
+					context.SetDefaultNavigationTimeout(PwNavTimeoutMs);
+					context.SetDefaultTimeout(PwActionTimeoutMs);
+				}
+				catch
+				{
+				}
 				await context.AddCookiesAsync(new Microsoft.Playwright.Cookie[1]
 				{
 					new Microsoft.Playwright.Cookie
@@ -1535,10 +1568,7 @@ public partial class Form1 : Form
 					}
 				});
 				await page2.BringToFrontAsync();
-				await page2.GotoAsync("https://accounts.google.com/?hl=en", new PageGotoOptions
-				{
-					WaitUntil = WaitUntilState.NetworkIdle
-				});
+				await page2.GotoAsync("https://accounts.google.com/?hl=en", PwGotoGoogleDomLoaded());
 				string content = await page2.ContentAsync();
 				if (content.Contains("ERR_PROXY_CONNECTION_FAILED") || content.Contains("ERR_NAME_NOT_RESOLVED") || content.Contains("ERR_INTERNET_DISCONNECTED") || content.Contains("ERR_CONNECTION_TIMED_OUT") || content.Contains("ERR_CONNECTION_REFUSED") || content.Contains("ERR_NETWORK_CHANGED") || content.Contains("ERR_SSL_PROTOCOL_ERROR") || content.Contains("ERR_ADDRESS_UNREACHABLE") || content.Contains("ERR_TUNNEL_CONNECTION_FAILED") || content.Contains("ERR_CONNECTION_RESET") || content.Contains("ERR_BAD_SSL_CLIENT_AUTH_CERT") || content.Contains("ERR_QUIC_PROTOCOL_ERROR") || content.Contains("ERR_EMPTY_RESPONSE") || content.Contains("ERR_SSL_VERSION_OR_CIPHER_MISMATCH"))
 				{
@@ -2482,6 +2512,52 @@ public partial class Form1 : Form
 		}
 	}
 
+	/// <summary>Banner lỗi tải tạm trên Apps Script (script.google.com): «Something went wrong» / «Please reload the page to try again.»</summary>
+	private static async Task<bool> ScriptPageShowsAppsScriptTransientLoadErrorAsync(IPage scriptPage)
+	{
+		if (scriptPage == null)
+		{
+			return false;
+		}
+		try
+		{
+			string url = "";
+			try
+			{
+				url = scriptPage.Url ?? "";
+			}
+			catch
+			{
+			}
+			if (string.IsNullOrEmpty(url))
+			{
+				return false;
+			}
+			if (url.IndexOf("script.google.com", StringComparison.OrdinalIgnoreCase) < 0 && url.IndexOf("script.new", StringComparison.OrdinalIgnoreCase) < 0)
+			{
+				return false;
+			}
+			string html = await scriptPage.ContentAsync();
+			if (string.IsNullOrEmpty(html))
+			{
+				return false;
+			}
+			if (html.IndexOf("Please reload the page to try again", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+			if (html.IndexOf("Something went wrong", StringComparison.OrdinalIgnoreCase) >= 0 && html.IndexOf("Please reload", StringComparison.OrdinalIgnoreCase) >= 0)
+			{
+				return true;
+			}
+			return false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	private static async Task<bool> ScriptPageShowsAuthorizationRequiredDialogAsync(IPage scriptPage)
 	{
 		try
@@ -2495,7 +2571,7 @@ public partial class Form1 : Form
 		}
 	}
 
-	private static async Task<bool> WaitForAccountAccessWarningAsync(IPage scriptPage, int timeoutMs = 8000, int pollMs = 400)
+	private static async Task<bool> WaitForAccountAccessWarningAsync(IPage scriptPage, int timeoutMs = 8000, int pollMs = 250)
 	{
 		DateTime endAt = DateTime.UtcNow.AddMilliseconds(timeoutMs);
 		while (DateTime.UtcNow < endAt)
@@ -2509,12 +2585,121 @@ public partial class Form1 : Form
 		return await ScriptPageShowsExecutionLogAccountAccessWarningAsync(scriptPage);
 	}
 
+	/// <summary>Sau F5/Reload editor Apps Script: chờ ngắn + networkidle tối đa ~12s (tránh khối 90s khiến bấm Run quá chậm).</summary>
+	private async Task WaitForAppsScriptEditorSettledAfterReloadAsync(IPage scriptPage)
+	{
+		await DelayBatchAsync(500);
+		try
+		{
+			await scriptPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+			{
+				Timeout = 12000f
+			});
+		}
+		catch
+		{
+		}
+		await DelayBatchAsync(200);
+	}
+
+	/// <summary>Khi Apps Script hiện «Something went wrong»: bấm Reload hoặc F5 lặp cho đến khi hết banner (tối đa <paramref name="maxAttempts"/>).</summary>
+	private async Task ReloadUntilAppsScriptTransientErrorClearsAsync(IPage scriptPage, int vitri, string email, string phaseLabel, int maxAttempts = 12)
+	{
+		for (int attempt = 0; attempt < maxAttempts; attempt++)
+		{
+			if (!await ScriptPageShowsAppsScriptTransientLoadErrorAsync(scriptPage))
+			{
+				return;
+			}
+			try
+			{
+				SetText(vitri, "STATUS", "[Script] Something went wrong — Reload (" + (attempt + 1) + "/" + maxAttempts + ") " + phaseLabel);
+			}
+			catch
+			{
+			}
+			try
+			{
+				AppendAutomationLog("WARN", vitri, email, "[Script] Apps Script «Something went wrong» — Reload (" + (attempt + 1) + "/" + maxAttempts + "): " + phaseLabel);
+			}
+			catch
+			{
+			}
+			bool clickedReload = false;
+			try
+			{
+				ILocator rel = scriptPage.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+				{
+					Name = "Reload"
+				}).First;
+				if (await rel.CountAsync() > 0)
+				{
+					try
+					{
+						if (await rel.IsVisibleAsync())
+						{
+							await rel.ClickAsync(new LocatorClickOptions
+							{
+								Timeout = 15000f
+							});
+							clickedReload = true;
+						}
+					}
+					catch
+					{
+					}
+				}
+			}
+			catch
+			{
+			}
+			if (!clickedReload)
+			{
+				try
+				{
+					await scriptPage.ReloadAsync(new PageReloadOptions
+					{
+						WaitUntil = WaitUntilState.DOMContentLoaded,
+						Timeout = 120000f
+					});
+				}
+				catch
+				{
+					try
+					{
+						await scriptPage.Keyboard.PressAsync("F5");
+						await scriptPage.WaitForLoadStateAsync(LoadState.DOMContentLoaded, new PageWaitForLoadStateOptions
+						{
+							Timeout = 120000f
+						});
+					}
+					catch
+					{
+					}
+				}
+			}
+			await WaitForAppsScriptEditorSettledAfterReloadAsync(scriptPage);
+			try
+			{
+				await scriptPage.SetViewportSizeAsync(1920, 1080);
+			}
+			catch
+			{
+			}
+		}
+		if (await ScriptPageShowsAppsScriptTransientLoadErrorAsync(scriptPage))
+		{
+			throw new InvalidOperationException("Apps Script vẫn «Something went wrong — Please reload» sau " + maxAttempts + " lần (" + phaseLabel + ").");
+		}
+	}
+
 	/// <summary>Khi Execution log báo thiếu quyền tài khoản: F5 (reload) trang editor rồi Run 2 lần; lặp tối đa maxAttempts.</summary>
 	private async Task RunScriptEditorTwiceWithReloadOnAccountAccessWarningAsync(IPage scriptPage, int vitri, string email, bool reloadImmediately = false, int maxAttempts = 4)
 	{
 		int authDialogSeenConsecutive = 0;
 		for (int attempt = 0; attempt < maxAttempts; attempt++)
 		{
+			await ReloadUntilAppsScriptTransientErrorClearsAsync(scriptPage, vitri, email, "trước Run editor (lần " + (attempt + 1) + ")", 12);
 			if (attempt > 0 || reloadImmediately)
 			{
 				SetText(vitri, "STATUS", "[Script] Execution log: cần quyền Google Account — F5, chờ editor (" + (attempt + 1) + "/" + maxAttempts + ")...");
@@ -2524,18 +2709,7 @@ public partial class Form1 : Form
 					WaitUntil = WaitUntilState.DOMContentLoaded,
 					Timeout = 120000f
 				});
-				await DelayBatchAsync(2000);
-				try
-				{
-					await scriptPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
-					{
-						Timeout = 90000f
-					});
-				}
-				catch
-				{
-				}
-				await DelayBatchAsync(1000);
+				await WaitForAppsScriptEditorSettledAfterReloadAsync(scriptPage);
 				try
 				{
 					await scriptPage.SetViewportSizeAsync(1920, 1080);
@@ -2543,11 +2717,12 @@ public partial class Form1 : Form
 				catch
 				{
 				}
+				await ReloadUntilAppsScriptTransientErrorClearsAsync(scriptPage, vitri, email, "sau F5 editor (Execution log)", 12);
 				await scriptPage.WaitForSelectorAsync(".view-lines", new PageWaitForSelectorOptions
 				{
 					Timeout = 180000f
 				});
-				await DelayBatchAsync(800);
+				await DelayBatchAsync(180);
 			}
 			SetText(vitri, "STATUS", "[Script] Editor sẵn sàng → Run function (lần 1)...");
 			await ClickRunSelectedFunctionAsync(scriptPage, vitri, "lần 1");
@@ -2593,7 +2768,7 @@ public partial class Form1 : Form
 			State = WaitForSelectorState.Visible,
 			Timeout = 45000f
 		});
-		DateTime waitEnabledUntil = DateTime.UtcNow.AddSeconds(20.0);
+		DateTime waitEnabledUntil = DateTime.UtcNow.AddSeconds(18.0);
 		while (DateTime.UtcNow < waitEnabledUntil)
 		{
 			try
@@ -2606,7 +2781,7 @@ public partial class Form1 : Form
 			catch
 			{
 			}
-			await Task.Delay(200);
+			await Task.Delay(90);
 		}
 		bool clicked = false;
 		try
@@ -2670,7 +2845,7 @@ public partial class Form1 : Form
 			catch
 			{
 			}
-			await Task.Delay(200);
+			await Task.Delay(90);
 		}
 		if (!runStarted)
 		{
@@ -2759,7 +2934,7 @@ public partial class Form1 : Form
 				{
 				}
 			}
-			await DelayBatchAsync(400);
+			await DelayBatchAsync(280);
 		}
 		// Fallback: giữ hành vi chờ pause cũ để không thoát quá sớm khi UI không phản hồi trạng thái nút.
 		await PageWaitCancellableAsync(scriptPage, _scriptRunPauseMs);
@@ -2804,6 +2979,13 @@ public partial class Form1 : Form
 				}
 				if (attempt + 1 >= maxAttempts)
 				{
+					try
+					{
+						AppendAutomationLog("WARN", vitri, null, stepLabel + " — thất bại sau " + maxAttempts + " lần (có F5 retry): " + ex.GetType().Name + " — " + (ex.Message ?? ""));
+					}
+					catch
+					{
+					}
 					throw;
 				}
 				try
@@ -3061,6 +3243,632 @@ public partial class Form1 : Form
 		}
 		string sep = url.Contains("?") ? "&" : "?";
 		return url + sep + "hl=en";
+	}
+
+	/// <summary>Text hiển thị của hàng ngôn ngữ ưu tiên thực sự (chỉ mục đầu trong khối «Preferred language»), không gộp «Other languages».</summary>
+	private static async Task<string> GetPreferredLanguageDisplayTextAsync(IPage page)
+	{
+		if (page == null)
+		{
+			return "";
+		}
+		try
+		{
+			return await page.EvaluateAsync<string>(@"() => {
+				const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
+				const main = document.querySelector('main') || document.body;
+				if (!main) return '';
+				const preferredMarkers = [
+					/^preferred\s+language$/i,
+					/^display\s+language$/i,
+					/^ngôn\s+ngữ\s+ưu\s+tiên$/i,
+					/^idioma\s+preferido$/i,
+					/^langue\s+préférée$/i,
+					/^bevorzugte\s+sprache$/i,
+					/^lingua\s+preferita$/i
+				];
+				const blocks = [...main.querySelectorAll('.edUmvf')];
+				for (const block of blocks) {
+					const h2 = block.querySelector(':scope > h2, h2.CrwUZc, h2');
+					if (!h2) continue;
+					const title = norm(h2.textContent || '');
+					if (!preferredMarkers.some((re) => re.test(title))) continue;
+					const li = block.querySelector('ul.u7hyyf > li');
+					if (!li) continue;
+					const label = li.querySelector('label');
+					const region = li.querySelector('.xsr7od');
+					const p1 = label ? norm(label.innerText || label.textContent) : '';
+					const p2 = region ? norm(region.innerText || region.textContent) : '';
+					if (p1 && p2) return p1 + ' (' + p2 + ')';
+					if (p1) return p1;
+					if (p2) return p2;
+					return norm(li.innerText || li.textContent);
+				}
+				return '';
+			}");
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	/// <summary>Đoạn log/debug: ưu tiên hàng Preferred thực; fallback ngắn từ body nếu DOM lạ.</summary>
+	private static async Task<string> GetPreferredLanguageSnippetAsync(IPage page)
+	{
+		string row = await GetPreferredLanguageDisplayTextAsync(page);
+		if (!string.IsNullOrWhiteSpace(row))
+		{
+			return "Preferred row: " + row;
+		}
+		if (page == null)
+		{
+			return "";
+		}
+		try
+		{
+			return await page.EvaluateAsync<string>(@"() => {
+				const t = (document.body && document.body.innerText) ? document.body.innerText : '';
+				if (!t) return '';
+				const markers = [
+					'Preferred language', 'Preferred Language',
+					'Ngôn ngữ ưu tiên',
+					'Display language', 'Display Language',
+					'Idioma preferido', 'Langue préférée', 'Bevorzugte Sprache', 'Lingua preferita'
+				];
+				let best = '';
+				let bestIdx = -1;
+				for (const m of markers) {
+					const idx = t.indexOf(m);
+					if (idx >= 0 && (bestIdx < 0 || idx < bestIdx)) {
+						bestIdx = idx;
+						best = t.substring(idx, Math.min(idx + 280, t.length));
+					}
+				}
+				return best;
+			}");
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	/// <summary>Chỉ coi là đúng khi đoạn Preferred language hiển thị English (United States) / Tiếng Anh (Hoa Kỳ) — không dùng Contains trên toàn bộ HTML.</summary>
+	private static bool SnippetIndicatesEnglishUnitedStates(string snippet)
+	{
+		if (string.IsNullOrWhiteSpace(snippet))
+		{
+			return false;
+		}
+		try
+		{
+			return Regex.IsMatch(snippet,
+				@"English\s*\(\s*United\s+States\s*\)|English\s*\(\s*US\s*\)|English\s*[–—\-]\s*United\s+States|English\s+United\s+States|Tiếng\s+Anh\s*\(\s*Hoa\s+Kỳ\s*\)|Inglés\s*\(\s*Estados\s+Unidos\s*\)|\ben-US\b",
+				RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static async Task<string> TryPostMyAccountLanguageUpdateAsync(IPage page, string langTag)
+	{
+		if (page == null || string.IsNullOrEmpty(langTag))
+		{
+			return "SKIP";
+		}
+		try
+		{
+			return await page.EvaluateAsync<string>(@"async (tag) => {
+				const wgd = (window.WIZ_global_data || window['WIZ_global_data']) || {};
+				let at = wgd['SNlM0e'] || wgd['at'] || null;
+				if (!at) {
+					const html = document.documentElement.innerHTML;
+					const m1 = html.match(/[""']SNlM0e[""']\s*:\s*[""']([^""']+)[""']/);
+					if (m1) at = m1[1];
+				}
+				if (!at) {
+					const html2 = document.documentElement.innerHTML;
+					const m2 = html2.match(/(['""])(A[A-Za-z0-9_-]{10,}:[0-9]+)\1/);
+					if (m2) at = m2[2];
+				}
+				if (!at) {
+					const html3 = document.documentElement.innerHTML;
+					const m3 = html3.match(/(['""])(APv[^'""]+)\1/);
+					if (m3) at = m3[2];
+				}
+				if (!at) return 'NO_AT';
+				const payload = JSON.stringify([[tag]]);
+				const body = 'f.req=' + encodeURIComponent(payload) + '&at=' + encodeURIComponent(at);
+				try {
+					const res = await fetch('/_/language_update?hl=en&soc-app=1&soc-platform=1&soc-device=1', {
+						method: 'POST',
+						headers: { 'content-type': 'application/x-www-form-urlencoded' },
+						body,
+						credentials: 'include'
+					});
+					const txt = (await res.text()) || '';
+					return 'HTTP_' + res.status + '|' + txt.substring(0, 80);
+				} catch (e) {
+					return 'FETCH_ERR:' + (e && e.message ? e.message : 'unknown');
+				}
+			}", langTag) ?? "NULL";
+		}
+		catch (Exception ex)
+		{
+			return "EX:" + ex.GetType().Name;
+		}
+	}
+
+	private async Task<bool> VerifyPreferredLanguageEnglishUsAfterReloadAsync(IPage page, int vitri)
+	{
+		try
+		{
+			await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"), PwGotoGoogleDomLoaded());
+		}
+		catch
+		{
+			return false;
+		}
+		try
+		{
+			await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+		}
+		catch
+		{
+		}
+		try
+		{
+			await page.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+			{
+				Timeout = 15000f
+			});
+		}
+		catch
+		{
+		}
+		await DelayBatchAsync(900);
+		string preferred = await GetPreferredLanguageDisplayTextAsync(page);
+		return SnippetIndicatesEnglishUnitedStates(preferred);
+	}
+
+	/// <summary>Tìm selector cho hàng English (United States) trong khối «Other languages».</summary>
+	private static async Task<string> FindEnglishUnitedStatesOtherLiSelectorAsync(IPage page)
+	{
+		try
+		{
+			return await page.EvaluateAsync<string>(@"() => {
+				const norm = (s) => (s || '').replace(/\s+/g, ' ').trim();
+				const main = document.querySelector('main') || document.body;
+				if (!main) return '';
+				const preferredMarkers = [
+					/^preferred\s+language$/i,
+					/^display\s+language$/i,
+					/^ngôn\s+ngữ\s+ưu\s+tiên$/i,
+					/^idioma\s+preferido$/i,
+					/^langue\s+préférée$/i,
+					/^bevorzugte\s+sprache$/i,
+					/^lingua\s+preferita$/i
+				];
+				let preferredLi = null;
+				const blocks = [...main.querySelectorAll('.edUmvf')];
+				for (const block of blocks) {
+					const h2 = block.querySelector(':scope > h2, h2.CrwUZc, h2');
+					if (!h2) continue;
+					const title = norm(h2.textContent || '');
+					if (!preferredMarkers.some((re) => re.test(title))) continue;
+					preferredLi = block.querySelector('ul.u7hyyf > li');
+					break;
+				}
+				const lis = [...main.querySelectorAll('ul.u7hyyf > li')];
+				let foundIdx = -1;
+				for (let i = 0; i < lis.length; i++) {
+					const li = lis[i];
+					if (preferredLi && li === preferredLi) continue;
+					const label = li.querySelector('label');
+					const region = li.querySelector('.xsr7od');
+					const p1 = label ? norm(label.innerText || label.textContent) : '';
+					const p2 = region ? norm(region.innerText || region.textContent) : '';
+					const id = (li.getAttribute('data-id') || '').toLowerCase();
+					const pair = (p1 + ' (' + p2 + ')').trim();
+					const isEnUs = (id === 'en' && /^english$/i.test(p1) && /^(united states|us)$/i.test(p2))
+						|| /english\s*\(\s*united\s+states\s*\)/i.test(pair)
+						|| /english\s*\(\s*us\s*\)/i.test(pair);
+					if (!isEnUs) continue;
+					foundIdx = i;
+					li.setAttribute('data-autopick', 'en-us-other');
+					break;
+				}
+				return foundIdx >= 0 ? 'ul.u7hyyf > li[data-autopick=""en-us-other""]' : '';
+			}");
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	/// <summary>Đóng các confirm/dialog xuất hiện sau khi bấm preferred-language.</summary>
+	private async Task TryConfirmLanguageDialogAsync(IPage page)
+	{
+		string[] confirmTexts = new string[]
+		{
+			"Change", "Confirm", "OK", "Save", "Apply", "Done", "Update",
+			"Yes", "Cập nhật", "Lưu", "Đồng ý", "Xác nhận",
+			"Guardar", "Aceptar", "Confirmar",
+			"Enregistrer", "Confirmer",
+			"Bestätigen", "Speichern",
+			"確認", "保存", "変更"
+		};
+		try
+		{
+			ILocator dialog = page.Locator("[role='dialog'], [role='alertdialog']");
+			if (await dialog.CountAsync() == 0)
+			{
+				return;
+			}
+			ILocator visible = dialog.First;
+			if (!await visible.IsVisibleAsync())
+			{
+				return;
+			}
+			foreach (string name in confirmTexts)
+			{
+				try
+				{
+					ILocator btn = visible.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
+					{
+						Name = name,
+						Exact = false
+					});
+					if (await btn.CountAsync() > 0 && await btn.First.IsVisibleAsync())
+					{
+						await btn.First.ClickAsync(new LocatorClickOptions
+						{
+							Timeout = 6000f
+						});
+						await DelayBatchAsync(600);
+						return;
+					}
+				}
+				catch
+				{
+				}
+			}
+		}
+		catch
+		{
+		}
+	}
+
+	/// <summary>Trên trang language (khối «Other languages»), bấm nút đưa English (United States) lên làm ưu tiên.</summary>
+	private async Task<bool> TryClickMakeEnglishUnitedStatesPreferredAsync(IPage page, int vitri)
+	{
+		try
+		{
+			SetText(vitri, "STATUS", "Ngôn ngữ: bấm «Make this my preferred language» (English US)...");
+			string liSel = await FindEnglishUnitedStatesOtherLiSelectorAsync(page);
+			if (string.IsNullOrEmpty(liSel))
+			{
+				return false;
+			}
+			ILocator li = page.Locator(liSel).First;
+			try
+			{
+				await li.ScrollIntoViewIfNeededAsync(new LocatorScrollIntoViewIfNeededOptions
+				{
+					Timeout = 6000f
+				});
+			}
+			catch
+			{
+			}
+			ILocator btn = li.Locator("button[aria-label*='Make this my preferred language' i], button[aria-label^='Move language up' i], button[aria-label*='Move language up' i], button[jsname='Pr7Yme']").First;
+			if (await btn.CountAsync() == 0)
+			{
+				return false;
+			}
+			try
+			{
+				await btn.ClickAsync(new LocatorClickOptions
+				{
+					Timeout = 10000f
+				});
+			}
+			catch
+			{
+				try
+				{
+					await btn.ClickAsync(new LocatorClickOptions
+					{
+						Force = true,
+						Timeout = 8000f
+					});
+				}
+				catch
+				{
+					return false;
+				}
+			}
+			await DelayBatchAsync(700);
+			await TryConfirmLanguageDialogAsync(page);
+			try
+			{
+				await page.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+				{
+					Timeout = 12000f
+				});
+			}
+			catch
+			{
+			}
+			await DelayBatchAsync(1000);
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Mở combobox Material (listbox) trong main và chọn «English (United States)».</summary>
+	private async Task<bool> TrySelectEnglishUnitedStatesPreferredListboxAsync(IPage page, int vitri)
+	{
+		try
+		{
+			SetText(vitri, "STATUS", "Ngôn ngữ: thử dropdown listbox → English (United States)...");
+			ILocator triggers = page.Locator("main [aria-haspopup='listbox'], main [aria-haspopup='menu'], main [role='button'][aria-expanded]").Or(page.GetByRole(AriaRole.Combobox, new PageGetByRoleOptions { NameRegex = new Regex("language|ngôn ngữ|idioma|langue", RegexOptions.IgnoreCase) }));
+			int n = await triggers.CountAsync();
+			for (int i = 0; i < Math.Min(n, 8); i++)
+			{
+				ILocator t0 = triggers.Nth(i);
+				try
+				{
+					if (!await t0.IsVisibleAsync())
+					{
+						continue;
+					}
+					await t0.ClickAsync(new LocatorClickOptions
+					{
+						Timeout = 10000f
+					});
+					await DelayBatchAsync(500);
+					ILocator opt = page.GetByRole(AriaRole.Option, new PageGetByRoleOptions
+					{
+						Name = "English (United States)",
+						Exact = true
+					});
+					if (await opt.CountAsync() == 0)
+					{
+						opt = page.Locator("[role='listbox'] [role='option'], [role='menu'] [role='menuitem'], [role='menu'] [role='menuitemradio']").Filter(new LocatorFilterOptions
+						{
+							HasText = "English (United States)"
+						});
+					}
+					if (await opt.CountAsync() > 0)
+					{
+						await opt.First.ClickAsync(new LocatorClickOptions
+						{
+							Timeout = 12000f
+						});
+						await DelayBatchAsync(600);
+						ILocator save = page.GetByRole(AriaRole.Button, new PageGetByRoleOptions
+						{
+							NameRegex = new Regex("^(Save|Select|Done|Apply|Update|Cập nhật|Guardar|OK)$", RegexOptions.IgnoreCase)
+						});
+						if (await save.CountAsync() > 0)
+						{
+							try
+							{
+								await save.First.ClickAsync(new LocatorClickOptions
+								{
+									Timeout = 6000f
+								});
+							}
+							catch
+							{
+							}
+						}
+						return true;
+					}
+				}
+				catch
+				{
+				}
+				try
+				{
+					await page.Keyboard.PressAsync("Escape");
+				}
+				catch
+				{
+				}
+				await DelayBatchAsync(200);
+			}
+		}
+		catch
+		{
+		}
+		return false;
+	}
+
+	/// <summary>Nút Edit + chọn lựa chọn (fallback khi không có listbox rõ ràng).</summary>
+	private async Task<bool> TryPreferredLanguageViaLegacyEditAndPickAsync(IPage page, int vitri)
+	{
+		bool opened = await page.EvaluateAsync<bool>(@"() => {
+			const main = document.querySelector('main') || document.body;
+			if (!main) return false;
+			const buttons = [...main.querySelectorAll('button, [role=""button""], a[role=""button""]')];
+			const isEdit = (b) => {
+				const al = (b.getAttribute('aria-label') || '').trim();
+				const tx = (b.textContent || '').trim().replace(/\s+/g, ' ');
+				if (/^edit$/i.test(tx) || /^edit$/i.test(al)) return true;
+				if (/chỉnh sửa|modifier|bearbeiten|編集|редактировать/i.test(tx + ' ' + al)) return true;
+				return false;
+			};
+			for (const b of buttons.filter(isEdit).slice(0, 6)) {
+				try { b.click(); return true; } catch (e) {}
+			}
+			return false;
+		}");
+		if (!opened)
+		{
+			return false;
+		}
+		await DelayBatchAsync(900);
+		await page.EvaluateAsync<bool>(@"() => {
+			const re = /english\s*\(\s*united\s+states\s*\)|english\s*[–-]\s*united\s+states|english\s*\(\s*mỹ\s*\)|ingl[eé]s\s*\(\s*estados\s+unidos\s*\)/i;
+			const candidates = [...document.querySelectorAll('[role=""option""], [role=""menuitemradio""], [role=""menuitem""], li[role=""option""]')];
+			for (const el of candidates) {
+				const t = (el.textContent || '').trim();
+				if (re.test(t)) { try { el.click(); return true; } catch (e) {} }
+			}
+			return false;
+		}");
+		await DelayBatchAsync(500);
+		await page.EvaluateAsync<bool>(@"() => {
+			const buttons = [...document.querySelectorAll('button, [role=""button""]')];
+			const names = /^(save|select|done|apply|update|cập nhật|guardar|ok|bestätigen)$/i;
+			for (const b of buttons) {
+				const t = (b.textContent || '').trim().split(/\n/)[0];
+				if (names.test(t)) { try { b.click(); return true; } catch (e) {} }
+			}
+			return false;
+		}");
+		await DelayBatchAsync(1200);
+		return true;
+	}
+
+	private async Task LogPreferredLanguageDebugAsync(IPage page, int vitri, string emailForLog, string note)
+	{
+		try
+		{
+			string sn = await GetPreferredLanguageSnippetAsync(page);
+			string head = (sn ?? "").Replace('\r', ' ').Replace('\n', ' ').Trim();
+			if (head.Length > 220)
+			{
+				head = head.Substring(0, 217) + "...";
+			}
+			AppendAutomationLog("DEBUG", vitri, emailForLog, note + (string.IsNullOrEmpty(head) ? " (snippet Preferred language trống)" : (" | snippet: " + head)));
+		}
+		catch
+		{
+		}
+	}
+
+	/// <summary>Sau đăng nhập/verify: bắt buộc mở <see href="https://myaccount.google.com/language"/> và đặt Preferred language = English (United States), rồi mới các bước sau.</summary>
+	private async Task EnsurePreferredLanguageEnglishUnitedStatesAsync(IPage page, int vitri, string emailForLog)
+	{
+		SetText(vitri, "STATUS", "Ngôn ngữ: mở myaccount.google.com/language (English US)...");
+		await RunStepWithReloadRetryAsync(page, vitri, "myaccount/language (bắt buộc EN-US)", async delegate
+		{
+			await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"), PwGotoGoogleDomLoaded());
+		});
+		try
+		{
+			await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+		}
+		catch
+		{
+		}
+		await DelayBatchAsync(1400);
+		string body0 = "";
+		try
+		{
+			body0 = await page.ContentAsync();
+		}
+		catch
+		{
+		}
+		if (body0.IndexOf("Your browser is not supported", StringComparison.OrdinalIgnoreCase) >= 0)
+		{
+			AppendAutomationLog("WARN", vitri, emailForLog, "Trang language báo «browser not supported» — chỉ thử POST _/language_update.");
+			string r1 = await TryPostMyAccountLanguageUpdateAsync(page, "en_US");
+			string r2 = await TryPostMyAccountLanguageUpdateAsync(page, "en");
+			AppendAutomationLog("DEBUG", vitri, emailForLog, "POST language_update (blocked): en_US=" + r1 + " | en=" + r2);
+			await DelayBatchAsync(1000);
+			if (!await VerifyPreferredLanguageEnglishUsAfterReloadAsync(page, vitri))
+			{
+				await LogPreferredLanguageDebugAsync(page, vitri, emailForLog, "Sau API (browser blocked):");
+				throw new InvalidOperationException("Không đặt được Preferred language English (US) — trang chặn browser và API không xác nhận (kiểm tra snippet trong automation.log).");
+			}
+			SetText(vitri, "STATUS", "Ngôn ngữ: đã đặt English (United States) (API).");
+			return;
+		}
+
+		string preferred0 = await GetPreferredLanguageDisplayTextAsync(page);
+		AppendAutomationLog("DEBUG", vitri, emailForLog, "Preferred language hiện tại: " + (string.IsNullOrEmpty(preferred0) ? "(trống)" : preferred0));
+		if (SnippetIndicatesEnglishUnitedStates(preferred0))
+		{
+			SetText(vitri, "STATUS", "Ngôn ngữ: đã là English (United States) — tiếp tục.");
+			return;
+		}
+
+		for (int attempt = 1; attempt <= 3; attempt++)
+		{
+			bool clicked = await TryClickMakeEnglishUnitedStatesPreferredAsync(page, vitri);
+			AppendAutomationLog("DEBUG", vitri, emailForLog, "Click «Make preferred» attempt " + attempt + ": " + clicked);
+			if (!clicked)
+			{
+				break;
+			}
+			string preferredAfter = await GetPreferredLanguageDisplayTextAsync(page);
+			if (SnippetIndicatesEnglishUnitedStates(preferredAfter))
+			{
+				SetText(vitri, "STATUS", "Ngôn ngữ: đã đặt English (United States) (nút ưu tiên).");
+				return;
+			}
+			if (await VerifyPreferredLanguageEnglishUsAfterReloadAsync(page, vitri))
+			{
+				SetText(vitri, "STATUS", "Ngôn ngữ: đã đặt English (United States) (nút ưu tiên).");
+				return;
+			}
+			await DelayBatchAsync(700);
+		}
+
+		SetText(vitri, "STATUS", "Ngôn ngữ: thử POST _/language_update (en_US → en)...");
+		string p1 = await TryPostMyAccountLanguageUpdateAsync(page, "en_US");
+		string p2 = await TryPostMyAccountLanguageUpdateAsync(page, "en");
+		AppendAutomationLog("DEBUG", vitri, emailForLog, "POST language_update: en_US=" + p1 + " | en=" + p2);
+		await DelayBatchAsync(1000);
+		if (await VerifyPreferredLanguageEnglishUsAfterReloadAsync(page, vitri))
+		{
+			SetText(vitri, "STATUS", "Ngôn ngữ: đã đặt English (United States) (API).");
+			return;
+		}
+
+		if (await TrySelectEnglishUnitedStatesPreferredListboxAsync(page, vitri))
+		{
+			if (await VerifyPreferredLanguageEnglishUsAfterReloadAsync(page, vitri))
+			{
+				SetText(vitri, "STATUS", "Ngôn ngữ: đã đặt English (United States) (dropdown).");
+				return;
+			}
+		}
+
+		if (await TryPreferredLanguageViaLegacyEditAndPickAsync(page, vitri))
+		{
+			if (await VerifyPreferredLanguageEnglishUsAfterReloadAsync(page, vitri))
+			{
+				SetText(vitri, "STATUS", "Ngôn ngữ: đã đặt English (United States) (Edit + chọn).");
+				return;
+			}
+		}
+
+		await LogPreferredLanguageDebugAsync(page, vitri, emailForLog, "Trước lần POST cuối:");
+		SetText(vitri, "STATUS", "Ngôn ngữ: lặp lại POST sau UI...");
+		string p3 = await TryPostMyAccountLanguageUpdateAsync(page, "en_US");
+		string p4 = await TryPostMyAccountLanguageUpdateAsync(page, "en");
+		AppendAutomationLog("DEBUG", vitri, emailForLog, "POST language_update (lần cuối): en_US=" + p3 + " | en=" + p4);
+		await DelayBatchAsync(1200);
+		if (!await VerifyPreferredLanguageEnglishUsAfterReloadAsync(page, vitri))
+		{
+			await LogPreferredLanguageDebugAsync(page, vitri, emailForLog, "Vẫn fail sau mọi bước:");
+			throw new InvalidOperationException("Không đặt được Preferred language = English (United States). Xem DEBUG snippet trong Data/automation.log.");
+		}
+
+		SetText(vitri, "STATUS", "Ngôn ngữ: đã đặt English (United States).");
 	}
 
 	private static ILocator GooglePrimaryActionButton(IPage page)
@@ -3489,7 +4297,7 @@ public partial class Form1 : Form
 					{
 						await page.WaitForSelectorAsync("input[type='email']", new PageWaitForSelectorOptions
 						{
-							Timeout = 15000f
+							Timeout = PwGoogleSignInEmailFieldMs
 						});
 						await page.FillAsync("input[type='email']", email);
 						SetText(vitri, "STATUS", "STEP 1: Submit email");
@@ -3498,7 +4306,7 @@ public partial class Form1 : Form
 					SetText(vitri, "STATUS", "STEP 2: Nhập password");
 					await RunStepWithReloadRetryAsync(page, vitri, "STEP 2 (password)", async delegate
 					{
-						DateTime deadline = DateTime.UtcNow.AddMilliseconds(15500.0);
+						DateTime deadline = DateTime.UtcNow.AddMilliseconds(PwGoogleSignInPasswordWaitMs);
 						while (DateTime.UtcNow < deadline)
 						{
 							if (await TryAbortIfGoogleSignInDeadAccountBlockingAsync(page, vitri, email))
@@ -3531,7 +4339,7 @@ public partial class Form1 : Form
 						{
 							throw new GoogleSignInDeadAccountException();
 						}
-						throw new TimeoutException("Timeout 15000ms exceeded — không thấy ô mật khẩu hiển thị.");
+						throw new TimeoutException("Timeout " + (int)PwGoogleSignInPasswordWaitMs + "ms exceeded — không thấy ô mật khẩu hiển thị.");
 					}, async delegate
 					{
 						await TryRecoverGoogleSignInPasswordAsync(page, email);
@@ -3703,7 +4511,7 @@ public partial class Form1 : Form
 						{
 							await RunStepWithReloadRetryAsync(page, vitri, "Goto myaccount/language (sau passkey)", async delegate
 							{
-								await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"));
+								await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"), PwGotoGoogleDomLoaded());
 							});
 						}
 						catch
@@ -4051,7 +4859,7 @@ public partial class Form1 : Form
 						await DelayBatchAsync(5000);
 						await RunStepWithReloadRetryAsync(page, vitri, "Goto myaccount/language (sau 2FA)", async delegate
 						{
-							await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"));
+							await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"), PwGotoGoogleDomLoaded());
 						});
 					}
 					else
@@ -4097,7 +4905,7 @@ public partial class Form1 : Form
 								{
 									await RunStepWithReloadRetryAsync(page, vitri, "Goto myaccount/language (sau recovery)", async delegate
 									{
-										await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"));
+										await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/language"), PwGotoGoogleDomLoaded());
 									});
 								}
 								catch
@@ -4119,10 +4927,15 @@ public partial class Form1 : Form
 					}
 				}
 				AFTER_VERIFY_STEP_3:
-				// Chỉ đổi ngôn ngữ khi đã verify xong. Tránh trường hợp chưa click được challenge mà vẫn nhảy bước.
-				if (page.Url.Contains("myaccount"))
+				try
 				{
-					await page.EvaluateAsync("async () => {\r\n                        const html = document.documentElement.innerHTML;\r\n\r\n                        // regex bắt cả ' và \"\r\n                        const match = html.match(/(['\"])(APv[^'\"]+)\\1/);\r\n                        const at = match ? match[2] : null;\r\n\r\n                        if (!at) {\r\n                            console.log('❌ Không tìm thấy AT');\r\n                            return 'NO_AT';\r\n                        }\r\n\r\n                        console.log('✅ AT:', at);\r\n\r\n                        const res = await fetch('/_/language_update?hl=en&soc-app=1&soc-platform=1&soc-device=1', {\r\n                            method: 'POST',\r\n                            headers: {\r\n                                'content-type': 'application/x-www-form-urlencoded'\r\n                            },\r\n                            body: 'f.req=%5B%5B%22en%22%5D%5D&at=' + encodeURIComponent(at)\r\n                        });\r\n\r\n                        const text = await res.text();\r\n                        console.log(text);\r\n                        return 'OK';\r\n                    }");
+					await EnsurePreferredLanguageEnglishUnitedStatesAsync(page, vitri, email);
+				}
+				catch (Exception exLang)
+				{
+					SetText(vitri, "STATUS", "Lỗi đặt ngôn ngữ English (US): " + exLang.Message);
+					AppendAutomationLog("ERROR", vitri, email, "Preferred language EN-US: " + exLang.GetType().Name + " — " + exLang.Message);
+					throw;
 				}
 			}
 			catch (GoogleSignInDeadAccountException)
@@ -4141,17 +4954,14 @@ public partial class Form1 : Form
 				IPage inbox = await context.NewPageAsync();
 				await RunStepWithReloadRetryAsync(inbox, vitri, "Mở Gmail Inbox", async delegate
 				{
-					await inbox.GotoAsync(GoogleUrlEn("https://mail.google.com/mail/u/0/"), new PageGotoOptions
-					{
-						WaitUntil = WaitUntilState.DOMContentLoaded
-					});
+					await inbox.GotoAsync(GoogleUrlEn("https://mail.google.com/mail/u/0/"), PwGotoGoogleDomLoaded());
 					await inbox.BringToFrontAsync();
 				});
 				try
 				{
 					await inbox.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
 					{
-						Timeout = 20000f
+						Timeout = 45000f
 					});
 				}
 				catch
@@ -4170,7 +4980,7 @@ public partial class Form1 : Form
 					await RunStepWithReloadRetryAsync(page, vitri, "STEP 4–5 (đổi avatar)", async delegate
 					{
 						SetText(vitri, "STATUS", "STEP 4: Mở trang Personal Info");
-						await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/personal-info"));
+						await page.GotoAsync(GoogleUrlEn("https://myaccount.google.com/personal-info"), PwGotoGoogleDomLoaded());
 						await DelayBatchAsync(2000);
 						SetText(vitri, "STATUS", "STEP 5: Click Change Avatar");
 						await page.GetByLabel("Change profile photo").ClickAsync();
@@ -4946,24 +5756,26 @@ public partial class Form1 : Form
 							WaitUntil = WaitUntilState.DOMContentLoaded,
 							Timeout = 80000f
 						});
-						await DelayBatchAsync(2500);
+						await DelayBatchAsync(1200);
 						try
 						{
 							await scriptPage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
 							{
-								Timeout = 90000f
+								Timeout = 20000f
 							});
 						}
 						catch
 						{
 						}
-						await DelayBatchAsync(1500);
+						await DelayBatchAsync(450);
 						await scriptPage.SetViewportSizeAsync(1920, 1080);
+						await ReloadUntilAppsScriptTransientErrorClearsAsync(scriptPage, vitri, email, "sau mở script.new", 12);
 						SetText(vitri, "STATUS", "[Script] Chờ editor Monaco (.view-lines)...");
 						await scriptPage.WaitForSelectorAsync(".view-lines", new PageWaitForSelectorOptions
 						{
 							Timeout = 180000f
 						});
+						await ReloadUntilAppsScriptTransientErrorClearsAsync(scriptPage, vitri, email, "sau khi có .view-lines (Something went wrong overlay)", 12);
 					});
 					SetText(vitri, "STATUS", "[Script] Xóa code mặc định, chuẩn bị dán codescript...");
 					await scriptPage.ClickAsync(".view-lines");
@@ -5515,6 +6327,13 @@ public partial class Form1 : Form
 			Exception ex10 = ex;
 			SetText(vitri, "STATUS", "ERROR " + ex10.Message);
 			Console.WriteLine("Login error tổng: " + ex10.Message);
+			try
+			{
+				AppendAutomationLog("WARN", vitri, email, "hamcheckpass (pipeline sau đăng nhập / Form / Sheet / Script): " + ex10.GetType().Name + " — " + (ex10.Message ?? ""));
+			}
+			catch
+			{
+			}
 			return false;
 		}
 	}
