@@ -111,13 +111,11 @@ function _mainLogic(e) {
     sentCache.add(email);
 
     subject = subject.replace(/\[Name\]/g, pageName);
-    intro = intro
-      .replace(/\[Name\]/g, `**${pageName}**`)
-      .replace(/\\n/g, "\n");
+    intro = intro.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
     linkText = linkText.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
 
     const now = new Date();
-    const dateStr = Utilities.formatDate(now, "America/New_York", "dd/MM/yyyy");
+    const dateStr = Utilities.formatDate(now, "Asia/Jerusalem", "dd/MM/yyyy HH:mm");
 
     const finalSubject = `[${dateStr}] ${subject}`;
 
@@ -126,22 +124,24 @@ function _mainLogic(e) {
 🌐 https://www.facebook.com
 📍  1 Meta Way, Menlo Park, CA 94025
 
-This message was sent to ${email} regarding activity associated with your account or Page.
-To stop receiving similar notifications, you may update your communication preferences or contact support.`;
+הודעת מידע זו נשלחה לכתובת ${email}.
+אם אינך מעוניין/ת לקבל עדכונים דומים בעתיד, ניתן להסיר את ההרשמה דרך הקישור שבתחתית ההודעה או לפנות אל info@unsub.com.`;
 
     const fullMessage =
 `${intro}
 
+כדי להמשיך בתהליך האימות, אנא הגישו את הבקשה דרך עמוד ההרשמה הרשמי המופיע למטה.
+
 ${linkText} ${CONFIG.FORM_URL}
 
-Submitted information will be reviewed according to standard procedures. 
+התג הכחול נועד לחיזוק האמינות ולאימות הרשמי של הדף, וכל המידע שנשלח ייבדק ויטופל בהתאם לסדר הבקשות.
 
-Best regards,
+תודה שאתם חלק מקהילת הפלטפורמה שלנו.
+
+בברכה,
 ${footer}`;
 
-    const htmlMessage = fullMessage
-      .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
-      .replace(/\n/g, "<br>");
+    const htmlMessage = fullMessage.replace(/\n/g, "<br>");
     let success = false;
     let errorMsg = "";
 

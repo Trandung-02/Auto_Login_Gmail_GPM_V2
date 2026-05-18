@@ -27,8 +27,27 @@ public partial class Form1
 		int baseY = cb_gpm_group.Bottom + 10;
 		cb_changeinfo.Location = new Point(SidebarPadX, baseY);
 		cb_tao_form.Location = new Point(SidebarPadX, baseY + SidebarOptsRowGap);
-		cb_tao_sheet_script.Location = new Point(SidebarPadX, baseY + SidebarOptsRowGap * 2);
-		cb_offchrome.Location = new Point(SidebarPadX, baseY + SidebarOptsRowGap * 3);
+		if (cb_form_link_short != null)
+		{
+			cb_form_link_short.Location = new Point(SidebarPadX + 18, baseY + SidebarOptsRowGap * 2);
+			cb_form_link_short.Enabled = cb_tao_form.Checked;
+		}
+		cb_tao_sheet_script.Location = new Point(SidebarPadX, baseY + SidebarOptsRowGap * 3);
+		cb_offchrome.Location = new Point(SidebarPadX, baseY + SidebarOptsRowGap * 4);
+	}
+
+	private void SyncFormLinkShortCheckboxEnabled()
+	{
+		if (cb_form_link_short == null)
+		{
+			return;
+		}
+		cb_form_link_short.Enabled = cb_tao_form != null && cb_tao_form.Checked;
+	}
+
+	private void cb_tao_form_CheckedChanged(object sender, EventArgs e)
+	{
+		SyncFormLinkShortCheckboxEnabled();
 	}
 
 	/// <summary>Sắp xếp id nhóm GPM lớn → bé (id số giảm dần; id không phải số so chuỗi giảm dần).</summary>
