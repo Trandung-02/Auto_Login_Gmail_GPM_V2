@@ -251,6 +251,12 @@ public partial class Form1 : Form
 
 	private CheckBox cb_changeinfo;
 
+	/// <summary>Sau đăng nhập: mở thêm tab Google Drive My Drive (cùng lúc với tab Gmail).</summary>
+	private CheckBox cb_mo_drive;
+
+	/// <summary>Sau tab Gmail: mở https://2fa.cn/, nhập secret cột 2FA và Submit.</summary>
+	private CheckBox cb_mo_2fa_cn;
+
 	private ToolStripMenuItem copy2FAToolStripMenuItem;
 
 	private ToolStripMenuItem xuatCsvLuoiToolStripMenuItem;
@@ -5247,6 +5253,70 @@ public partial class Form1 : Form
 		}
 	}
 
+	/// <summary>Sau tab Gmail: mở https://2fa.cn/, dán secret cột 2FA vào #listToken và bấm Submit.</summary>
+	private async Task TryOpenAndFill2faCnAsync(IBrowserContext context, int vitri, string ma2fa)
+	{
+		string secretRaw = (ma2fa ?? "").Trim();
+		if (string.IsNullOrEmpty(secretRaw))
+		{
+			SetText(vitri, "STATUS", "2fa.cn: cột 2FA trống — bỏ qua");
+			AppendAutomationLog("WARN", vitri, "", "2fa.cn: cột 2FA trống.");
+			return;
+		}
+		string secret = Regex.Replace(secretRaw, @"[\s\-_]+", "");
+		SetText(vitri, "STATUS", "Mở tab 2fa.cn — nhập secret 2FA...");
+		try
+		{
+			IPage tfaPage = await context.NewPageAsync();
+			await RunStepWithReloadRetryAsync(tfaPage, vitri, "Mở 2fa.cn", async delegate
+			{
+				await tfaPage.GotoAsync("https://2fa.cn/", new PageGotoOptions
+				{
+					WaitUntil = WaitUntilState.DOMContentLoaded
+				});
+				await tfaPage.BringToFrontAsync();
+			});
+			await tfaPage.WaitForSelectorAsync("#listToken", new PageWaitForSelectorOptions
+			{
+				Timeout = 30000f
+			});
+			await tfaPage.FillAsync("#listToken", secret);
+			await DelayBatchAsync(400);
+			ILocator submitBtn = tfaPage.Locator("#submit");
+			if (await submitBtn.CountAsync() > 0)
+			{
+				await submitBtn.First.ClickAsync(new LocatorClickOptions
+				{
+					Timeout = 15000f
+				});
+			}
+			else
+			{
+				await tfaPage.GetByRole(AriaRole.Link, new PageGetByRoleOptions
+				{
+					Name = "Submit"
+				}).ClickAsync();
+			}
+			try
+			{
+				await tfaPage.WaitForFunctionAsync("() => { const o = document.getElementById('output'); return o && o.value && o.value.trim().length > 0; }", null, new PageWaitForFunctionOptions
+				{
+					Timeout = 20000f
+				});
+			}
+			catch
+			{
+			}
+			SetText(vitri, "STATUS", "2fa.cn: đã Submit secret 2FA");
+			AppendAutomationLog("INFO", vitri, "", "2fa.cn: đã nhập secret và Submit.");
+		}
+		catch (Exception ex)
+		{
+			SetText(vitri, "STATUS", "2fa.cn: " + ex.Message);
+			AppendAutomationLog("WARN", vitri, "", "2fa.cn: " + ex.GetType().Name + " — " + ex.Message);
+		}
+	}
+
 	public async Task<bool> hamcheckpass(int vitri, IBrowserContext context, IPage page, string email, string password, string ma2fa, string mail2)
 	{
 		try
@@ -5843,6 +5913,39 @@ public partial class Form1 : Form
 			{
 				// ignore: mở tab chỉ để tiện thao tác, không ảnh hưởng luồng chính
 			}
+			if (cb_mo_2fa_cn != null && cb_mo_2fa_cn.Checked)
+			{
+				await TryOpenAndFill2faCnAsync(context, vitri, ma2fa);
+			}
+			if (cb_mo_drive != null && cb_mo_drive.Checked)
+			{
+				SetText(vitri, "STATUS", "Mở tab Google Drive (My Drive)...");
+				try
+				{
+					IPage drivePage = await context.NewPageAsync();
+					await RunStepWithReloadRetryAsync(drivePage, vitri, "Mở Google Drive My Drive", async delegate
+					{
+						await drivePage.GotoAsync(
+							GoogleUrlEn("https://drive.google.com/drive/my-drive"),
+							PwGotoGoogleDomLoaded());
+						await drivePage.BringToFrontAsync();
+					});
+					try
+					{
+						await drivePage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+						{
+							Timeout = 45000f
+						});
+					}
+					catch
+					{
+					}
+				}
+				catch
+				{
+					// ignore: mở tab Drive chỉ để tiện thao tác, không ảnh hưởng luồng chính
+				}
+			}
 			if (cb_changeinfo.Checked)
 			{
 				try
@@ -5961,6 +6064,16 @@ public partial class Form1 : Form
 					catch
 					{
 					}
+					SetText(vitri, "STATUS", "[Form] Đóng popup Gemini tạo form (nếu có)...");
+					await DismissGoogleFormsGeminiGettingStartedDialogIfPresentAsync(formPage);
+					await DelayBatchAsync(400);
+					try
+					{
+						await DismissGoogleFormsGeminiGettingStartedDialogIfPresentAsync(formPage, waitBeforeCheck: false);
+					}
+					catch
+					{
+					}
 					try
 					{
 						await ReloadUntilGoogleFormsTransientErrorClearsAsync(formPage, vitri, email, "sau popup quyền Forms", 8);
@@ -6067,16 +6180,34 @@ public partial class Form1 : Form
 						})).SetFilesAsync(headerPath);
 						await DelayBatchAsync(2000);
 						await ClickGoogleFormsHeaderPickerDoneButtonAsync(formPage, frame2);
-						await DelayBatchAsync(2500);
-						SetText(vitri, "STATUS", "[Form] Theme: ảnh header đã áp dụng (Done)");
+						SetText(vitri, "STATUS", "[Form] Theme: chờ crop Position Header (nếu có)...");
+						if (!await WaitForGoogleFormsPositionHeaderAndSaveAsync(formPage, 50000).ConfigureAwait(false))
+						{
+							if (await GoogleFormsHeaderApplySucceededAsync(formPage).ConfigureAwait(false))
+							{
+								SetText(vitri, "STATUS", "[Form] Theme: ảnh header đã áp dụng (không cần dialog Save)");
+							}
+							else
+							{
+								throw new TimeoutException("Không bấm được Save trong dialog Position Header sau upload ảnh header.");
+							}
+						}
+						else
+						{
+							SetText(vitri, "STATUS", "[Form] Theme: ảnh header đã áp dụng (Done/Save)");
+						}
 						try
 						{
-							SetText(vitri, "STATUS", "[Form] Theme: dialog hoặc sidebar — chọn màu #0e72ea / #076ff6...");
+							SetText(vitri, "STATUS", "[Form] Theme: chọn 1 màu (#076ff6 → #0a74f7 → #0e72ea)...");
 							await PageWaitCancellableAsync(formPage, 2000f);
 							bool colorApplied = false;
+							string appliedThemeHex = "";
+							string themeColorHex = GoogleFormsThemeColorPriority[0];
+							const string themeColorHexUpper = "076FF6";
 							LocatorFilterOptions hasThemeBlue = new LocatorFilterOptions
 							{
-								Has = formPage.Locator("div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#076ff6']")
+								Has = formPage.Locator(
+									"div.UBrD9d[data-color='#076ff6'], div.UBrD9d[data-color='#0a74f7'], div.UBrD9d[data-color='#0e72ea']")
 							};
 							ILocator themeDialog = formPage.Locator("div[role='dialog'][aria-label='Theme']");
 							try
@@ -6086,48 +6217,14 @@ public partial class Form1 : Form
 									State = WaitForSelectorState.Visible,
 									Timeout = 18000f
 								});
-								ILocator colorSwatch = themeDialog.Locator("div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#076ff6']").First;
-								await colorSwatch.WaitForAsync(new LocatorWaitForOptions
+								(bool okDlg, string hexDlg) = await TryApplyGoogleFormsFirstThemeColorInRootAsync(themeDialog.First, formPage);
+								colorApplied = okDlg;
+								appliedThemeHex = hexDlg;
+								if (colorApplied)
 								{
-									State = WaitForSelectorState.Visible,
-									Timeout = 45000f
-								});
-								await colorSwatch.ScrollIntoViewIfNeededAsync();
-								await PageWaitCancellableAsync(formPage, 200f);
-								await colorSwatch.ClickAsync(new LocatorClickOptions
-								{
-									Timeout = 30000f,
-									Force = true
-								});
-								await PageWaitCancellableAsync(formPage, 400f);
-								ILocator applyInTheme = themeDialog.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
-								{
-									Name = "Apply"
-								});
-								if (await applyInTheme.CountAsync() > 0)
-								{
-									await applyInTheme.Last.ClickAsync(new LocatorClickOptions
-									{
-										Timeout = 30000f,
-										Force = true
-									});
+									await PageWaitCancellableAsync(formPage, 400f);
+									await TryClickGoogleFormsThemeApplyAsync(themeDialog.First, formPage);
 								}
-								else
-								{
-									ILocator spanApply = themeDialog.Locator("span.snByac").Filter(new LocatorFilterOptions
-									{
-										HasTextString = "Apply"
-									});
-									if (await spanApply.CountAsync() > 0)
-									{
-										await spanApply.Last.ClickAsync(new LocatorClickOptions
-										{
-											Timeout = 30000f,
-											Force = true
-										});
-									}
-								}
-								colorApplied = true;
 							}
 							catch
 							{
@@ -6149,71 +6246,14 @@ public partial class Form1 : Form
 											State = WaitForSelectorState.Visible,
 											Timeout = 12000f
 										});
-										ILocator colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#0e72ea'][data-label='#0e72ea'], div.UBrD9d[role='listitem'][data-color='#076ff6'][data-label='#076ff6']").First;
-										if (await colorItem.CountAsync() == 0)
+										(bool okSb, string hexSb) = await TryApplyGoogleFormsFirstThemeColorInRootAsync(themePanel, formPage);
+										if (!okSb)
 										{
-											colorItem = themePanel.Locator("div.UBrD9d[role='listitem'][data-color='#0e72ea'], div.UBrD9d[role='listitem'][data-color='#076ff6']").First;
+											continue;
 										}
-										if (await colorItem.CountAsync() == 0)
-										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#0e72ea'][data-label='#0e72ea'], div.UBrD9d[data-color='#076ff6'][data-label='#076ff6']").First;
-										}
-										if (await colorItem.CountAsync() == 0)
-										{
-											colorItem = themePanel.Locator("div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#076ff6']").First;
-										}
-										if (await colorItem.CountAsync() == 0)
-										{
-											colorItem = themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
-											{
-												Name = "#0e72ea",
-												Exact = true
-											}).Or(themePanel.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
-											{
-												Name = "#076ff6",
-												Exact = true
-											})).First;
-										}
-										await colorItem.WaitForAsync(new LocatorWaitForOptions
-										{
-											State = WaitForSelectorState.Visible,
-											Timeout = 30000f
-										});
-										await colorItem.ScrollIntoViewIfNeededAsync();
-										await PageWaitCancellableAsync(formPage, 250f);
-										await colorItem.ClickAsync(new LocatorClickOptions
-										{
-											Timeout = 30000f,
-											Force = true
-										});
+										appliedThemeHex = hexSb;
 										await PageWaitCancellableAsync(formPage, 500f);
-										ILocator applyInPanel = themePanel.Locator("span.snByac").Filter(new LocatorFilterOptions
-										{
-											HasTextString = "Apply"
-										});
-										if (await applyInPanel.CountAsync() > 0)
-										{
-											await applyInPanel.Last.ClickAsync(new LocatorClickOptions
-											{
-												Timeout = 30000f,
-												Force = true
-											});
-										}
-										else
-										{
-											ILocator applyBtnSb = themePanel.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
-											{
-												Name = "Apply"
-											});
-											if (await applyBtnSb.CountAsync() > 0)
-											{
-												await applyBtnSb.Last.ClickAsync(new LocatorClickOptions
-												{
-													Timeout = 30000f,
-													Force = true
-												});
-											}
-										}
+										await TryClickGoogleFormsThemeApplyAsync(themePanel, formPage);
 										colorApplied = true;
 										break;
 									}
@@ -6224,7 +6264,41 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								bool jsPick = await formPage.EvaluateAsync<bool>("() => {\r\n  const colors = ['#0e72ea', '#076ff6'];\r\n  const pick = (root) => {\r\n    if (!root) return null;\r\n    for (let j = 0; j < colors.length; j++) {\r\n      const c = colors[j];\r\n      let hit = root.querySelector('div.UBrD9d[role=\"listitem\"][data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"][data-label=\"' + c + '\"]')\r\n        || root.querySelector('div.UBrD9d[data-color=\"' + c + '\"]');\r\n      if (hit) return hit;\r\n    }\r\n    return null;\r\n  };\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Theme\"]');\r\n  let el = pick(dlg);\r\n  if (el) {\r\n    el.scrollIntoView({ block: 'center', inline: 'center' });\r\n    el.click();\r\n    return true;\r\n  }\r\n  const sideSels = ['div[role=\"complementary\"][aria-roledescription=\"sidebar\"]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];\r\n  for (let s = 0; s < sideSels.length; s++) {\r\n    const nodes = document.querySelectorAll(sideSels[s]);\r\n    for (let i = 0; i < nodes.length; i++) {\r\n      el = pick(nodes[i]);\r\n      if (el) {\r\n        el.scrollIntoView({ block: 'center', inline: 'center' });\r\n        el.click();\r\n        return true;\r\n      }\r\n    }\r\n  }\r\n  el = document.querySelector('div.UBrD9d[data-color=\"#0e72ea\"], div.UBrD9d[data-color=\"#076ff6\"]');\r\n  if (!el) return false;\r\n  el.scrollIntoView({ block: 'center', inline: 'center' });\r\n  el.click();\r\n  return true;\r\n}");
+								bool jsPick = await formPage.EvaluateAsync<bool>(
+									@"() => {
+  const colors = ['#076ff6', '#0a74f7', '#0e72ea'];
+  const pick = (root, hex) => {
+    if (!root) return null;
+    return root.querySelector('div.UBrD9d[role=""listitem""][data-color=""' + hex + '""][data-label=""' + hex + '""]')
+      || root.querySelector('div.UBrD9d[data-color=""' + hex + '""][data-label=""' + hex + '""]')
+      || root.querySelector('div.UBrD9d[data-color=""' + hex + '""]');
+  };
+  const clickSwatch = (el) => {
+    if (!el) return false;
+    const r = el.getBoundingClientRect();
+    if (r.width < 4 || r.height < 4) return false;
+    el.scrollIntoView({ block: 'center', inline: 'center' });
+    el.click();
+    return true;
+  };
+  const tryRoot = (root) => {
+    for (let i = 0; i < colors.length; i++) {
+      const el = pick(root, colors[i]);
+      if (clickSwatch(el)) return true;
+    }
+    return false;
+  };
+  const dlg = document.querySelector('div[role=""dialog""][aria-label=""Theme""]');
+  if (tryRoot(dlg)) return true;
+  const sideSels = ['div[role=""complementary""][aria-roledescription=""sidebar""]', 'div.lOsMle.kiQbk.cvymMe', 'div.lOsMle.cvymMe'];
+  for (let s = 0; s < sideSels.length; s++) {
+    const nodes = document.querySelectorAll(sideSels[s]);
+    for (let i = 0; i < nodes.length; i++) {
+      if (tryRoot(nodes[i])) return true;
+    }
+  }
+  return false;
+}");
 								if (jsPick)
 								{
 									try
@@ -6241,48 +6315,28 @@ public partial class Form1 : Form
 											}
 											if (vis)
 											{
-												ILocator dlgApply = themeDialog.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
-												{
-													Name = "Apply"
-												});
-												if (await dlgApply.CountAsync() > 0)
-												{
-													await dlgApply.Last.ClickAsync(new LocatorClickOptions
-													{
-														Timeout = 30000f,
-														Force = true
-													});
-												}
-												else
-												{
-													ILocator sp = themeDialog.Locator("span.snByac").Filter(new LocatorFilterOptions
-													{
-														HasTextString = "Apply"
-													});
-													if (await sp.CountAsync() > 0)
-													{
-														await sp.Last.ClickAsync(new LocatorClickOptions
-														{
-															Timeout = 30000f,
-															Force = true
-														});
-													}
-												}
+												await TryClickGoogleFormsThemeApplyAsync(themeDialog.First, formPage);
 											}
 										}
 										colorApplied = true;
+										appliedThemeHex = "(JS)";
 									}
 									catch
 									{
 										colorApplied = true;
+										appliedThemeHex = "(JS)";
 									}
 								}
+							}
+							if (colorApplied && !string.IsNullOrEmpty(appliedThemeHex) && appliedThemeHex != "(JS)")
+							{
+								SetText(vitri, "STATUS", "[Form] Theme: đã chọn màu " + appliedThemeHex);
 							}
 							if (!colorApplied)
 							{
 								try
 								{
-									SetText(vitri, "STATUS", "[Form] Theme: không thấy preset — mở Add custom color #0E72EA (fallback)...");
+									SetText(vitri, "STATUS", "[Form] Theme: không thấy preset — Add custom color #076FF6 (fallback)...");
 									int dialogsBefore = await formPage.Locator("div[role='dialog']").CountAsync();
 									ILocator addCustomBtn = themeDialog.Locator("div.UBrD9d[aria-label='Add custom color'], div[aria-label='Add custom color'][role='button']").First;
 									if (await addCustomBtn.CountAsync() == 0)
@@ -6363,7 +6417,7 @@ public partial class Form1 : Form
 									{
 										try
 										{
-											hexSet = await formPage.EvaluateAsync<bool>(hexJs, "0E72EA");
+											hexSet = await formPage.EvaluateAsync<bool>(hexJs, themeColorHexUpper);
 										}
 										catch
 										{
@@ -6387,7 +6441,7 @@ public partial class Form1 : Form
 												await fallbackInput.ClickAsync(new LocatorClickOptions { Force = true, Timeout = 6000f });
 												await fallbackInput.PressAsync("Control+A");
 												await fallbackInput.PressAsync("Delete");
-												await fallbackInput.TypeAsync("0E72EA", new LocatorTypeOptions { Delay = 40f });
+												await fallbackInput.TypeAsync(themeColorHexUpper, new LocatorTypeOptions { Delay = 40f });
 												await fallbackInput.PressAsync("Tab");
 												hexSet = true;
 											}
@@ -6401,7 +6455,7 @@ public partial class Form1 : Form
 										throw new Exception("Không tìm thấy input HEX trong dialog Custom color.");
 									}
 									await PageWaitCancellableAsync(formPage, 500f);
-									SetText(vitri, "STATUS", "[Form] Theme: đã nhập HEX 0E72EA — click OK/Save...");
+									SetText(vitri, "STATUS", "[Form] Theme: đã nhập HEX " + themeColorHexUpper + " — click OK/Save...");
 									bool okClicked = false;
 									string[] okNames = new string[4] { "OK", "Save", "Done", "Apply" };
 									foreach (string okName in okNames)
@@ -6451,47 +6505,13 @@ public partial class Form1 : Form
 										}
 									}
 									await PageWaitCancellableAsync(formPage, 900f);
-									ILocator finalApply = themeDialog.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
+									if (await themeDialog.CountAsync() > 0)
 									{
-										Name = "Apply"
-									});
-									if (await finalApply.CountAsync() > 0)
-									{
-										try
-										{
-											await finalApply.Last.ClickAsync(new LocatorClickOptions
-											{
-												Timeout = 15000f,
-												Force = true
-											});
-										}
-										catch
-										{
-										}
-									}
-									else
-									{
-										ILocator sbApply = formPage.Locator("span.snByac").Filter(new LocatorFilterOptions
-										{
-											HasTextString = "Apply"
-										});
-										if (await sbApply.CountAsync() > 0)
-										{
-											try
-											{
-												await sbApply.Last.ClickAsync(new LocatorClickOptions
-												{
-													Timeout = 15000f,
-													Force = true
-												});
-											}
-											catch
-											{
-											}
-										}
+										await TryClickGoogleFormsThemeApplyAsync(themeDialog.First, formPage);
 									}
 									colorApplied = true;
-									SetText(vitri, "STATUS", "[Form] Theme: đã thêm & áp dụng custom color #0E72EA");
+									appliedThemeHex = themeColorHex;
+									SetText(vitri, "STATUS", "[Form] Theme: đã thêm & áp dụng custom color " + themeColorHex);
 								}
 								catch (Exception exCustom)
 								{
@@ -6500,7 +6520,7 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								throw new Exception("Không tìm thấy ô màu #0e72ea / #076ff6 (dialog Theme hoặc sidebar lOsMle/kiQbk) và không thể thêm custom color.");
+								throw new Exception("Không tìm thấy ô màu #076ff6 / #0a74f7 / #0e72ea (dialog Theme hoặc sidebar) và không thể thêm custom color.");
 							}
 							await PageWaitCancellableAsync(formPage, 1000f);
 							SetText(vitri, "STATUS", "[Form] Theme: đã Apply màu / hoàn tất tùy chỉnh");
@@ -7506,6 +7526,136 @@ public partial class Form1 : Form
 		catch
 		{
 			return false;
+		}
+	}
+
+	/// <summary>Ưu tiên chọn một màu theme: có #076ff6 thì dùng, không thì #0a74f7, rồi #0e72ea.</summary>
+	private static readonly string[] GoogleFormsThemeColorPriority = new string[3]
+	{
+		"#076ff6",
+		"#0a74f7",
+		"#0e72ea"
+	};
+
+	private static ILocator GoogleFormsThemeColorSwatchLocator(ILocator root, string hexLower)
+	{
+		return root.Locator("div.UBrD9d[role='listitem'][data-color='" + hexLower + "'][data-label='" + hexLower + "']")
+			.Or(root.Locator("div.UBrD9d[role='listitem'][data-color='" + hexLower + "']"))
+			.Or(root.Locator("div.UBrD9d[data-color='" + hexLower + "'][data-label='" + hexLower + "']"))
+			.Or(root.Locator("div.UBrD9d[data-color='" + hexLower + "']"))
+			.Or(root.GetByRole(AriaRole.Listitem, new LocatorGetByRoleOptions
+			{
+				Name = hexLower,
+				Exact = true
+			}));
+	}
+
+	private static async Task<bool> TryClickGoogleFormsThemeColorSwatchAsync(ILocator root, string hexLower, IPage page)
+	{
+		if (root == null || page == null)
+		{
+			return false;
+		}
+		try
+		{
+			ILocator swatch = GoogleFormsThemeColorSwatchLocator(root, hexLower).First;
+			if (await swatch.CountAsync() == 0)
+			{
+				return false;
+			}
+			await swatch.WaitForAsync(new LocatorWaitForOptions
+			{
+				State = WaitForSelectorState.Visible,
+				Timeout = 30000f
+			});
+			await swatch.ScrollIntoViewIfNeededAsync();
+			await PlaywrightWaitHelpers.PageWaitAsync(page, 200f);
+			await swatch.ClickAsync(new LocatorClickOptions
+			{
+				Timeout = 30000f,
+				Force = true
+			});
+			return true;
+		}
+		catch
+		{
+			try
+			{
+				ILocator swatch = GoogleFormsThemeColorSwatchLocator(root, hexLower);
+				if (await swatch.CountAsync() > 0 && await TryMouseClickLocatorCenterAsync(swatch, page))
+				{
+					return true;
+				}
+			}
+			catch
+			{
+			}
+			return false;
+		}
+	}
+
+	private static async Task<(bool Ok, string PickedHex)> TryApplyGoogleFormsFirstThemeColorInRootAsync(ILocator root, IPage page)
+	{
+		if (root == null || page == null)
+		{
+			return (false, "");
+		}
+		foreach (string hex in GoogleFormsThemeColorPriority)
+		{
+			try
+			{
+				if (await GoogleFormsThemeColorSwatchLocator(root, hex).CountAsync() == 0)
+				{
+					continue;
+				}
+				if (await TryClickGoogleFormsThemeColorSwatchAsync(root, hex, page).ConfigureAwait(false))
+				{
+					return (true, hex);
+				}
+			}
+			catch
+			{
+			}
+		}
+		return (false, "");
+	}
+
+	private static async Task TryClickGoogleFormsThemeApplyAsync(ILocator themeRoot, IPage page)
+	{
+		if (themeRoot == null || page == null)
+		{
+			return;
+		}
+		try
+		{
+			ILocator applyInTheme = themeRoot.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
+			{
+				Name = "Apply"
+			});
+			if (await applyInTheme.CountAsync() > 0)
+			{
+				await applyInTheme.Last.ClickAsync(new LocatorClickOptions
+				{
+					Timeout = 30000f,
+					Force = true
+				});
+				return;
+			}
+			ILocator spanApply = themeRoot.Locator("span.snByac").Filter(new LocatorFilterOptions
+			{
+				HasTextString = "Apply"
+			});
+			if (await spanApply.CountAsync() > 0)
+			{
+				await spanApply.Last.ClickAsync(new LocatorClickOptions
+				{
+					Timeout = 30000f,
+					Force = true
+				});
+			}
+		}
+		catch
+		{
 		}
 	}
 
@@ -8792,23 +8942,28 @@ public partial class Form1 : Form
 					}
 					return true;
 				}
+				function matchConfirmLabel(raw) {
+					if (!raw) return false;
+					const u = raw.replace(/\s+/g, ' ').trim().toUpperCase();
+					if (u === 'DONE' || u === 'DONE.') return true;
+					if (u === 'INSERT' || u === 'OPEN' || u === 'SELECT') return true;
+					if (u.indexOf('CROP') >= 0 && u.indexOf('INSERT') >= 0) return true;
+					if (u.indexOf('SAVE') >= 0 && u.indexOf('INSERT') >= 0) return true;
+					return u.startsWith('DONE') && raw.length <= 12;
+				}
 				const byJsname = document.querySelector('button[jsname=""KbvHGe""]')
 					|| document.querySelector('[jsname=""KbvHGe""]')
 					|| document.querySelector('div[jsname=""KbvHGe""]');
 				if (byJsname && scrollAndFire(byJsname)) return true;
-				const mat = document.querySelector('button.VfPpkd-LgbsSe, .VfPpkd-LgbsSe[role=""button""]');
-				if (mat) {
+				const mats = document.querySelectorAll('button.VfPpkd-LgbsSe, .VfPpkd-LgbsSe[role=""button""], button[data-idom-class]');
+				for (const mat of mats) {
 					const t = (mat.innerText || mat.textContent || '').trim();
-					if (/^done\.?$/i.test(t) && scrollAndFire(mat)) return true;
+					if (matchConfirmLabel(t) && scrollAndFire(mat)) return true;
 				}
 				const candidates = document.querySelectorAll('button, [role=""button""], div[role=""button""]');
 				for (const el of candidates) {
 					const raw = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
-					if (!raw) continue;
-					const u = raw.toUpperCase();
-					if (u === 'DONE' || u === 'DONE.' || (u.startsWith('DONE') && raw.length <= 8)) {
-						if (scrollAndFire(el)) return true;
-					}
+					if (matchConfirmLabel(raw) && scrollAndFire(el)) return true;
 				}
 				return false;
 			}").ConfigureAwait(false);
@@ -8843,35 +8998,461 @@ public partial class Form1 : Form
 		return false;
 	}
 
-	/// <summary>Picker Google Forms "Select Header" sau khi upload: nút Done dùng jsname KbvHGe, aria-label thường là "Done." (có dấu chấm). Có thể nằm trong iframe picker hoặc dialog trên trang chính.</summary>
+	private static ILocator GoogleFormsPositionHeaderPortalLocator(IPage formPage)
+	{
+		return formPage.Locator("div.uW2Fw-Sx9Kwc[data-inject-content-controller]:not([aria-hidden='true']) div.uW2Fw-P5QLlc[aria-label='Position Header']").Or(formPage.Locator("div.uW2Fw-P5QLlc[aria-label='Position Header']"));
+	}
+
+	private static ILocator GoogleFormsPositionHeaderDialogLocator(IPage formPage)
+	{
+		return GoogleFormsPositionHeaderPortalLocator(formPage).Or(formPage.GetByRole(AriaRole.Dialog, new PageGetByRoleOptions
+		{
+			Name = "Position Header"
+		}));
+	}
+
+	/// <summary>Dialog «Position Header» (portal uW2Fw cuối body): nút Save trong .uW2Fw-T0kwCb — data-mdc-dialog-action=ok.</summary>
+	private static async Task<bool> TryJsClickGoogleFormsPositionHeaderSaveAsync(IPage formPage)
+	{
+		try
+		{
+			return await formPage.EvaluateAsync<bool>(@"() => {
+				function visible(el) {
+					if (!el) return false;
+					const st = window.getComputedStyle(el);
+					if (st.display === 'none' || st.visibility === 'hidden' || parseFloat(st.opacity || '1') === 0) return false;
+					const r = el.getBoundingClientRect();
+					return r.width > 2 && r.height > 2;
+				}
+				function scrollAndFire(el) {
+					if (!el || !visible(el)) return false;
+					try { el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' }); } catch (e0) {}
+					const o = { bubbles: true, cancelable: true, view: window, composed: true };
+					try {
+						const r = el.getBoundingClientRect();
+						const cx = Math.floor(r.left + r.width / 2);
+						const cy = Math.floor(r.top + r.height / 2);
+						el.dispatchEvent(new PointerEvent('pointerdown', Object.assign({ pointerId: 1, pointerType: 'mouse', clientX: cx, clientY: cy, isPrimary: true }, o)));
+						el.dispatchEvent(new PointerEvent('pointerup', Object.assign({ pointerId: 1, pointerType: 'mouse', clientX: cx, clientY: cy, isPrimary: true }, o)));
+						el.dispatchEvent(new MouseEvent('mousedown', Object.assign({ clientX: cx, clientY: cy }, o)));
+						el.dispatchEvent(new MouseEvent('mouseup', Object.assign({ clientX: cx, clientY: cy }, o)));
+						el.dispatchEvent(new MouseEvent('click', Object.assign({ clientX: cx, clientY: cy }, o)));
+					} catch (e1) {}
+					if (typeof el.click === 'function') {
+						try { el.click(); } catch (e2) {}
+					}
+					return true;
+				}
+				const dlg = document.querySelector('div.uW2Fw-P5QLlc[aria-label=""Position Header""]')
+					|| document.querySelector('motion div.uW2Fw-P5QLlc[aria-label=""Position Header""]')
+					|| document.querySelector('div[role=""dialog""][aria-label=""Position Header""]');
+				if (!dlg || !visible(dlg)) return false;
+				const img = dlg.querySelector('img[jsname=""ZKyN0d""]');
+				if (img && !img.complete) return false;
+				const btn = dlg.querySelector('.uW2Fw-T0kwCb button[data-mdc-dialog-action=""ok""]')
+					|| dlg.querySelector('button[data-mdc-dialog-action=""ok""]');
+				if (btn && scrollAndFire(btn)) return true;
+				const spans = dlg.querySelectorAll('.uW2Fw-T0kwCb span.mUIrbf-vQzf8d, span[jsname=""V67aGc""]');
+				for (const sp of spans) {
+					const t = (sp.innerText || sp.textContent || '').replace(/\s+/g, ' ').trim();
+					if (/^save$/i.test(t)) {
+						const b = sp.closest('button');
+						if (b && scrollAndFire(b)) return true;
+					}
+				}
+				return false;
+			}").ConfigureAwait(false);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static async Task<bool> TryClickGoogleFormsPositionHeaderSavePlaywrightAsync(IPage formPage)
+	{
+		ILocator positionDialog = GoogleFormsPositionHeaderDialogLocator(formPage);
+		try
+		{
+			try
+			{
+				await positionDialog.First.WaitForAsync(new LocatorWaitForOptions
+				{
+					State = WaitForSelectorState.Visible,
+					Timeout = 20000f
+				});
+			}
+			catch
+			{
+				if (await positionDialog.CountAsync() == 0 || !await positionDialog.First.IsVisibleAsync())
+				{
+					return false;
+				}
+			}
+			ILocator cropImg = positionDialog.Locator("img[jsname='ZKyN0d']");
+			if (await cropImg.CountAsync() > 0)
+			{
+				try
+				{
+					await cropImg.First.WaitForAsync(new LocatorWaitForOptions
+					{
+						State = WaitForSelectorState.Visible,
+						Timeout = 15000f
+					});
+				}
+				catch
+				{
+				}
+			}
+			ILocator saveBtn = positionDialog.Locator("div.uW2Fw-T0kwCb button[data-mdc-dialog-action='ok']").Or(positionDialog.Locator("button[data-mdc-dialog-action='ok']"));
+			if (await saveBtn.CountAsync() == 0)
+			{
+				saveBtn = formPage.GetByRole(AriaRole.Dialog, new PageGetByRoleOptions
+				{
+					Name = "Position Header"
+				}).GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
+				{
+					Name = "Save",
+					Exact = true
+				});
+			}
+			if (await saveBtn.CountAsync() == 0)
+			{
+				return false;
+			}
+			ILocator first = saveBtn.First;
+			if (!await first.IsVisibleAsync())
+			{
+				return false;
+			}
+			await first.ScrollIntoViewIfNeededAsync();
+			await PlaywrightWaitHelpers.PageWaitAsync(formPage, 200f);
+			await first.ClickAsync(new LocatorClickOptions
+			{
+				Timeout = 10000f,
+				Force = true
+			});
+			return true;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static async Task<bool> GoogleFormsPositionHeaderDialogVisibleAsync(IPage formPage)
+	{
+		try
+		{
+			ILocator dlg = GoogleFormsPositionHeaderDialogLocator(formPage);
+			return await dlg.CountAsync() > 0 && await dlg.First.IsVisibleAsync();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static ILocator GoogleFormsPickerShellDialogLocator(IPage formPage)
+	{
+		return formPage.Locator("div.fFW7wc.XKSfm-Sx9Kwc.picker-dialog[role='dialog']");
+	}
+
+	private static async Task<bool> GoogleFormsPickerShellVisibleAsync(IPage formPage)
+	{
+		try
+		{
+			ILocator shell = GoogleFormsPickerShellDialogLocator(formPage);
+			return await shell.CountAsync() > 0 && await shell.First.IsVisibleAsync();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static async Task<bool> GoogleFormsSelectHeaderDialogVisibleAsync(IPage formPage)
+	{
+		try
+		{
+			if (await GoogleFormsPickerShellVisibleAsync(formPage).ConfigureAwait(false))
+			{
+				return true;
+			}
+			ILocator dlg = formPage.Locator("div[role='dialog'][aria-label='Select Header']").Or(formPage.Locator("div[jsname='BleNNd'][role='dialog']"));
+			return await dlg.CountAsync() > 0 && await dlg.First.IsVisibleAsync();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Header đã crop / hiển thị trên form (không cần dialog Save).</summary>
+	private static async Task<bool> GoogleFormsHeaderApplySucceededAsync(IPage formPage)
+	{
+		try
+		{
+			ILocator headerEdit = formPage.Locator("[aria-label='Edit Header Image']");
+			if (await headerEdit.CountAsync() > 0 && await headerEdit.First.IsVisibleAsync())
+			{
+				return true;
+			}
+			return await formPage.EvaluateAsync<bool>(@"() => {
+				const edit = document.querySelector('[aria-label=""Edit Header Image""]');
+				if (edit) {
+					const r = edit.getBoundingClientRect();
+					if (r.width > 20 && r.height > 10) return true;
+				}
+				const img = document.querySelector('img[jsname=""ZKyN0d""]');
+				if (img && img.src && img.offsetParent) {
+					const r = img.getBoundingClientRect();
+					if (r.width > 50 && r.height > 20) return true;
+				}
+				return false;
+			}").ConfigureAwait(false);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Chờ dialog Position Header (crop) rồi bấm Save trong portal uW2Fw.</summary>
+	private static async Task<bool> WaitForGoogleFormsPositionHeaderAndSaveAsync(IPage formPage, int maxWaitMs = 45000)
+	{
+		int deadline = Environment.TickCount + maxWaitMs;
+		while (Environment.TickCount < deadline)
+		{
+			if (await GoogleFormsPositionHeaderDialogVisibleAsync(formPage).ConfigureAwait(false))
+			{
+				if (await TryClickGoogleFormsPositionHeaderSavePlaywrightAsync(formPage).ConfigureAwait(false))
+				{
+					return true;
+				}
+				if (await TryJsClickGoogleFormsPositionHeaderSaveAsync(formPage).ConfigureAwait(false))
+				{
+					return true;
+				}
+				try
+				{
+					ILocator saveBtn = GoogleFormsPositionHeaderPortalLocator(formPage).Locator("motion div.uW2Fw-T0kwCb button[data-mdc-dialog-action='ok']");
+					if (await saveBtn.CountAsync() > 0 && await saveBtn.First.IsVisibleAsync())
+					{
+						await saveBtn.First.ClickAsync(new LocatorClickOptions
+						{
+							Timeout = 8000f,
+							Force = true
+						});
+						await PlaywrightWaitHelpers.PageWaitAsync(formPage, 400f);
+						if (!await GoogleFormsPositionHeaderDialogVisibleAsync(formPage).ConfigureAwait(false))
+						{
+							return true;
+						}
+					}
+				}
+				catch
+				{
+				}
+			}
+			if (await GoogleFormsHeaderApplySucceededAsync(formPage).ConfigureAwait(false))
+			{
+				return true;
+			}
+			await Task.Delay(350);
+		}
+		return false;
+	}
+
+	private static async Task<bool> GoogleFormsPickerConfirmButtonVisibleAsync(IFrameLocator pickerFrame)
+	{
+		try
+		{
+			ILocator done = pickerFrame.Locator("button[jsname='KbvHGe']").Or(pickerFrame.Locator("[jsname='KbvHGe']"));
+			if (await done.CountAsync() > 0 && await done.First.IsVisibleAsync())
+			{
+				return true;
+			}
+			ILocator byRole = pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
+			{
+				NameRegex = new Regex("^\\s*(Done\\.?|Insert|Crop and insert|Save and insert|Open|Select)\\s*$", RegexOptions.IgnoreCase)
+			});
+			if (await byRole.CountAsync() > 0 && await byRole.First.IsVisibleAsync())
+			{
+				return true;
+			}
+			ILocator byText = pickerFrame.Locator("button, [role='button']").Filter(new LocatorFilterOptions
+			{
+				HasTextRegex = new Regex("^\\s*(Done\\.?|Insert|Crop and insert|Save and insert)\\s*$", RegexOptions.IgnoreCase)
+			});
+			return await byText.CountAsync() > 0 && await byText.First.IsVisibleAsync();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	private static async Task<bool> GoogleFormsPickerDoneButtonVisibleAsync(IFrameLocator pickerFrame)
+	{
+		return await GoogleFormsPickerConfirmButtonVisibleAsync(pickerFrame).ConfigureAwait(false);
+	}
+
+	private static async Task<bool> GoogleFormsHeaderCropDialogStillOpenAsync(IPage formPage)
+	{
+		try
+		{
+			if (await GoogleFormsPositionHeaderDialogVisibleAsync(formPage).ConfigureAwait(false))
+			{
+				return true;
+			}
+			if (await GoogleFormsPickerShellVisibleAsync(formPage).ConfigureAwait(false))
+			{
+				return true;
+			}
+			return await GoogleFormsSelectHeaderDialogVisibleAsync(formPage).ConfigureAwait(false);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Nút xác nhận trong iframe picker (Done / Insert / Crop and insert) — khác Save trên trang chính.</summary>
+	private static async Task<bool> TryClickGoogleFormsPickerConfirmPlaywrightAsync(IPage formPage, IFrameLocator pickerFrame)
+	{
+		ILocator[] order = new ILocator[]
+		{
+			pickerFrame.Locator("button[jsname='KbvHGe']").Or(pickerFrame.Locator("[jsname='KbvHGe']")),
+			pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions { Name = "Insert", Exact = true }),
+			pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions { Name = "Crop and insert", Exact = true }),
+			pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions { Name = "Save and insert", Exact = true }),
+			pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions { Name = "Done.", Exact = true }),
+			pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions { Name = "Done", Exact = true }),
+			pickerFrame.Locator("button").Filter(new LocatorFilterOptions { HasTextRegex = new Regex("^\\s*(Insert|Crop and insert|Done\\.?)\\s*$", RegexOptions.IgnoreCase) })
+		};
+		return await TryClickGoogleFormsHeaderDonePlaywrightAsync(formPage, order).ConfigureAwait(false);
+	}
+
+	/// <summary>Trang chính Forms: dialog Select Header → Done (KbvHGe / chữ Done).</summary>
+	private static async Task<bool> TryJsClickGoogleFormsSelectHeaderDoneAsync(IPage formPage)
+	{
+		try
+		{
+			return await formPage.EvaluateAsync<bool>(@"() => {
+				function visible(el) {
+					if (!el) return false;
+					const st = window.getComputedStyle(el);
+					if (st.display === 'none' || st.visibility === 'hidden' || parseFloat(st.opacity || '1') === 0) return false;
+					const r = el.getBoundingClientRect();
+					return r.width > 2 && r.height > 2;
+				}
+				function scrollAndFire(el) {
+					if (!el || !visible(el)) return false;
+					try { el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' }); } catch (e0) {}
+					const o = { bubbles: true, cancelable: true, view: window, composed: true };
+					try {
+						const r = el.getBoundingClientRect();
+						const cx = Math.floor(r.left + r.width / 2);
+						const cy = Math.floor(r.top + r.height / 2);
+						el.dispatchEvent(new PointerEvent('pointerdown', Object.assign({ pointerId: 1, pointerType: 'mouse', clientX: cx, clientY: cy, isPrimary: true }, o)));
+						el.dispatchEvent(new PointerEvent('pointerup', Object.assign({ pointerId: 1, pointerType: 'mouse', clientX: cx, clientY: cy, isPrimary: true }, o)));
+						el.dispatchEvent(new MouseEvent('mousedown', Object.assign({ clientX: cx, clientY: cy }, o)));
+						el.dispatchEvent(new MouseEvent('mouseup', Object.assign({ clientX: cx, clientY: cy }, o)));
+						el.dispatchEvent(new MouseEvent('click', Object.assign({ clientX: cx, clientY: cy }, o)));
+					} catch (e1) {}
+					if (typeof el.click === 'function') {
+						try { el.click(); } catch (e2) {}
+					}
+					return true;
+				}
+				function matchConfirmLabel(raw) {
+					if (!raw) return false;
+					const u = raw.replace(/\s+/g, ' ').trim().toUpperCase();
+					if (u === 'DONE' || u === 'DONE.') return true;
+					if (u === 'INSERT' || u === 'OPEN' || u === 'SELECT') return true;
+					if (u.indexOf('CROP') >= 0 && u.indexOf('INSERT') >= 0) return true;
+					if (u.indexOf('SAVE') >= 0 && u.indexOf('INSERT') >= 0) return true;
+					return u.startsWith('DONE') && raw.length <= 12;
+				}
+				const dlg = document.querySelector('div.fFW7wc.XKSfm-Sx9Kwc.picker-dialog[role=""dialog""]')
+					|| document.querySelector('div[role=""dialog""][aria-label=""Select Header""]')
+					|| document.querySelector('div[jsname=""BleNNd""][role=""dialog""]');
+				if (!dlg || !visible(dlg)) return false;
+				const byJsname = dlg.querySelector('button[jsname=""KbvHGe""]') || dlg.querySelector('[jsname=""KbvHGe""]');
+				if (byJsname && scrollAndFire(byJsname)) return true;
+				const buttons = dlg.querySelectorAll('button, [role=""button""]');
+				for (const el of buttons) {
+					const raw = (el.innerText || el.textContent || '').replace(/\s+/g, ' ').trim();
+					if (matchConfirmLabel(raw) && scrollAndFire(el)) return true;
+				}
+				return false;
+			}").ConfigureAwait(false);
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Trang chính: thử Save (Position Header) rồi Done (Select Header) — dialog nào đang mở thì bấm nút đó.</summary>
+	private static async Task<bool> TryJsClickGoogleFormsHeaderConfirmOnMainPageAsync(IPage formPage)
+	{
+		if (await TryJsClickGoogleFormsPositionHeaderSaveAsync(formPage).ConfigureAwait(false))
+		{
+			return true;
+		}
+		return await TryJsClickGoogleFormsSelectHeaderDoneAsync(formPage).ConfigureAwait(false);
+	}
+
+	private static async Task<bool> TryClickGoogleFormsHeaderDonePlaywrightAsync(IPage formPage, ILocator[] doneTryOrder)
+	{
+		foreach (ILocator loc in doneTryOrder)
+		{
+			try
+			{
+				if (await loc.CountAsync() == 0)
+				{
+					continue;
+				}
+				ILocator first = loc.First;
+				if (!await first.IsVisibleAsync())
+				{
+					continue;
+				}
+				await first.ScrollIntoViewIfNeededAsync();
+				await PlaywrightWaitHelpers.PageWaitAsync(formPage, 200f);
+				await first.ClickAsync(new LocatorClickOptions
+				{
+					Timeout = 10000f,
+					Force = true
+				});
+				return true;
+			}
+			catch
+			{
+			}
+		}
+		return false;
+	}
+
+	/// <summary>Sau upload header: Done/Insert trong iframe picker (shell fFW7wc) rồi Save (Position Header portal uW2Fw).</summary>
 	private static async Task ClickGoogleFormsHeaderPickerDoneButtonAsync(IPage formPage, IFrameLocator pickerFrame)
 	{
-		ILocator headerDialogMain = formPage.Locator("div[role='dialog'][aria-label='Select Header']").Or(formPage.Locator("div[jsname='BleNNd'][role='dialog']"));
-		ILocator doneInDialogMain = headerDialogMain.Locator("button[jsname='KbvHGe']");
+		ILocator pickerShell = GoogleFormsPickerShellDialogLocator(formPage);
+		ILocator headerDialogMain = pickerShell.Or(formPage.Locator("div[role='dialog'][aria-label='Select Header']")).Or(formPage.Locator("div[jsname='BleNNd'][role='dialog']"));
 		ILocator doneInFrameByJsname = pickerFrame.Locator("button[jsname='KbvHGe']").Or(pickerFrame.Locator("[jsname='KbvHGe']"));
-		ILocator doneInFrameByRole = pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
-		{
-			Name = "Done."
-		}).Or(pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
-		{
-			Name = "Done"
-		})).Or(pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions
-		{
-			Name = "DONE"
-		}));
-		ILocator doneInMainByRole = headerDialogMain.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
-		{
-			Name = "Done."
-		}).Or(headerDialogMain.GetByRole(AriaRole.Button, new LocatorGetByRoleOptions
-		{
-			Name = "Done"
-		}));
+		ILocator doneInFrameInsert = pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions { Name = "Insert", Exact = true });
+		ILocator doneInFrameCropInsert = pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions { Name = "Crop and insert", Exact = true });
+		ILocator doneInFrameByRole = pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions { Name = "Done.", Exact = true })
+			.Or(pickerFrame.GetByRole(AriaRole.Button, new FrameLocatorGetByRoleOptions { Name = "Done", Exact = true }));
 		ILocator doneInFrameByText = pickerFrame.Locator("button").Filter(new LocatorFilterOptions
 		{
-			HasTextRegex = new Regex("^\\s*DONE\\.?\\s*$", RegexOptions.IgnoreCase)
+			HasTextRegex = new Regex("^\\s*(Done\\.?|Insert|Crop and insert|Save and insert)\\s*$", RegexOptions.IgnoreCase)
 		});
-		ILocator[] tryOrder = new ILocator[5] { doneInFrameByJsname, doneInFrameByRole, doneInFrameByText, doneInDialogMain, doneInMainByRole };
-		for (int i = 0; i < 50; i++)
+		ILocator doneInDialogMain = headerDialogMain.Locator("button[jsname='KbvHGe']");
+		ILocator[] doneTryOrder = new ILocator[6] { doneInFrameInsert, doneInFrameCropInsert, doneInFrameByJsname, doneInFrameByRole, doneInFrameByText, doneInDialogMain };
+		for (int i = 0; i < 55; i++)
 		{
 			try
 			{
@@ -8905,65 +9486,262 @@ public partial class Form1 : Form
 					{
 					}
 				}
+				ILocator positionDlg = GoogleFormsPositionHeaderDialogLocator(formPage);
+				if (await positionDlg.CountAsync() > 0 && await positionDlg.First.IsVisibleAsync())
+				{
+					ILocator posLoading = positionDlg.Locator("[jsname='des24e']").First;
+					if (await posLoading.CountAsync() > 0)
+					{
+						try
+						{
+							await posLoading.WaitForAsync(new LocatorWaitForOptions
+							{
+								State = WaitForSelectorState.Hidden,
+								Timeout = 8000f
+							});
+						}
+						catch
+						{
+						}
+					}
+				}
 			}
 			catch
 			{
 			}
-			foreach (ILocator loc in tryOrder)
+			bool positionOpen = await GoogleFormsPositionHeaderDialogVisibleAsync(formPage).ConfigureAwait(false);
+			bool pickerShellOpen = await GoogleFormsPickerShellVisibleAsync(formPage).ConfigureAwait(false);
+			bool selectOpen = await GoogleFormsSelectHeaderDialogVisibleAsync(formPage).ConfigureAwait(false);
+			bool pickerConfirmVisible = await GoogleFormsPickerConfirmButtonVisibleAsync(pickerFrame).ConfigureAwait(false);
+			bool trySave = positionOpen;
+			bool tryDone = !positionOpen && (pickerShellOpen || selectOpen || pickerConfirmVisible);
+			if (trySave)
+			{
+				if (await TryClickGoogleFormsPositionHeaderSavePlaywrightAsync(formPage).ConfigureAwait(false)
+					|| await TryJsClickGoogleFormsPositionHeaderSaveAsync(formPage).ConfigureAwait(false))
+				{
+					await PlaywrightWaitHelpers.PageWaitAsync(formPage, 600f);
+				}
+			}
+			else if (tryDone)
+			{
+				if (await TryClickGoogleFormsPickerConfirmPlaywrightAsync(formPage, pickerFrame).ConfigureAwait(false)
+					|| await TryClickGoogleFormsHeaderDonePlaywrightAsync(formPage, doneTryOrder).ConfigureAwait(false)
+					|| await TryJsClickPickerDoneInAnyFrameAsync(formPage).ConfigureAwait(false)
+					|| await TryJsClickGoogleFormsSelectHeaderDoneAsync(formPage).ConfigureAwait(false))
+				{
+					await PlaywrightWaitHelpers.PageWaitAsync(formPage, 600f);
+				}
+			}
+			else
+			{
+				await TryJsClickPickerDoneInAnyFrameAsync(formPage).ConfigureAwait(false);
+			}
+			if (!await GoogleFormsHeaderCropDialogStillOpenAsync(formPage).ConfigureAwait(false))
+			{
+				return;
+			}
+			if (await GoogleFormsHeaderApplySucceededAsync(formPage).ConfigureAwait(false))
+			{
+				return;
+			}
+			await Task.Delay(400);
+		}
+		await TryClickGoogleFormsPickerConfirmPlaywrightAsync(formPage, pickerFrame).ConfigureAwait(false);
+		await TryJsClickPickerDoneInAnyFrameAsync(formPage).ConfigureAwait(false);
+		await TryClickGoogleFormsHeaderDonePlaywrightAsync(formPage, doneTryOrder).ConfigureAwait(false);
+		await TryJsClickGoogleFormsSelectHeaderDoneAsync(formPage).ConfigureAwait(false);
+		await TryClickGoogleFormsPositionHeaderSavePlaywrightAsync(formPage).ConfigureAwait(false);
+		await TryJsClickGoogleFormsPositionHeaderSaveAsync(formPage).ConfigureAwait(false);
+		await PlaywrightWaitHelpers.PageWaitAsync(formPage, 500f);
+		if (!await GoogleFormsHeaderCropDialogStillOpenAsync(formPage).ConfigureAwait(false))
+		{
+			return;
+		}
+		if (await GoogleFormsHeaderApplySucceededAsync(formPage).ConfigureAwait(false))
+		{
+			return;
+		}
+		throw new TimeoutException("Không bấm được Done (Select Header / picker) hoặc Save (Position Header) sau upload ảnh header.");
+	}
+
+	private static async Task<bool> GoogleFormsGeminiGettingStartedPanelVisibleAsync(IPage page)
+	{
+		if (page == null)
+		{
+			return false;
+		}
+		try
+		{
+			ILocator panel = page.Locator(
+				"#getting-started-dialog-docgen-view, [id^='getting-started-dialog-docgen']");
+			if (await panel.CountAsync() == 0)
+			{
+				return false;
+			}
+			return await panel.First.IsVisibleAsync();
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
+	/// <summary>Đóng panel Gemini «Let's start creating» khi mở trang tạo Form (nút X / Close).</summary>
+	private static async Task<bool> TryDismissGoogleFormsGeminiGettingStartedDialogAsync(IPage page)
+	{
+		if (page == null || !await GoogleFormsGeminiGettingStartedPanelVisibleAsync(page).ConfigureAwait(false))
+		{
+			return false;
+		}
+		LocatorClickOptions opt = new LocatorClickOptions
+		{
+			Timeout = 12000f,
+			Force = true
+		};
+		ILocator[] closeTargets = new ILocator[]
+		{
+			page.Locator(
+				"div:has(#getting-started-dialog-docgen-view) [role='button'][aria-label='Close']"),
+			page.Locator(
+				"div:has([id^='getting-started-dialog-docgen']) [role='button'][aria-label='Close']"),
+			page.Locator(
+				"div:has(#getting-started-dialog-docgen-view) button[aria-label='Close']"),
+			page.Locator(
+				"div:has(#getting-started-dialog-docgen-view) [data-tooltip='Close'][role='button']"),
+			page.GetByRole(AriaRole.Button, new PageGetByRoleOptions { Name = "Close", Exact = true })
+		};
+		foreach (ILocator loc in closeTargets)
+		{
+			try
+			{
+				if (await loc.CountAsync() == 0)
+				{
+					continue;
+				}
+				ILocator btn = loc.First;
+				if (!await btn.IsVisibleAsync())
+				{
+					continue;
+				}
+				await btn.ClickAsync(opt);
+				await PlaywrightWaitHelpers.PageWaitAsync(page, 500f);
+				if (!await GoogleFormsGeminiGettingStartedPanelVisibleAsync(page).ConfigureAwait(false))
+				{
+					return true;
+				}
+			}
+			catch
 			{
 				try
 				{
-					if (await loc.CountAsync() == 0)
+					if (await loc.CountAsync() > 0 && await TryMouseClickLocatorCenterAsync(loc, page))
 					{
-						continue;
+						await PlaywrightWaitHelpers.PageWaitAsync(page, 500f);
+						if (!await GoogleFormsGeminiGettingStartedPanelVisibleAsync(page).ConfigureAwait(false))
+						{
+							return true;
+						}
 					}
-					ILocator first = loc.First;
-					if (!await first.IsVisibleAsync())
-					{
-						continue;
-					}
-					await first.ScrollIntoViewIfNeededAsync();
-					await PlaywrightWaitHelpers.PageWaitAsync(formPage, 200f);
-					await first.ClickAsync(new LocatorClickOptions
-					{
-						Timeout = 10000f,
-						Force = true
-					});
-					return;
 				}
 				catch
 				{
 				}
 			}
-			try
-			{
-				if (await TryJsClickPickerDoneInAnyFrameAsync(formPage).ConfigureAwait(false))
-				{
-					await PlaywrightWaitHelpers.PageWaitAsync(formPage, 500f);
-					return;
-				}
-			}
-			catch
-			{
-			}
-			await Task.Delay(400);
 		}
 		try
 		{
-			bool jsOk = await formPage.EvaluateAsync<bool>("() => {\r\n  const dlg = document.querySelector('div[role=\"dialog\"][aria-label=\"Select Header\"]') || document.querySelector('div[jsname=\"BleNNd\"][role=\"dialog\"]');\r\n  if (!dlg) return false;\r\n  const btn = dlg.querySelector('button[jsname=\"KbvHGe\"]');\r\n  if (!btn) return false;\r\n  btn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));\r\n  return true;\r\n}");
-			if (jsOk)
+			bool js = await page.EvaluateAsync<bool>(
+				@"() => {
+				  const panel = document.getElementById('getting-started-dialog-docgen-view')
+				    || document.querySelector('[id^=""getting-started-dialog-docgen""]');
+				  if (!panel) return false;
+				  const panelBox = panel.getBoundingClientRect();
+				  if (panelBox.width < 8 || panelBox.height < 8) return false;
+				  const visible = (el) => {
+				    if (!el || !el.getBoundingClientRect) return false;
+				    const b = el.getBoundingClientRect();
+				    return b.width >= 4 && b.height >= 4 && b.bottom > 0 && b.right > 0;
+				  };
+				  const fireClick = (el) => {
+				    el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
+				    el.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
+				    el.click();
+				    return true;
+				  };
+				  const tryCloseIn = (root) => {
+				    if (!root) return false;
+				    const labels = ['Close', 'Đóng'];
+				    for (const lab of labels) {
+				      const sel = '[role=""button""][aria-label=""' + lab + '""], button[aria-label=""' + lab + '""], [data-tooltip=""' + lab + '""][role=""button""]';
+				      const btns = root.querySelectorAll(sel);
+				      for (let i = 0; i < btns.length; i++) {
+				        if (visible(btns[i])) { fireClick(btns[i]); return true; }
+				      }
+				    }
+				    const paths = root.querySelectorAll('svg path[d*=""M19 6.41""]');
+				    for (let j = 0; j < paths.length; j++) {
+				      let el = paths[j].closest('[role=""button""]') || paths[j].closest('button');
+				      if (!el && paths[j].parentElement) {
+				        el = paths[j].parentElement.closest('[role=""button""]') || paths[j].parentElement.closest('button');
+				      }
+				      if (el && visible(el)) { fireClick(el); return true; }
+				    }
+				    return false;
+				  };
+				  let el = panel;
+				  for (let depth = 0; depth < 14 && el; depth++) {
+				    if (tryCloseIn(el)) return true;
+				    el = el.parentElement;
+				  }
+				  return false;
+				}");
+			if (js)
 			{
-				return;
+				await PlaywrightWaitHelpers.PageWaitAsync(page, 600f);
+				return !await GoogleFormsGeminiGettingStartedPanelVisibleAsync(page).ConfigureAwait(false);
 			}
 		}
 		catch
 		{
 		}
-		if (await TryJsClickPickerDoneInAnyFrameAsync(formPage).ConfigureAwait(false))
+		return false;
+	}
+
+	private static async Task DismissGoogleFormsGeminiGettingStartedDialogIfPresentAsync(IPage page, bool waitBeforeCheck = true)
+	{
+		if (page == null)
 		{
 			return;
 		}
-		throw new TimeoutException("Không bấm được nút Done (Select Header / crop ảnh).");
+		if (waitBeforeCheck)
+		{
+			await PlaywrightWaitHelpers.PageWaitAsync(page, 500f);
+		}
+		for (int i = 0; i < 12; i++)
+		{
+			if (await GoogleFormsGeminiGettingStartedPanelVisibleAsync(page).ConfigureAwait(false))
+			{
+				break;
+			}
+			if (i == 11)
+			{
+				return;
+			}
+			await PlaywrightWaitHelpers.PageWaitAsync(page, 300f);
+		}
+		for (int round = 0; round < 3; round++)
+		{
+			if (!await GoogleFormsGeminiGettingStartedPanelVisibleAsync(page).ConfigureAwait(false))
+			{
+				return;
+			}
+			if (!await TryDismissGoogleFormsGeminiGettingStartedDialogAsync(page).ConfigureAwait(false))
+			{
+				return;
+			}
+			await PlaywrightWaitHelpers.PageWaitAsync(page, 700f);
+		}
 	}
 
 	private static async Task DismissGoogleFormsAccessControlDialogIfPresentAsync(IPage page, bool waitBeforeCheck = true)
@@ -9436,6 +10214,8 @@ public partial class Form1 : Form
 		_uiToolTip.SetToolTip(cb_sudungproxy, "Khi tích: mỗi hàng trong hàng đợi phải có PROXY hợp lệ. App đẩy PROXY lên GPM rồi sau khi mở profile đọc chrome://version (Command Line, --proxy-server) so host:port với lưới; lệch thì cột STATUS ghi \"Không tìm thấy proxy tương ứng bên GPM\" và không chạy hàng đó. Định dạng: host:port hoặc host:port:user:pass.");
 		_uiToolTip.SetToolTip(cb_gpm_group, "Luôn chọn nhóm GPM: profile A, B, C… trong nhóm khớp hàng 1, 2, 3… (dù tắt \"Proxy…\").");
 		_uiToolTip.SetToolTip(cb_changeinfo, "Sau khi đăng nhập: mở myaccount và đổi ảnh đại diện (cần avatar.jpg).");
+		_uiToolTip.SetToolTip(cb_mo_drive, "Sau khi đăng nhập (sau tab Gmail): mở thêm tab https://drive.google.com/drive/my-drive");
+		_uiToolTip.SetToolTip(cb_mo_2fa_cn, "Ngay sau tab Gmail: mở https://2fa.cn/, dán secret cột 2FA (#listToken) và bấm Submit để sinh mã.");
 		_uiToolTip.SetToolTip(cb_tao_form, "Mở Google Forms, điền tiêu đề/mô tả, theme, publish và copy link phản hồi (cần tieude.txt, noidung.txt, header.jpg… trong Data\\).");
 		_uiToolTip.SetToolTip(cb_form_link_short, "Khi tích (và đã bật Tạo Form): sau Publish tick «Shorten URL» → [LINK_FORM] = https://forms.gle/…\nKhi bỏ tích: không rút gọn → [LINK_FORM] = link dài …/viewform.");
 		_uiToolTip.SetToolTip(cb_tao_sheet_script, "Tạo Google Sheet mới, mở script.new, dán codesc.txt (thay [LINK_FORM] và [LINK_SHEET]), thêm Drive API và chạy OAuth/Run. Có thể bật một mình: khi không tạo Form, [LINK_FORM] để trống.");
@@ -9618,6 +10398,28 @@ public partial class Form1 : Form
 			{
 				cb_changeinfo.Checked = result2;
 			}
+			if (cb_mo_drive != null)
+			{
+				if (dictionary.ContainsKey("mo_drive") && bool.TryParse(dictionary["mo_drive"], out var moDrive))
+				{
+					cb_mo_drive.Checked = moDrive;
+				}
+				else
+				{
+					cb_mo_drive.Checked = false;
+				}
+			}
+			if (cb_mo_2fa_cn != null)
+			{
+				if (dictionary.ContainsKey("mo_2fa_cn") && bool.TryParse(dictionary["mo_2fa_cn"], out var mo2faCn))
+				{
+					cb_mo_2fa_cn.Checked = mo2faCn;
+				}
+				else
+				{
+					cb_mo_2fa_cn.Checked = false;
+				}
+			}
 			bool loadedTaoForm = false;
 			bool loadedTaoSheetScript = false;
 			if (dictionary.ContainsKey("tao_form") && bool.TryParse(dictionary["tao_form"], out var tf))
@@ -9771,6 +10573,14 @@ public partial class Form1 : Form
 		d["sudungproxy"] = cb_sudungproxy.Checked.ToString();
 		d["gpm_proxy_group_id"] = GetSelectedGpmGroupId() ?? "";
 		d["changeinfo"] = cb_changeinfo.Checked.ToString();
+		if (cb_mo_drive != null)
+		{
+			d["mo_drive"] = cb_mo_drive.Checked.ToString();
+		}
+		if (cb_mo_2fa_cn != null)
+		{
+			d["mo_2fa_cn"] = cb_mo_2fa_cn.Checked.ToString();
+		}
 		d["tao_form"] = cb_tao_form.Checked.ToString();
 		if (cb_form_link_short != null)
 		{
@@ -10249,6 +11059,8 @@ public partial class Form1 : Form
 		this.cb_tao_sheet_script = new System.Windows.Forms.CheckBox();
 		this.cb_form_link_short = new System.Windows.Forms.CheckBox();
 		this.cb_tao_form = new System.Windows.Forms.CheckBox();
+		this.cb_mo_drive = new System.Windows.Forms.CheckBox();
+		this.cb_mo_2fa_cn = new System.Windows.Forms.CheckBox();
 		this.cb_changeinfo = new System.Windows.Forms.CheckBox();
 		this.lbl_log_mail_mode = new System.Windows.Forms.Label();
 		this.rb_log_mail_cu = new System.Windows.Forms.RadioButton();
@@ -10298,6 +11110,7 @@ public partial class Form1 : Form
 		((System.ComponentModel.ISupportInitialize)this.dataGridView1).BeginInit();
 		this.contextMenuStrip1.SuspendLayout();
 		base.SuspendLayout();
+		this.sidebar.AutoScroll = true;
 		this.sidebar.BackColor = System.Drawing.Color.FromArgb(28, 28, 32);
 		this.sidebar.Controls.Add(this.cb_offchrome);
 		this.sidebar.Controls.Add(this.lbl_speed_profile);
@@ -10306,6 +11119,8 @@ public partial class Form1 : Form
 		this.sidebar.Controls.Add(this.cb_form_link_short);
 		this.sidebar.Controls.Add(this.cb_tao_form);
 		this.sidebar.Controls.Add(this.cb_changeinfo);
+		this.sidebar.Controls.Add(this.cb_mo_2fa_cn);
+		this.sidebar.Controls.Add(this.cb_mo_drive);
 		this.sidebar.Controls.Add(this.cb_gpm_group);
 		this.sidebar.Controls.Add(this.lbl_gpm_group);
 		this.sidebar.Controls.Add(this.cb_sudungproxy);
@@ -10386,7 +11201,7 @@ public partial class Form1 : Form
 		this.cb_tao_form.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_tao_form.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_tao_form.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
-		this.cb_tao_form.Location = new System.Drawing.Point(12, 406);
+		this.cb_tao_form.Location = new System.Drawing.Point(12, 462);
 		this.cb_tao_form.Name = "cb_tao_form";
 		this.cb_tao_form.Size = new System.Drawing.Size(284, 24);
 		this.cb_tao_form.TabIndex = 6;
@@ -10396,7 +11211,7 @@ public partial class Form1 : Form
 		this.cb_form_link_short.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_form_link_short.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_form_link_short.ForeColor = System.Drawing.Color.FromArgb(190, 198, 210);
-		this.cb_form_link_short.Location = new System.Drawing.Point(30, 434);
+		this.cb_form_link_short.Location = new System.Drawing.Point(30, 490);
 		this.cb_form_link_short.Name = "cb_form_link_short";
 		this.cb_form_link_short.Size = new System.Drawing.Size(266, 24);
 		this.cb_form_link_short.TabIndex = 8;
@@ -10406,16 +11221,36 @@ public partial class Form1 : Form
 		this.cb_tao_sheet_script.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_tao_sheet_script.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_tao_sheet_script.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
-		this.cb_tao_sheet_script.Location = new System.Drawing.Point(12, 462);
+		this.cb_tao_sheet_script.Location = new System.Drawing.Point(12, 518);
 		this.cb_tao_sheet_script.Name = "cb_tao_sheet_script";
 		this.cb_tao_sheet_script.Size = new System.Drawing.Size(284, 24);
 		this.cb_tao_sheet_script.TabIndex = 7;
 		this.cb_tao_sheet_script.Text = "Tạo Sheet + Script";
+		this.cb_mo_drive.AutoSize = false;
+		this.cb_mo_drive.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.cb_mo_drive.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.cb_mo_drive.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
+		this.cb_mo_drive.Location = new System.Drawing.Point(12, 378);
+		this.cb_mo_drive.Name = "cb_mo_drive";
+		this.cb_mo_drive.Size = new System.Drawing.Size(284, 24);
+		this.cb_mo_drive.TabIndex = 9;
+		this.cb_mo_drive.Text = "Mở tab Google Drive";
+		this.cb_mo_2fa_cn.AutoSize = false;
+		this.cb_mo_2fa_cn.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.cb_mo_2fa_cn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.cb_mo_2fa_cn.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
+		this.cb_mo_2fa_cn.Location = new System.Drawing.Point(12, 406);
+		this.cb_mo_2fa_cn.Name = "cb_mo_2fa_cn";
+		this.cb_mo_2fa_cn.Size = new System.Drawing.Size(284, 24);
+		this.cb_mo_2fa_cn.TabIndex = 10;
+		this.cb_mo_2fa_cn.Text = "Mở tab 2fa.cn (Submit 2FA)";
+		this.cb_mo_2fa_cn.UseVisualStyleBackColor = false;
+		this.cb_mo_2fa_cn.BackColor = System.Drawing.Color.FromArgb(28, 28, 32);
 		this.cb_changeinfo.AutoSize = false;
 		this.cb_changeinfo.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_changeinfo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_changeinfo.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
-		this.cb_changeinfo.Location = new System.Drawing.Point(12, 378);
+		this.cb_changeinfo.Location = new System.Drawing.Point(12, 434);
 		this.cb_changeinfo.Name = "cb_changeinfo";
 		this.cb_changeinfo.Size = new System.Drawing.Size(284, 24);
 		this.cb_changeinfo.TabIndex = 5;
@@ -10710,7 +11545,7 @@ public partial class Form1 : Form
 		this.cb_offchrome.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_offchrome.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
 		this.cb_offchrome.ForeColor = System.Drawing.Color.FromArgb(228, 228, 232);
-		this.cb_offchrome.Location = new System.Drawing.Point(12, 490);
+		this.cb_offchrome.Location = new System.Drawing.Point(12, 546);
 		this.cb_offchrome.Name = "cb_offchrome";
 		this.cb_offchrome.Size = new System.Drawing.Size(284, 24);
 		this.cb_offchrome.TabIndex = 8;
@@ -10718,7 +11553,7 @@ public partial class Form1 : Form
 		this.lbl_speed_profile.AutoSize = false;
 		this.lbl_speed_profile.Font = new System.Drawing.Font("Segoe UI", 8.75f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
 		this.lbl_speed_profile.ForeColor = System.Drawing.Color.FromArgb(150, 152, 162);
-		this.lbl_speed_profile.Location = new System.Drawing.Point(16, 494);
+		this.lbl_speed_profile.Location = new System.Drawing.Point(16, 550);
 		this.lbl_speed_profile.Name = "lbl_speed_profile";
 		this.lbl_speed_profile.Size = new System.Drawing.Size(276, 20);
 		this.lbl_speed_profile.TabIndex = 41;
@@ -10738,7 +11573,7 @@ public partial class Form1 : Form
 			"Rất chậm — mạng rất yếu (×2.0)",
 			"Tùy chỉnh"
 		});
-		this.cb_speed_profile.Location = new System.Drawing.Point(12, 516);
+		this.cb_speed_profile.Location = new System.Drawing.Point(12, 572);
 		this.cb_speed_profile.Name = "cb_speed_profile";
 		this.cb_speed_profile.Size = new System.Drawing.Size(284, 25);
 		this.cb_speed_profile.TabIndex = 42;

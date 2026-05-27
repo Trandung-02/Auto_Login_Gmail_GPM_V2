@@ -24,16 +24,41 @@ public partial class Form1
 	{
 		lbl_gpm_group.Visible = true;
 		cb_gpm_group.Visible = true;
-		int baseY = cb_gpm_group.Bottom + 10;
-		cb_changeinfo.Location = new Point(SidebarPadX, baseY);
-		cb_tao_form.Location = new Point(SidebarPadX, baseY + SidebarOptsRowGap);
+		int y = cb_gpm_group.Bottom + 10;
+		void PlaceOptionCheckBox(CheckBox cb)
+		{
+			if (cb == null)
+			{
+				return;
+			}
+			cb.Location = new Point(SidebarPadX, y);
+			cb.BringToFront();
+			y += SidebarOptsRowGap;
+		}
+		PlaceOptionCheckBox(cb_mo_drive);
+		PlaceOptionCheckBox(cb_mo_2fa_cn);
+		PlaceOptionCheckBox(cb_changeinfo);
+		PlaceOptionCheckBox(cb_tao_form);
 		if (cb_form_link_short != null)
 		{
-			cb_form_link_short.Location = new Point(SidebarPadX + 18, baseY + SidebarOptsRowGap * 2);
+			cb_form_link_short.Location = new Point(SidebarPadX + 18, y);
 			cb_form_link_short.Enabled = cb_tao_form.Checked;
+			cb_form_link_short.BringToFront();
+			y += SidebarOptsRowGap;
 		}
-		cb_tao_sheet_script.Location = new Point(SidebarPadX, baseY + SidebarOptsRowGap * 3);
-		cb_offchrome.Location = new Point(SidebarPadX, baseY + SidebarOptsRowGap * 4);
+		PlaceOptionCheckBox(cb_tao_sheet_script);
+		PlaceOptionCheckBox(cb_offchrome);
+		if (lbl_speed_profile != null)
+		{
+			lbl_speed_profile.Location = new Point(SidebarPadX + 4, y);
+			lbl_speed_profile.BringToFront();
+			y += 22;
+		}
+		if (cb_speed_profile != null)
+		{
+			cb_speed_profile.Location = new Point(SidebarPadX, y);
+			cb_speed_profile.BringToFront();
+		}
 	}
 
 	private void SyncFormLinkShortCheckboxEnabled()

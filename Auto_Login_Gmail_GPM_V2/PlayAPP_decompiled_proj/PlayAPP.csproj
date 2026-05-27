@@ -5,7 +5,12 @@
     <OutputType>WinExe</OutputType>
     <UseWindowsForms>True</UseWindowsForms>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <Version>2.1.0</Version>
+    <AssemblyInformationalVersion>2.1.0+2fa-cn</AssemblyInformationalVersion>
   </PropertyGroup>
+  <Target Name="CopyReleaseToRepoRoot" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <Copy SourceFiles="$(OutputPath)PlayAPP.exe;$(OutputPath)PlayAPP.dll;$(OutputPath)PlayAPP.deps.json;$(OutputPath)PlayAPP.runtimeconfig.json" DestinationFolder="$(MSBuildProjectDirectory)\..\" SkipUnchangedFiles="true" />
+  </Target>
   <PropertyGroup>
     <LangVersion>12.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj": {}
+    "d:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj": {}
   },
   "projects": {
-    "D:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj": {
-      "version": "1.0.0",
+    "d:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj": {
+      "version": "2.1.0",
       "restore": {
-        "projectUniqueName": "D:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj",
+        "projectUniqueName": "d:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj",
         "projectName": "PlayAPP",
-        "projectPath": "D:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj",
+        "projectPath": "d:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\PlayAPP.csproj",
         "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-        "outputPath": "D:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\obj\\",
+        "outputPath": "d:\\Code\\Auto_Login_Gmail_GPM_V2\\PlayAPP_decompiled_proj\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config"
