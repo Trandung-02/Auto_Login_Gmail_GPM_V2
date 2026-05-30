@@ -552,6 +552,39 @@ public partial class Form1
 		}
 	}
 
+	/// <summary>Lưới cố định theo số luồng chuẩn (2/5/10): 10 luồng → 5×2 (5 cửa sổ hàng trên, 5 hàng dưới).</summary>
+	private static bool TryApplyPreferredBrowserTileLayout(int countInBatch, int availW, int availH, int gapPx, int minW, int minH, out int cols, out int winW, out int winH)
+	{
+		int preferredCols = countInBatch switch
+		{
+			10 => 5,
+			5 => 5,
+			2 => 2,
+			_ => 0
+		};
+		if (preferredCols <= 0)
+		{
+			cols = 0;
+			winW = 0;
+			winH = 0;
+			return false;
+		}
+		int rows = (int)Math.Ceiling((double)countInBatch / preferredCols);
+		int w = (availW - gapPx * (preferredCols + 1)) / preferredCols;
+		int h = (availH - gapPx * (rows + 1)) / rows;
+		if (w < minW || h < minH)
+		{
+			cols = 0;
+			winW = 0;
+			winH = 0;
+			return false;
+		}
+		cols = preferredCols;
+		winW = w;
+		winH = h;
+		return true;
+	}
+
 	/// <summary>GPM mặc định đôi khi mở cửa sổ ngoài vùng nhìn thấy; gắn win_pos/win_size theo lưới vừa màn hình.</summary>
 	private static void ComputeBrowserTileLayout(int countInBatch, out int cols, out int winW, out int winH, out int gapPx)
 	{
@@ -569,6 +602,10 @@ public partial class Form1
 		const int minH = 360;
 		int availW = Math.Max(640, wa.Width - 2 * edge);
 		int availH = Math.Max(400, wa.Height - 2 * edge);
+		if (TryApplyPreferredBrowserTileLayout(countInBatch, availW, availH, gapPx, minW, minH, out cols, out winW, out winH))
+		{
+			return;
+		}
 		cols = 1;
 		winW = minW;
 		winH = minH;
