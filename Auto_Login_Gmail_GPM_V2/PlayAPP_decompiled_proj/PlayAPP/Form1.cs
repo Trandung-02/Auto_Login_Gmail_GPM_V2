@@ -254,6 +254,9 @@ public partial class Form1 : Form
 	/// <summary>Sau đăng nhập: mở thêm tab Google Drive My Drive (cùng lúc với tab Gmail).</summary>
 	private CheckBox cb_mo_drive;
 
+	/// <summary>Con của cb_mo_drive: upload PDF từ Data\DriveUpload (25 tab). Tắt = chỉ mở 1 tab My Drive.</summary>
+	private CheckBox cb_drive_upload_pdf;
+
 	/// <summary>Sau tab Gmail: mở https://2fa.cn/, nhập secret cột 2FA và Submit.</summary>
 	private CheckBox cb_mo_2fa_cn;
 
@@ -5919,31 +5922,16 @@ public partial class Form1 : Form
 			}
 			if (cb_mo_drive != null && cb_mo_drive.Checked)
 			{
-				SetText(vitri, "STATUS", "Mở tab Google Drive (My Drive)...");
+				bool uploadPdf = cb_drive_upload_pdf != null && cb_drive_upload_pdf.Checked;
+				SetText(vitri, "STATUS", uploadPdf ? "Mở tab Google Drive + upload PDF..." : "Mở tab Google Drive (My Drive)...");
 				try
 				{
-					IPage drivePage = await context.NewPageAsync();
-					await RunStepWithReloadRetryAsync(drivePage, vitri, "Mở Google Drive My Drive", async delegate
-					{
-						await drivePage.GotoAsync(
-							GoogleUrlEn("https://drive.google.com/drive/my-drive"),
-							PwGotoGoogleDomLoaded());
-						await drivePage.BringToFrontAsync();
-					});
-					try
-					{
-						await drivePage.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
-						{
-							Timeout = 45000f
-						});
-					}
-					catch
-					{
-					}
+					await RunDriveOpenAndUploadAsync(context, vitri, email, uploadPdf);
 				}
-				catch
+				catch (Exception exDrive)
 				{
-					// ignore: mở tab Drive chỉ để tiện thao tác, không ảnh hưởng luồng chính
+					// ignore: mở tab/upload Drive chỉ là tiện ích, không ảnh hưởng luồng đăng nhập chính
+					AppendAutomationLog("WARN", vitri, email, "Drive: lỗi tổng — " + exDrive.GetType().Name + ": " + exDrive.Message);
 				}
 			}
 			if (cb_changeinfo.Checked)
@@ -10181,6 +10169,7 @@ public partial class Form1 : Form
 		_runQueueStartRowIndex = 0;
 		UpdateGpmGroupControlsVisible();
 		SyncFormLinkShortCheckboxEnabled();
+		SyncDriveUploadCheckboxEnabled();
 		lbl_status.AutoSize = false;
 		lbl_status.Width = 260;
 		lbl_status.Height = 56;
@@ -10214,7 +10203,11 @@ public partial class Form1 : Form
 		_uiToolTip.SetToolTip(cb_sudungproxy, "Khi tích: mỗi hàng trong hàng đợi phải có PROXY hợp lệ. App đẩy PROXY lên GPM rồi sau khi mở profile đọc chrome://version (Command Line, --proxy-server) so host:port với lưới; lệch thì cột STATUS ghi \"Không tìm thấy proxy tương ứng bên GPM\" và không chạy hàng đó. Định dạng: host:port hoặc host:port:user:pass.");
 		_uiToolTip.SetToolTip(cb_gpm_group, "Luôn chọn nhóm GPM: profile A, B, C… trong nhóm khớp hàng 1, 2, 3… (dù tắt \"Proxy…\").");
 		_uiToolTip.SetToolTip(cb_changeinfo, "Sau khi đăng nhập: mở myaccount và đổi ảnh đại diện (cần avatar.jpg).");
-		_uiToolTip.SetToolTip(cb_mo_drive, "Sau khi đăng nhập (sau tab Gmail): mở thêm tab https://drive.google.com/drive/my-drive");
+		_uiToolTip.SetToolTip(cb_mo_drive, "Sau khi đăng nhập (sau tab Gmail): mở tab Google Drive My Drive. Bật thêm «Upload PDF» bên dưới để upload tự động.");
+		if (cb_drive_upload_pdf != null)
+		{
+			_uiToolTip.SetToolTip(cb_drive_upload_pdf, "Cần bật «Mở tab Google Drive». Upload theo ô «số mail cần log» (0 = 25 tab): mỗi hàng lưới chỉ upload PDF từ thư mục DriveUpload\\NN tương ứng (hàng 1→01, hàng 2→02…). Cùng tên file giữa các thư mục vẫn OK.");
+		}
 		_uiToolTip.SetToolTip(cb_mo_2fa_cn, "Ngay sau tab Gmail: mở https://2fa.cn/, dán secret cột 2FA (#listToken) và bấm Submit để sinh mã.");
 		_uiToolTip.SetToolTip(cb_tao_form, "Mở Google Forms, điền tiêu đề/mô tả, theme, publish và copy link phản hồi (cần tieude.txt, noidung.txt, header.jpg… trong Data\\).");
 		_uiToolTip.SetToolTip(cb_form_link_short, "Khi tích (và đã bật Tạo Form): sau Publish tick «Shorten URL» → [LINK_FORM] = https://forms.gle/…\nKhi bỏ tích: không rút gọn → [LINK_FORM] = link dài …/viewform.");
@@ -10409,6 +10402,17 @@ public partial class Form1 : Form
 					cb_mo_drive.Checked = false;
 				}
 			}
+			if (cb_drive_upload_pdf != null)
+			{
+				if (dictionary.ContainsKey("drive_upload_pdf") && bool.TryParse(dictionary["drive_upload_pdf"], out var driveUploadPdf))
+				{
+					cb_drive_upload_pdf.Checked = driveUploadPdf;
+				}
+				else
+				{
+					cb_drive_upload_pdf.Checked = false;
+				}
+			}
 			if (cb_mo_2fa_cn != null)
 			{
 				if (dictionary.ContainsKey("mo_2fa_cn") && bool.TryParse(dictionary["mo_2fa_cn"], out var mo2faCn))
@@ -10576,6 +10580,10 @@ public partial class Form1 : Form
 		if (cb_mo_drive != null)
 		{
 			d["mo_drive"] = cb_mo_drive.Checked.ToString();
+		}
+		if (cb_drive_upload_pdf != null)
+		{
+			d["drive_upload_pdf"] = cb_drive_upload_pdf.Checked.ToString();
 		}
 		if (cb_mo_2fa_cn != null)
 		{
@@ -11060,6 +11068,7 @@ public partial class Form1 : Form
 		this.cb_form_link_short = new System.Windows.Forms.CheckBox();
 		this.cb_tao_form = new System.Windows.Forms.CheckBox();
 		this.cb_mo_drive = new System.Windows.Forms.CheckBox();
+		this.cb_drive_upload_pdf = new System.Windows.Forms.CheckBox();
 		this.cb_mo_2fa_cn = new System.Windows.Forms.CheckBox();
 		this.cb_changeinfo = new System.Windows.Forms.CheckBox();
 		this.lbl_log_mail_mode = new System.Windows.Forms.Label();
@@ -11120,6 +11129,7 @@ public partial class Form1 : Form
 		this.sidebar.Controls.Add(this.cb_tao_form);
 		this.sidebar.Controls.Add(this.cb_changeinfo);
 		this.sidebar.Controls.Add(this.cb_mo_2fa_cn);
+		this.sidebar.Controls.Add(this.cb_drive_upload_pdf);
 		this.sidebar.Controls.Add(this.cb_mo_drive);
 		this.sidebar.Controls.Add(this.cb_gpm_group);
 		this.sidebar.Controls.Add(this.lbl_gpm_group);
@@ -11235,6 +11245,18 @@ public partial class Form1 : Form
 		this.cb_mo_drive.Size = new System.Drawing.Size(284, 24);
 		this.cb_mo_drive.TabIndex = 9;
 		this.cb_mo_drive.Text = "Mở tab Google Drive";
+		this.cb_mo_drive.CheckedChanged += new System.EventHandler(cb_mo_drive_CheckedChanged);
+		this.cb_drive_upload_pdf.AutoSize = false;
+		this.cb_drive_upload_pdf.Cursor = System.Windows.Forms.Cursors.Hand;
+		this.cb_drive_upload_pdf.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+		this.cb_drive_upload_pdf.ForeColor = System.Drawing.Color.FromArgb(190, 198, 210);
+		this.cb_drive_upload_pdf.Location = new System.Drawing.Point(30, 406);
+		this.cb_drive_upload_pdf.Name = "cb_drive_upload_pdf";
+		this.cb_drive_upload_pdf.Size = new System.Drawing.Size(266, 24);
+		this.cb_drive_upload_pdf.TabIndex = 11;
+		this.cb_drive_upload_pdf.Text = "Upload PDF lên Drive (25 tab)";
+		this.cb_drive_upload_pdf.UseVisualStyleBackColor = false;
+		this.cb_drive_upload_pdf.BackColor = System.Drawing.Color.FromArgb(28, 28, 32);
 		this.cb_mo_2fa_cn.AutoSize = false;
 		this.cb_mo_2fa_cn.Cursor = System.Windows.Forms.Cursors.Hand;
 		this.cb_mo_2fa_cn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;

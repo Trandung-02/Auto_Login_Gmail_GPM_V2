@@ -36,6 +36,13 @@ public partial class Form1
 			y += SidebarOptsRowGap;
 		}
 		PlaceOptionCheckBox(cb_mo_drive);
+		if (cb_drive_upload_pdf != null)
+		{
+			cb_drive_upload_pdf.Location = new Point(SidebarPadX + 18, y);
+			cb_drive_upload_pdf.Enabled = cb_mo_drive != null && cb_mo_drive.Checked;
+			cb_drive_upload_pdf.BringToFront();
+			y += SidebarOptsRowGap;
+		}
 		PlaceOptionCheckBox(cb_mo_2fa_cn);
 		PlaceOptionCheckBox(cb_changeinfo);
 		PlaceOptionCheckBox(cb_tao_form);
@@ -73,6 +80,21 @@ public partial class Form1
 	private void cb_tao_form_CheckedChanged(object sender, EventArgs e)
 	{
 		SyncFormLinkShortCheckboxEnabled();
+	}
+
+	private void SyncDriveUploadCheckboxEnabled()
+	{
+		if (cb_drive_upload_pdf == null)
+		{
+			return;
+		}
+		cb_drive_upload_pdf.Enabled = cb_mo_drive != null && cb_mo_drive.Checked;
+	}
+
+	private void cb_mo_drive_CheckedChanged(object sender, EventArgs e)
+	{
+		SyncDriveUploadCheckboxEnabled();
+		UpdateGpmGroupControlsVisible();
 	}
 
 	/// <summary>Sắp xếp id nhóm GPM lớn → bé (id số giảm dần; id không phải số so chuỗi giảm dần).</summary>
