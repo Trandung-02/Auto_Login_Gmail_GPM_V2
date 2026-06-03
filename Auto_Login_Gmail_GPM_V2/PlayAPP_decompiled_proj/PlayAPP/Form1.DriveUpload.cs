@@ -276,14 +276,14 @@ public partial class Form1
 			string fileName = Path.GetFileName(tab.pdfPath);
 			int tabNo = i + 1;
 			SetText(vitri, "STATUS", $"Drive: upload tab {tabNo}/{openedTabs.Count} (thư mục {tab.folderIndex + 1:D2}) — {fileName}");
-			bool uploadOk = await TryUploadPdfToDriveTabAsync(tab.page, tab.pdfPath, vitri, tabNo, email);
-			if (!uploadOk)
+			(bool uploadOk, string driveFileId) uploadResult = await TryUploadPdfToDriveTabAsync(tab.page, tab.pdfPath, vitri, tabNo, email);
+			if (!uploadResult.uploadOk)
 			{
 				continue;
 			}
 			uploadOkCount++;
 			SetText(vitri, "STATUS", $"Drive: share + copy link tab {tabNo}/{openedTabs.Count} — {fileName}");
-			bool shareOk = await TryShareDriveFileAndOpenLinkAsync(context, tab.page, tab.pdfPath, vitri, tabNo, email);
+			bool shareOk = await TryShareDriveFileAndOpenLinkAsync(context, tab.page, tab.pdfPath, uploadResult.driveFileId, vitri, tabNo, email);
 			if (shareOk)
 			{
 				shareOkCount++;
@@ -344,12 +344,12 @@ public partial class Form1
 	/// Upload 1 PDF: gửi file (nhiều cách) rồi <b>chỉ báo OK khi xác minh</b> file đã lên My Drive.
 	/// Trước đây luôn return true dù chưa upload — đã sửa.
 	/// </summary>
-	private async Task<bool> TryUploadPdfToDriveTabAsync(IPage page, string pdfPath, int vitri, int tabNumber, string email)
+	private async Task<(bool uploadOk, string driveFileId)> TryUploadPdfToDriveTabAsync(IPage page, string pdfPath, int vitri, int tabNumber, string email)
 	{
 		if (page == null || string.IsNullOrEmpty(pdfPath) || !File.Exists(pdfPath))
 		{
 			AppendAutomationLog("WARN", vitri, email, $"Drive upload tab {tabNumber}: file không tồn tại — {pdfPath}");
-			return false;
+			return (false, null);
 		}
 		string absolutePdfPath = Path.GetFullPath(pdfPath);
 		string fileName = Path.GetFileName(absolutePdfPath);
@@ -357,27 +357,32 @@ public partial class Form1
 		{
 			if (!await EnsureDriveMyDriveReadyAsync(page, vitri, tabNumber, email))
 			{
-				return false;
+				return (false, null);
 			}
 			bool sent = await TrySendFileToDriveAsync(page, absolutePdfPath, vitri, tabNumber, email);
 			if (!sent)
 			{
 				AppendAutomationLog("WARN", vitri, email, $"Drive upload tab {tabNumber}: không gửi được file '{fileName}' (New/File upload/input file).");
-				return false;
+				return (false, null);
 			}
 			bool verified = await VerifyDriveUploadSucceededAsync(page, fileName, vitri, email, tabNumber);
 			if (!verified)
 			{
 				AppendAutomationLog("WARN", vitri, email, $"Drive upload tab {tabNumber}: đã thử gửi '{fileName}' nhưng không xác nhận được trên My Drive (không coi là thành công).");
-				return false;
+				return (false, null);
+			}
+			string driveFileId = await TryResolveDriveFileIdForUploadedFileAsync(page, fileName);
+			if (!string.IsNullOrEmpty(driveFileId))
+			{
+				AppendAutomationLog("INFO", vitri, email, $"Drive upload tab {tabNumber}: fileId={driveFileId}");
 			}
 			AppendAutomationLog("INFO", vitri, email, $"Drive upload tab {tabNumber}: xác nhận OK — '{fileName}' đã có trên Drive.");
-			return true;
+			return (true, driveFileId);
 		}
 		catch (Exception ex)
 		{
 			AppendAutomationLog("WARN", vitri, email, $"Drive upload tab {tabNumber}: {ex.GetType().Name} — {ex.Message}");
-			return false;
+			return (false, null);
 		}
 	}
 
@@ -739,7 +744,7 @@ public partial class Form1
 	/// Upload xong → chọn file trên lưới → Share → Anyone with the link → lấy link → mở tab mới.
 	/// Chỉ return true khi xác nhận được link Drive hợp lệ và tab mới mở được.
 	/// </summary>
-	private async Task<bool> TryShareDriveFileAndOpenLinkAsync(IBrowserContext context, IPage page, string pdfPath, int vitri, int tabNumber, string email)
+	private async Task<bool> TryShareDriveFileAndOpenLinkAsync(IBrowserContext context, IPage page, string pdfPath, string expectedDriveFileId, int vitri, int tabNumber, string email)
 	{
 		if (context == null || page == null || string.IsNullOrEmpty(pdfPath))
 		{
@@ -748,36 +753,48 @@ public partial class Form1
 		string fileName = Path.GetFileName(pdfPath);
 		try
 		{
-			await DelayBatchAsync(1000);
-			ILocator fileRow = await ResolveUploadedDriveFileRowAsync(page, fileName);
+			await page.BringToFrontAsync();
+			await DelayBatchAsync(600);
+			ILocator fileRow = await ResolveUploadedDriveFileRowAsync(page, fileName, expectedDriveFileId);
 			if (fileRow == null)
 			{
 				AppendAutomationLog("WARN", vitri, email, $"Drive share tab {tabNumber}: không thấy hàng file '{fileName}' trên lưới My Drive.");
 				return false;
 			}
-			// Panel Share là iframe drivesharing → mọi thao tác phải chạy trong frame này.
-			IFrame shareFrame = await OpenDriveShareDialogForFileRowAsync(page, fileRow, vitri, tabNumber, email);
+			string driveFileId = expectedDriveFileId;
+			if (string.IsNullOrEmpty(driveFileId))
+			{
+				driveFileId = await TryGetDriveFileIdFromRowAsync(fileRow);
+			}
+			// Panel Share là iframe drivesharing → thao tác trong frame khớp fileId (tránh nhầm tab/iframe cũ).
+			IFrame shareFrame = await OpenDriveShareDialogForFileRowAsync(page, fileRow, driveFileId, vitri, tabNumber, email);
 			if (shareFrame == null)
 			{
 				AppendAutomationLog("WARN", vitri, email, $"Drive share tab {tabNumber}: không mở được hộp thoại Share (iframe).");
 				return false;
 			}
+			if (string.IsNullOrEmpty(driveFileId))
+			{
+				driveFileId = TryExtractDriveFileIdFromShareFrameUrl(shareFrame);
+			}
 			if (!await SetDriveGeneralAccessAnyoneWithLinkAsync(shareFrame, vitri, tabNumber, email))
 			{
 				AppendAutomationLog("WARN", vitri, email, $"Drive share tab {tabNumber}: không đặt được General access = Anyone with the link.");
-				await TryCloseDriveShareDialogAsync(shareFrame);
+				await TryCloseDriveShareDialogAsync(shareFrame, page);
 				return false;
 			}
 			await DelayBatchAsync(800);
-			string link = await ObtainDriveShareLinkAsync(shareFrame, vitri, tabNumber, email);
-			if (!IsValidDriveShareLink(link))
+			string link = await ObtainDriveShareLinkAsync(shareFrame, page, driveFileId, vitri, tabNumber, email);
+			if (!IsValidDriveShareLink(link) || !DriveShareLinkMatchesFileId(link, driveFileId))
 			{
-				AppendAutomationLog("WARN", vitri, email, $"Drive share tab {tabNumber}: không lấy được link chia sẻ hợp lệ.");
-				await TryCloseDriveShareDialogAsync(shareFrame);
+				AppendAutomationLog("WARN", vitri, email,
+					$"Drive share tab {tabNumber}: link không khớp file (fileId={driveFileId ?? "?"}, link={(string.IsNullOrEmpty(link) ? "(trống)" : link)}).");
+				await TryCloseDriveShareDialogAsync(shareFrame, page);
 				return false;
 			}
-			AppendAutomationLog("INFO", vitri, email, $"Drive share tab {tabNumber}: link = {link}");
-			await TryCloseDriveShareDialogAsync(shareFrame);
+			AppendAutomationLog("INFO", vitri, email, $"Drive share tab {tabNumber}: link OK fileId={driveFileId} → {link}");
+			await TryCloseDriveShareDialogAsync(shareFrame, page);
+			await WaitUntilDriveShareFrameClosedAsync(page);
 			if (!await TryOpenDriveShareLinkInNewTabAsync(context, link, vitri, tabNumber, email))
 			{
 				AppendAutomationLog("WARN", vitri, email, $"Drive share tab {tabNumber}: có link nhưng mở tab thất bại.");
@@ -794,28 +811,43 @@ public partial class Form1
 	}
 
 	/// <summary>
-	/// Tìm iframe của panel Share (DriveShareDialogUi tại /drivesharing/driveshare).
-	/// Trả null nếu không thấy trong thời gian chờ.
+	/// Tìm iframe Share của đúng tab: ưu tiên URL chứa <paramref name="expectedDriveFileId"/>, lấy iframe cuối (mới nhất).
 	/// </summary>
-	private static async Task<IFrame> ResolveDriveShareFrameAsync(IPage page, float timeoutMs)
+	private static async Task<IFrame> ResolveDriveShareFrameAsync(IPage page, float timeoutMs, string expectedDriveFileId = null)
 	{
 		DateTime deadline = DateTime.UtcNow.AddMilliseconds(timeoutMs);
 		while (true)
 		{
+			IFrame matched = null;
+			IFrame anyShare = null;
 			foreach (IFrame f in page.Frames)
 			{
 				try
 				{
 					string u = f.Url ?? "";
-					if (u.Contains("drivesharing", StringComparison.OrdinalIgnoreCase)
-						|| u.Contains("/driveshare", StringComparison.OrdinalIgnoreCase))
+					if (!u.Contains("drivesharing", StringComparison.OrdinalIgnoreCase)
+						&& !u.Contains("/driveshare", StringComparison.OrdinalIgnoreCase))
 					{
-						return f;
+						continue;
+					}
+					anyShare = f;
+					if (!string.IsNullOrEmpty(expectedDriveFileId)
+						&& u.Contains(expectedDriveFileId, StringComparison.OrdinalIgnoreCase))
+					{
+						matched = f;
 					}
 				}
 				catch
 				{
 				}
+			}
+			if (matched != null)
+			{
+				return matched;
+			}
+			if (anyShare != null && string.IsNullOrEmpty(expectedDriveFileId))
+			{
+				return anyShare;
 			}
 			if (DateTime.UtcNow >= deadline)
 			{
@@ -824,6 +856,36 @@ public partial class Form1
 			await Task.Delay(300);
 		}
 		return null;
+	}
+
+	private static async Task WaitUntilDriveShareFrameClosedAsync(IPage page, int maxWaitMs = 10000)
+	{
+		DateTime deadline = DateTime.UtcNow.AddMilliseconds(maxWaitMs);
+		while (DateTime.UtcNow < deadline)
+		{
+			bool hasShareFrame = false;
+			foreach (IFrame f in page.Frames)
+			{
+				try
+				{
+					string u = f.Url ?? "";
+					if (u.Contains("drivesharing", StringComparison.OrdinalIgnoreCase)
+						|| u.Contains("/driveshare", StringComparison.OrdinalIgnoreCase))
+					{
+						hasShareFrame = true;
+						break;
+					}
+				}
+				catch
+				{
+				}
+			}
+			if (!hasShareFrame)
+			{
+				return;
+			}
+			await Task.Delay(250);
+		}
 	}
 
 	/// <summary>Panel Share Drive (heading Share + General access) trong iframe drivesharing.</summary>
@@ -852,9 +914,128 @@ public partial class Form1
 			|| u.Contains("docs.google.com", StringComparison.OrdinalIgnoreCase);
 	}
 
-	/// <summary>Tìm hàng file trên lưới My Drive (không dùng toast — toast không mở Share đúng).</summary>
-	private async Task<ILocator> ResolveUploadedDriveFileRowAsync(IPage page, string fileName)
+	/// <summary>Link chia sẻ phải chứa đúng fileId của file vừa upload trên tab này.</summary>
+	private static bool DriveShareLinkMatchesFileId(string link, string driveFileId)
 	{
+		if (string.IsNullOrWhiteSpace(driveFileId))
+		{
+			return true;
+		}
+		if (string.IsNullOrWhiteSpace(link))
+		{
+			return false;
+		}
+		return link.Contains(driveFileId, StringComparison.OrdinalIgnoreCase);
+	}
+
+	private static string AcceptDriveShareLinkIfMatches(string link, string driveFileId)
+	{
+		if (!IsValidDriveShareLink(link))
+		{
+			return "";
+		}
+		if (!DriveShareLinkMatchesFileId(link, driveFileId))
+		{
+			return "";
+		}
+		return link.Trim();
+	}
+
+	/// <summary>Lấy fileId Google Drive từ hàng lưới (ưu tiên file mới nhất cùng tên — thường ở trên cùng).</summary>
+	private static async Task<string> TryResolveDriveFileIdForUploadedFileAsync(IPage page, string fileName)
+	{
+		try
+		{
+			string id = await page.EvaluateAsync<string>(@"fileName => {
+				const norm = s => (s || '').toLowerCase();
+				const want = norm(fileName);
+				const baseName = want.replace(/\.[^.]+$/, '');
+				const rows = document.querySelectorAll('[role=""row""][data-id]');
+				const hits = [];
+				for (const row of rows) {
+					const fid = row.getAttribute('data-id');
+					if (!fid || fid.length < 12) continue;
+					const label = norm(row.getAttribute('aria-label') || row.innerText || '');
+					if (!label.includes(want) && !label.includes(baseName)) continue;
+					const r = row.getBoundingClientRect();
+					hits.push({ id: fid, top: r.top });
+				}
+				if (hits.length === 0) return '';
+				hits.sort((a, b) => a.top - b.top);
+				return hits[0].id;
+			}", fileName);
+			return (id ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static async Task<string> TryGetDriveFileIdFromRowAsync(ILocator row)
+	{
+		if (row == null)
+		{
+			return "";
+		}
+		try
+		{
+			string id = await row.GetAttributeAsync("data-id");
+			if (!string.IsNullOrWhiteSpace(id) && id.Length >= 12)
+			{
+				return id.Trim();
+			}
+		}
+		catch
+		{
+		}
+		try
+		{
+			string id = await row.EvaluateAsync<string>("el => (el.getAttribute('data-id') || el.closest('[data-id]')?.getAttribute('data-id') || '')");
+			return (id ?? "").Trim();
+		}
+		catch
+		{
+			return "";
+		}
+	}
+
+	private static string TryExtractDriveFileIdFromShareFrameUrl(IFrame frame)
+	{
+		try
+		{
+			string u = frame?.Url ?? "";
+			Match m = Regex.Match(u, @"[?&]id=([a-zA-Z0-9_-]{12,})");
+			if (m.Success)
+			{
+				return m.Groups[1].Value;
+			}
+		}
+		catch
+		{
+		}
+		return "";
+	}
+
+	/// <summary>Tìm hàng file trên lưới My Drive — ưu tiên đúng data-id (file vừa upload trên tab này).</summary>
+	private async Task<ILocator> ResolveUploadedDriveFileRowAsync(IPage page, string fileName, string expectedDriveFileId = null)
+	{
+		if (!string.IsNullOrEmpty(expectedDriveFileId))
+		{
+			try
+			{
+				ILocator byId = page.Locator($"div[role='row'][data-id='{EscapeForCssAttr(expectedDriveFileId)}']");
+				if (await byId.CountAsync() > 0)
+				{
+					ILocator pick = byId.First;
+					await pick.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 12000f });
+					return pick;
+				}
+			}
+			catch
+			{
+			}
+		}
 		string nameNoExt = Path.GetFileNameWithoutExtension(fileName);
 		List<Func<ILocator>> candidateFactories = new List<Func<ILocator>>();
 		try { candidateFactories.Add(() => page.GetByRole(AriaRole.Row, new PageGetByRoleOptions { Name = fileName })); } catch { }
@@ -872,7 +1053,8 @@ public partial class Form1
 				int count = await loc.CountAsync();
 				if (count > 0)
 				{
-					ILocator pick = count > 1 ? loc.Last : loc.First;
+					// File mới thường ở trên cùng lưới (sort theo ngày).
+					ILocator pick = loc.First;
 					await pick.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Visible, Timeout = 12000f });
 					return pick;
 				}
@@ -895,8 +1077,9 @@ public partial class Form1
 	}
 
 	/// <summary>Chọn file → Ctrl+Alt+A mở panel Share (ưu tiên); dự phòng chuột phải / toolbar. Trả iframe Share hoặc null.</summary>
-	private async Task<IFrame> OpenDriveShareDialogForFileRowAsync(IPage page, ILocator fileRow, int vitri, int tabNumber, string email)
+	private async Task<IFrame> OpenDriveShareDialogForFileRowAsync(IPage page, ILocator fileRow, string expectedDriveFileId, int vitri, int tabNumber, string email)
 	{
+		await page.BringToFrontAsync();
 		try
 		{
 			await fileRow.ScrollIntoViewIfNeededAsync();
@@ -910,7 +1093,7 @@ public partial class Form1
 			await fileRow.ClickAsync(new LocatorClickOptions { Timeout = 15000f });
 			await DelayBatchAsync(500);
 			await page.Keyboard.PressAsync("Control+Alt+a");
-			IFrame f = await WaitForDriveShareFrameReadyAsync(page, 15000f);
+			IFrame f = await WaitForDriveShareFrameReadyAsync(page, 15000f, expectedDriveFileId);
 			if (f != null)
 			{
 				await TryDismissDriveShareGotItCalloutAsync(f);
@@ -934,7 +1117,7 @@ public partial class Form1
 			if (await shareMenu.CountAsync() > 0)
 			{
 				await shareMenu.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f });
-				IFrame f = await WaitForDriveShareFrameReadyAsync(page, 15000f);
+				IFrame f = await WaitForDriveShareFrameReadyAsync(page, 15000f, expectedDriveFileId);
 				if (f != null)
 				{
 					await TryDismissDriveShareGotItCalloutAsync(f);
@@ -955,7 +1138,7 @@ public partial class Form1
 			if (await shareToolbar.CountAsync() > 0)
 			{
 				await shareToolbar.First.ClickAsync(new LocatorClickOptions { Timeout = 15000f });
-				IFrame f = await WaitForDriveShareFrameReadyAsync(page, 12000f);
+				IFrame f = await WaitForDriveShareFrameReadyAsync(page, 12000f, expectedDriveFileId);
 				if (f != null)
 				{
 					await TryDismissDriveShareGotItCalloutAsync(f);
@@ -991,9 +1174,9 @@ public partial class Form1
 	}
 
 	/// <summary>Chờ iframe Share xuất hiện và panel bên trong đã render (General access / nút dropdown).</summary>
-	private async Task<IFrame> WaitForDriveShareFrameReadyAsync(IPage page, float timeoutMs)
+	private async Task<IFrame> WaitForDriveShareFrameReadyAsync(IPage page, float timeoutMs, string expectedDriveFileId = null)
 	{
-		IFrame frame = await ResolveDriveShareFrameAsync(page, timeoutMs);
+		IFrame frame = await ResolveDriveShareFrameAsync(page, timeoutMs, expectedDriveFileId);
 		if (frame == null)
 		{
 			return null;
@@ -1211,23 +1394,31 @@ public partial class Form1
 		return false;
 	}
 
-	/// <summary>Đọc link từ ô trong dialog trước, rồi Copy link + clipboard.</summary>
-	private async Task<string> ObtainDriveShareLinkAsync(IFrame frame, int vitri, int tabNumber, string email)
+	/// <summary>Đọc link từ ô trong dialog (ưu tiên), rồi Copy link — chỉ chấp nhận link khớp fileId tab hiện tại.</summary>
+	private async Task<string> ObtainDriveShareLinkAsync(IFrame frame, IPage ownerPage, string expectedDriveFileId, int vitri, int tabNumber, string email)
 	{
-		string fromInput = await TryReadShareLinkFromDialogAsync(frame);
-		if (IsValidDriveShareLink(fromInput))
+		string fromInput = await TryReadShareLinkFromDialogAsync(frame, expectedDriveFileId);
+		string accepted = AcceptDriveShareLinkIfMatches(fromInput, expectedDriveFileId);
+		if (!string.IsNullOrEmpty(accepted))
 		{
-			return fromInput;
+			return accepted;
 		}
-		string fromCopy = await ClickCopyLinkAndReadAsync(frame, vitri, tabNumber, email);
-		if (IsValidDriveShareLink(fromCopy))
+		string fromCopy = await ClickCopyLinkAndReadAsync(frame, ownerPage, expectedDriveFileId, vitri, tabNumber, email);
+		string acceptedCopy = AcceptDriveShareLinkIfMatches(fromCopy, expectedDriveFileId);
+		if (!string.IsNullOrEmpty(acceptedCopy))
 		{
-			return fromCopy;
+			return acceptedCopy;
+		}
+		if (!string.IsNullOrEmpty(expectedDriveFileId))
+		{
+			string built = "https://drive.google.com/file/d/" + expectedDriveFileId + "/view?usp=sharing";
+			AppendAutomationLog("INFO", vitri, email, $"Drive share tab {tabNumber}: dùng link dựng từ fileId (Copy link không đọc được).");
+			return built;
 		}
 		return "";
 	}
 
-	private static async Task<string> TryReadShareLinkFromDialogAsync(IFrame frame)
+	private static async Task<string> TryReadShareLinkFromDialogAsync(IFrame frame, string expectedDriveFileId = null)
 	{
 		try
 		{
@@ -1247,9 +1438,10 @@ public partial class Form1
 				try
 				{
 					string val = await inputs.Nth(i).InputValueAsync();
-					if (IsValidDriveShareLink(val))
+					string ok = AcceptDriveShareLinkIfMatches(val, expectedDriveFileId);
+					if (!string.IsNullOrEmpty(ok))
 					{
-						return val.Trim();
+						return ok;
 					}
 				}
 				catch
@@ -1268,9 +1460,10 @@ public partial class Form1
 				}
 				return '';
 			}");
-			if (IsValidDriveShareLink(fromJs))
+			string okJs = AcceptDriveShareLinkIfMatches(fromJs, expectedDriveFileId);
+			if (!string.IsNullOrEmpty(okJs))
 			{
-				return fromJs.Trim();
+				return okJs;
 			}
 		}
 		catch
@@ -1279,11 +1472,19 @@ public partial class Form1
 		return "";
 	}
 
-	/// <summary>Bấm nút Copy link (jsname=lmPqlf / span AeBiU-vQzf8d) rồi đọc clipboard.</summary>
-	private async Task<string> ClickCopyLinkAndReadAsync(IFrame frame, int vitri, int tabNumber, string email)
+	/// <summary>Bấm nút Copy link (jsname=lmPqlf / span AeBiU-vQzf8d) rồi đọc clipboard trên đúng tab (không dùng link tab khác).</summary>
+	private async Task<string> ClickCopyLinkAndReadAsync(IFrame frame, IPage ownerPage, string expectedDriveFileId, int vitri, int tabNumber, string email)
 	{
 		try
 		{
+			await ownerPage.BringToFrontAsync();
+			try
+			{
+				await ownerPage.EvaluateAsync("() => navigator.clipboard.writeText('').catch(() => {})");
+			}
+			catch
+			{
+			}
 			ILocator copyBtn = frame.Locator("button[jsname='lmPqlf']");
 			if (await copyBtn.CountAsync() == 0)
 			{
@@ -1308,10 +1509,11 @@ public partial class Form1
 			{
 				try
 				{
-					string fromClip = await frame.EvaluateAsync<string>("() => navigator.clipboard.readText().catch(() => '')");
-					if (IsValidDriveShareLink(fromClip))
+					string fromClip = await ownerPage.EvaluateAsync<string>("() => navigator.clipboard.readText().catch(() => '')");
+					string ok = AcceptDriveShareLinkIfMatches(fromClip, expectedDriveFileId);
+					if (!string.IsNullOrEmpty(ok))
 					{
-						return fromClip.Trim();
+						return ok;
 					}
 				}
 				catch
@@ -1362,7 +1564,7 @@ public partial class Form1
 	}
 
 	/// <summary>Đóng panel Share (Done jsname=AHldd hoặc Escape).</summary>
-	private async Task TryCloseDriveShareDialogAsync(IFrame frame)
+	private async Task TryCloseDriveShareDialogAsync(IFrame frame, IPage ownerPage)
 	{
 		try
 		{
@@ -1382,7 +1584,8 @@ public partial class Form1
 		}
 		try
 		{
-			await frame.Page.Keyboard.PressAsync("Escape");
+			await ownerPage.BringToFrontAsync();
+			await ownerPage.Keyboard.PressAsync("Escape");
 		}
 		catch
 		{

@@ -563,3 +563,1641 @@
 2026-06-01 16:57:15.065	WARN	hàng 25		[Sheet] Mở Sheets + chờ tab — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
 2026-06-01 16:57:15.065	WARN	hàng 25	L***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
 2026-06-01 16:57:15.152	INFO	-		Kết thúc batch: OK=21 Fail=4 (Playwright đã đóng).
+2026-06-02 08:41:56.724	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="114", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-02 08:43:51.770	DEBUG	hàng 2	C***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:43:52.785	DEBUG	hàng 4	F***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:43:52.789	DEBUG	hàng 5	V***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:43:53.365	DEBUG	hàng 1	E***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:43:55.249	DEBUG	hàng 7	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:43:55.549	DEBUG	hàng 8	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:43:55.838	DEBUG	hàng 9	C***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:43:56.430	DEBUG	hàng 10	K***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:43:59.900	DEBUG	hàng 6	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:44:43.933	INFO	hàng 2		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:44:45.683	INFO	hàng 4		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:44:46.152	INFO	hàng 5		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:44:46.512	INFO	hàng 1		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:44:48.362	INFO	hàng 8		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:44:49.442	INFO	hàng 7		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:44:52.043	INFO	hàng 9		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:44:52.962	INFO	hàng 6		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:44:56.952	INFO	hàng 10		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:45:01.196	INFO	hàng 5	V***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:45:04.971	INFO	hàng 2	C***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:45:06.595	INFO	hàng 9	C***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:45:07.131	INFO	hàng 1	E***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:45:07.832	INFO	hàng 4	F***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:45:08.254	INFO	hàng 8	M***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:45:09.386	INFO	hàng 7	M***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:45:09.897	INFO	hàng 5	V***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:45:11.377	INFO	hàng 2	C***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:45:12.577	WARN	hàng 5	V***@gmail.com	Drive share tab 1: General access — Frame was detached Call log:   - waiting for Locator("div.u5mDnb").First to be visible
+2026-06-02 08:45:12.577	WARN	hàng 5	V***@gmail.com	Drive share tab 1: không đặt được General access = Anyone with the link.
+2026-06-02 08:45:12.603	WARN	hàng 5	V***@gmail.com	Drive: hàng 5 — upload 1 tab nhưng share/link 0 tab.
+2026-06-02 08:45:13.430	INFO	hàng 9	C***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:45:13.497	INFO	hàng 1	E***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:45:13.612	INFO	hàng 6	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:45:14.208	INFO	hàng 4	F***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:45:15.732	INFO	hàng 7	M***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:45:16.199	INFO	hàng 10	K***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:45:16.649	INFO	hàng 8	M***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:45:17.863	INFO	hàng 6	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:45:22.573	INFO	hàng 10	K***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:45:26.384	INFO	hàng 2	C***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1XxDo-kKWEAX7fWba5PUgmU1ghqdjhFo_/view?usp=sharing
+2026-06-02 08:45:28.247	INFO	hàng 1	E***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1JwJQLXFeaA5Q9nLSXHIB_ELbX3YwmBww/view?usp=sharing
+2026-06-02 08:45:28.367	INFO	hàng 9	C***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1JwJQLXFeaA5Q9nLSXHIB_ELbX3YwmBww/view?usp=sharing
+2026-06-02 08:45:29.241	INFO	hàng 4	F***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1JwJQLXFeaA5Q9nLSXHIB_ELbX3YwmBww/view?usp=sharing
+2026-06-02 08:45:31.305	INFO	hàng 7	M***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1vwwRCqar1JdQ1CD-w5qtlu-PhZO1KdxI/view?usp=sharing
+2026-06-02 08:45:31.918	INFO	hàng 2	C***@gmail.com	Drive: hàng 2 — upload+share+link OK 1/1 tab.
+2026-06-02 08:45:32.616	INFO	hàng 8	M***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1QPidRO4dKVa3erZRIxTNi1OLcSw4pINN/view?usp=sharing
+2026-06-02 08:45:33.609	INFO	hàng 6	S***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1QPidRO4dKVa3erZRIxTNi1OLcSw4pINN/view?usp=sharing
+2026-06-02 08:45:33.800	INFO	hàng 1	E***@gmail.com	Drive: hàng 1 — upload+share+link OK 1/1 tab.
+2026-06-02 08:45:34.120	INFO	hàng 9	C***@gmail.com	Drive: hàng 9 — upload+share+link OK 1/1 tab.
+2026-06-02 08:45:35.254	INFO	hàng 4	F***@gmail.com	Drive: hàng 4 — upload+share+link OK 1/1 tab.
+2026-06-02 08:45:36.897	INFO	hàng 7	M***@gmail.com	Drive: hàng 7 — upload+share+link OK 1/1 tab.
+2026-06-02 08:45:38.270	INFO	hàng 8	M***@gmail.com	Drive: hàng 8 — upload+share+link OK 1/1 tab.
+2026-06-02 08:45:38.353	INFO	hàng 10	K***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1SLXYTTZxQoNXjB2b9Ne4kqGWoMa_QJJ3/view?usp=sharing
+2026-06-02 08:45:39.816	INFO	hàng 6	S***@gmail.com	Drive: hàng 6 — upload+share+link OK 1/1 tab.
+2026-06-02 08:45:43.941	INFO	hàng 10	K***@gmail.com	Drive: hàng 10 — upload+share+link OK 1/1 tab.
+2026-06-02 08:46:42.873	WARN	hàng 5	V***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:46:43.104	WARN	hàng 5	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:46:59.748	WARN	hàng 2	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:46:59.967	WARN	hàng 2	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:01.359	WARN	hàng 5	V***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:47:01.575	WARN	hàng 5	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:02.804	WARN	hàng 9	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:47:03.029	WARN	hàng 9	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:06.049	WARN	hàng 1	E***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:47:06.274	WARN	hàng 1	E***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:10.727	WARN	hàng 4	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:47:11.024	WARN	hàng 4	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:11.954	WARN	hàng 6	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:47:12.225	WARN	hàng 6	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:13.199	WARN	hàng 8	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:47:13.427	WARN	hàng 8	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:17.449	WARN	hàng 2	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:47:17.672	WARN	hàng 2	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:17.824	WARN	hàng 10	K***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:47:18.041	WARN	hàng 10	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:20.481	WARN	hàng 9	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:47:20.705	WARN	hàng 9	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:24.053	WARN	hàng 1	E***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:47:24.292	WARN	hàng 1	E***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:26.925	WARN	hàng 7	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:47:27.164	WARN	hàng 7	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:29.213	WARN	hàng 4	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:47:29.428	WARN	hàng 4	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:30.061	WARN	hàng 6	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:47:30.300	WARN	hàng 6	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:31.110	WARN	hàng 8	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:47:31.325	WARN	hàng 8	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:36.616	WARN	hàng 10	K***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:47:36.912	WARN	hàng 10	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:44.984	WARN	hàng 7	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:47:45.213	WARN	hàng 7	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:47:58.157	INFO	hàng 5	V***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:48:11.479	INFO	hàng 2	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:48:13.672	INFO	hàng 9	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:48:16.668	INFO	hàng 1	E***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:48:23.751	DEBUG	hàng 3	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:48:27.257	INFO	hàng 8	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:48:27.396	INFO	hàng 4	F***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:48:27.474	INFO	hàng 6	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:48:28.971	INFO	hàng 10	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:48:37.728	INFO	hàng 7	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:49:16.149	INFO	hàng 3		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:49:30.176	INFO	hàng 3	B***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:49:36.964	INFO	hàng 3	B***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:49:52.434	INFO	hàng 3	B***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1cokAM586Xqj4PXQN2HcdR905om_eoxRx/view?usp=sharing
+2026-06-02 08:49:57.953	INFO	hàng 3	B***@gmail.com	Drive: hàng 3 — upload+share+link OK 1/1 tab.
+2026-06-02 08:51:25.594	WARN	hàng 3	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:51:25.803	WARN	hàng 3	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:51:43.673	WARN	hàng 3	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:51:43.900	WARN	hàng 3	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:52:36.963	INFO	hàng 3	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:54:29.900	DEBUG	hàng 11	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:54:30.191	DEBUG	hàng 12	H***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:54:30.537	DEBUG	hàng 13	W***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:54:31.137	DEBUG	hàng 14	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:54:31.786	DEBUG	hàng 15	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:54:31.862	DEBUG	hàng 16	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:54:33.115	DEBUG	hàng 19	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:54:33.120	DEBUG	hàng 17	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:54:33.850	DEBUG	hàng 20	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 08:55:24.547	INFO	hàng 13		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:55:24.740	INFO	hàng 15		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:55:24.760	INFO	hàng 12		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:55:25.646	INFO	hàng 14		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:55:25.996	INFO	hàng 20		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:55:25.998	INFO	hàng 17		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:55:26.226	INFO	hàng 11		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:55:27.487	INFO	hàng 19		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:55:27.946	INFO	hàng 16		2fa.cn: đã nhập secret và Submit.
+2026-06-02 08:55:40.090	INFO	hàng 13	W***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:55:41.289	INFO	hàng 11	B***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:55:41.661	INFO	hàng 17	B***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:55:41.749	INFO	hàng 20	M***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:55:46.733	INFO	hàng 15	M***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:55:46.935	INFO	hàng 12	H***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:55:47.747	INFO	hàng 14	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:55:48.626	INFO	hàng 19	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:55:48.867	INFO	hàng 13	W***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:55:50.111	INFO	hàng 16	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 08:55:50.313	INFO	hàng 17	B***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:55:50.944	INFO	hàng 20	M***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:55:51.772	INFO	hàng 11	B***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:55:55.106	INFO	hàng 15	M***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:55:55.314	INFO	hàng 12	H***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:55:56.996	INFO	hàng 19	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:55:58.210	INFO	hàng 14	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:55:58.486	INFO	hàng 16	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 08:56:01.179	WARN	hàng 16	S***@gmail.com	Drive share tab 1: General access — Frame was detached Call log:   - waiting for Locator("div.u5mDnb").First to be visible
+2026-06-02 08:56:01.179	WARN	hàng 16	S***@gmail.com	Drive share tab 1: không đặt được General access = Anyone with the link.
+2026-06-02 08:56:01.207	WARN	hàng 16	S***@gmail.com	Drive: hàng 16 — upload 1 tab nhưng share/link 0 tab.
+2026-06-02 08:56:03.962	INFO	hàng 13	W***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/12X-0mQXkYpsf4nkZrybfI3Yg336sLLOt/view?usp=sharing
+2026-06-02 08:56:05.930	INFO	hàng 17	B***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1i1NR3Ws3VrwZVVxEDHkStL1kDLtvN2_f/view?usp=sharing
+2026-06-02 08:56:06.176	INFO	hàng 20	M***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1i1NR3Ws3VrwZVVxEDHkStL1kDLtvN2_f/view?usp=sharing
+2026-06-02 08:56:06.898	INFO	hàng 11	B***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1i1NR3Ws3VrwZVVxEDHkStL1kDLtvN2_f/view?usp=sharing
+2026-06-02 08:56:10.038	INFO	hàng 13	W***@gmail.com	Drive: hàng 13 — upload+share+link OK 1/1 tab.
+2026-06-02 08:56:10.502	INFO	hàng 12	H***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1UBYqpOPt_c9wx6_2gn2BSJhigf1rOHkl/view?usp=sharing
+2026-06-02 08:56:11.421	INFO	hàng 15	M***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1UBYqpOPt_c9wx6_2gn2BSJhigf1rOHkl/view?usp=sharing
+2026-06-02 08:56:12.098	INFO	hàng 17	B***@gmail.com	Drive: hàng 17 — upload+share+link OK 1/1 tab.
+2026-06-02 08:56:13.254	INFO	hàng 11	B***@gmail.com	Drive: hàng 11 — upload+share+link OK 1/1 tab.
+2026-06-02 08:56:13.702	INFO	hàng 19	S***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1kVNj0ZSMnFfEELFWvUDaght8MagnWoQD/view?usp=sharing
+2026-06-02 08:56:13.923	INFO	hàng 20	M***@gmail.com	Drive: hàng 20 — upload+share+link OK 1/1 tab.
+2026-06-02 08:56:14.624	INFO	hàng 14	S***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1kVNj0ZSMnFfEELFWvUDaght8MagnWoQD/view?usp=sharing
+2026-06-02 08:56:16.898	INFO	hàng 12	H***@gmail.com	Drive: hàng 12 — upload+share+link OK 1/1 tab.
+2026-06-02 08:56:17.691	INFO	hàng 15	M***@gmail.com	Drive: hàng 15 — upload+share+link OK 1/1 tab.
+2026-06-02 08:56:21.611	INFO	hàng 14	S***@gmail.com	Drive: hàng 14 — upload+share+link OK 1/1 tab.
+2026-06-02 08:56:21.746	INFO	hàng 19	S***@gmail.com	Drive: hàng 19 — upload+share+link OK 1/1 tab.
+2026-06-02 08:57:34.326	WARN	hàng 16	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:57:34.589	WARN	hàng 16	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:57:42.435	WARN	hàng 11	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:57:42.715	WARN	hàng 11	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:57:44.957	WARN	hàng 17	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:57:45.199	WARN	hàng 17	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:57:48.178	WARN	hàng 13	W***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:57:48.496	WARN	hàng 13	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:57:50.736	WARN	hàng 15	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:57:51.073	WARN	hàng 15	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:57:52.422	WARN	hàng 16	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:57:52.788	WARN	hàng 16	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:57:52.892	WARN	hàng 19	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:57:53.206	WARN	hàng 19	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:57:53.367	WARN	hàng 14	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:57:53.640	WARN	hàng 14	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:57:54.109	WARN	hàng 17	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:57:54.386	WARN	hàng 17	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:57:58.539	WARN	hàng 12	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:57:58.831	WARN	hàng 12	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:58:01.898	WARN	hàng 11	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:58:01.917	WARN	hàng 15	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:58:02.309	WARN	hàng 11	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:58:02.398	WARN	hàng 15	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:58:03.593	WARN	hàng 20	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 08:58:03.923	WARN	hàng 20	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:58:07.739	WARN	hàng 13	W***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:58:07.992	WARN	hàng 13	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:58:12.167	WARN	hàng 19	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:58:12.557	WARN	hàng 19	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:58:13.016	WARN	hàng 14	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:58:13.297	WARN	hàng 14	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:58:16.825	WARN	hàng 12	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:58:17.129	WARN	hàng 12	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:58:21.893	WARN	hàng 20	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 08:58:22.171	WARN	hàng 20	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 08:58:50.439	INFO	hàng 16	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:58:58.228	INFO	hàng 11	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:58:58.370	INFO	hàng 17	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:58:59.222	INFO	hàng 15	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:59:03.575	INFO	hàng 13	W***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:59:05.740	INFO	hàng 19	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:59:07.047	INFO	hàng 14	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:59:12.999	INFO	hàng 12	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 08:59:15.161	INFO	hàng 20	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 09:00:32.953	DEBUG	hàng 18	I***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 09:01:24.933	INFO	hàng 18		2fa.cn: đã nhập secret và Submit.
+2026-06-02 09:01:39.323	INFO	hàng 18	I***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 09:01:45.696	INFO	hàng 18	I***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 09:02:00.773	INFO	hàng 18	I***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1QPidRO4dKVa3erZRIxTNi1OLcSw4pINN/view
+2026-06-02 09:02:06.196	INFO	hàng 18	I***@gmail.com	Drive: hàng 18 — upload+share+link OK 1/1 tab.
+2026-06-02 09:03:37.899	WARN	hàng 18	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 09:03:38.114	WARN	hàng 18	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:03:55.283	WARN	hàng 18	I***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 09:03:55.494	WARN	hàng 18	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:04:47.345	INFO	hàng 18	I***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 09:06:30.126	DEBUG	hàng 21	I***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 09:06:30.217	DEBUG	hàng 22	J***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 09:06:30.602	DEBUG	hàng 23	V***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 09:06:31.335	DEBUG	hàng 24	L***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 09:06:32.083	DEBUG	hàng 25	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 09:06:40.270	INFO	hàng 24		2fa.cn: đã nhập secret và Submit.
+2026-06-02 09:06:54.857	INFO	hàng 24	L***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 09:07:02.744	INFO	hàng 24	L***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 09:07:17.355	INFO	hàng 24	L***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1w2ACBqCLSXSxRgH7TGgu-rzX9nydsvKu/view?usp=sharing
+2026-06-02 09:07:22.330	INFO	hàng 22		2fa.cn: đã nhập secret và Submit.
+2026-06-02 09:07:22.810	INFO	hàng 21		2fa.cn: đã nhập secret và Submit.
+2026-06-02 09:07:23.611	INFO	hàng 24	L***@gmail.com	Drive: hàng 24 — upload+share+link OK 1/1 tab.
+2026-06-02 09:07:24.889	INFO	hàng 25		2fa.cn: đã nhập secret và Submit.
+2026-06-02 09:07:25.061	INFO	hàng 23		2fa.cn: đã nhập secret và Submit.
+2026-06-02 09:07:37.530	INFO	hàng 21	I***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 09:07:39.564	INFO	hàng 25	G***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 09:07:39.807	INFO	hàng 23	V***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 09:07:42.356	INFO	hàng 22	J***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 09:07:44.153	INFO	hàng 21	I***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 09:07:46.073	INFO	hàng 25	G***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 09:07:46.330	INFO	hàng 23	V***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 09:07:48.648	INFO	hàng 22	J***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 09:07:59.699	INFO	hàng 21	I***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1NobRbiyEzImW4FFeOL72YrQHt_1v3Qcr/view?usp=sharing
+2026-06-02 09:08:01.271	INFO	hàng 23	V***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1078j5rQ8STvZXLuGhK8LF4y1bB1Negwx/view?usp=sharing
+2026-06-02 09:08:01.633	INFO	hàng 25	G***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1078j5rQ8STvZXLuGhK8LF4y1bB1Negwx/view?usp=sharing
+2026-06-02 09:08:04.199	INFO	hàng 22	J***@gmail.com	Drive share tab 1: link = https://drive.google.com/file/d/1OzUrH822RwPclYnf52-yMAwtCSRVCE3G/view?usp=sharing
+2026-06-02 09:08:06.679	INFO	hàng 23	V***@gmail.com	Drive: hàng 23 — upload+share+link OK 1/1 tab.
+2026-06-02 09:08:07.526	INFO	hàng 21	I***@gmail.com	Drive: hàng 21 — upload+share+link OK 1/1 tab.
+2026-06-02 09:08:09.281	INFO	hàng 25	G***@gmail.com	Drive: hàng 25 — upload+share+link OK 1/1 tab.
+2026-06-02 09:08:12.958	INFO	hàng 22	J***@gmail.com	Drive: hàng 22 — upload+share+link OK 1/1 tab.
+2026-06-02 09:08:53.226	WARN	hàng 24	L***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 09:08:53.457	WARN	hàng 24	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:09:10.785	WARN	hàng 24	L***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 09:09:10.987	WARN	hàng 24	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:09:32.847	WARN	hàng 21	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 09:09:33.050	WARN	hàng 21	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:09:36.145	WARN	hàng 23	V***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 09:09:36.362	WARN	hàng 23	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:09:45.116	WARN	hàng 22	J***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 09:09:45.190	WARN	hàng 25	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 09:09:45.385	WARN	hàng 22	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:09:45.465	WARN	hàng 25	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:09:50.184	WARN	hàng 21	I***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 09:09:50.399	WARN	hàng 21	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:09:53.511	WARN	hàng 23	V***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 09:09:53.732	WARN	hàng 23	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:10:02.851	WARN	hàng 25	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 09:10:02.926	WARN	hàng 22	J***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 09:10:03.060	WARN	hàng 25	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:10:03.136	WARN	hàng 22	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 09:10:03.264	INFO	hàng 24	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 09:10:44.329	INFO	hàng 21	I***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 09:10:45.223	INFO	hàng 23	V***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 09:10:57.046	INFO	hàng 22	J***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 09:10:57.677	INFO	hàng 25	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 09:10:58.209	INFO	-		Kết thúc batch: OK=25 Fail=0 (Playwright đã đóng).
+2026-06-02 16:40:28.374	INFO	hàng 1	E***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.392	INFO	hàng 2	C***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.392	INFO	hàng 3	B***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.392	INFO	hàng 4	F***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.392	INFO	hàng 5	V***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 6	S***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 7	M***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 8	M***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 9	C***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 10	K***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 11	B***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 12	H***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 13	W***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 14	S***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 15	M***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 16	S***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 17	B***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 18	I***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 19	S***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 20	M***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 21	I***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 22	J***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 23	V***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.393	INFO	hàng 24	L***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:40:28.394	INFO	hàng 25	G***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:41:37.585	INFO	hàng 2	C***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:41:37.596	INFO	hàng 5	V***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:41:37.596	INFO	hàng 9	C***@gmail.com	Bỏ qua: UID đã ghi thành công cho nhóm GPM khác trong Data/login_success.log.
+2026-06-02 16:41:37.633	INFO	-		Bắt đầu batch: 22 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="115", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-02 16:41:43.563	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-06-02 16:42:15.367	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="115", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-02 16:44:05.711	DEBUG	hàng 3	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:44:05.819	DEBUG	hàng 2	C***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:44:06.183	DEBUG	hàng 5	V***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:44:06.191	DEBUG	hàng 1	E***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:44:06.675	DEBUG	hàng 4	F***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:44:07.516	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-06-02 16:44:07.524	WARN	hàng 10	K***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.537	WARN	hàng 6	S***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.538	WARN	hàng 8	M***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.539	WARN	hàng 9	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.562	WARN	hàng 1		Mở Gmail Inbox — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.566	WARN	hàng 2		Mở Gmail Inbox — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.566	WARN	hàng 1		2fa.cn: TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.570	WARN	hàng 2		2fa.cn: TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.581	WARN	hàng 3		Mở Gmail Inbox — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.584	WARN	hàng 3		2fa.cn: TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.586	DEBUG	hàng 6		Không chụp screenshot: Target page, context or browser has been closed Call log:   - taking page screenshot     - disabled all CSS animations   - waiting for fonts to load...   - fonts loaded
+2026-06-02 16:44:07.592	WARN	hàng 4		Mở Gmail Inbox — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.593	WARN	hàng 1		STEP 4–5 (đổi avatar) — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.593	WARN	hàng 1	E***@gmail.com	hamcheckpass (pipeline sau đăng nhập / Form / Sheet / Script): TaskCanceledException — A task was canceled.
+2026-06-02 16:44:07.594	WARN	hàng 1	E***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.594	WARN	hàng 2		STEP 4–5 (đổi avatar) — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.594	WARN	hàng 2	C***@gmail.com	hamcheckpass (pipeline sau đăng nhập / Form / Sheet / Script): TaskCanceledException — A task was canceled.
+2026-06-02 16:44:07.594	WARN	hàng 2	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.595	WARN	hàng 7	M***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.595	WARN	hàng 4		2fa.cn: TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.595	WARN	hàng 5		Mở Gmail Inbox — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.596	WARN	hàng 5		2fa.cn: TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.608	DEBUG	hàng 8		Không chụp screenshot: Target page, context or browser has been closed Call log:   - taking page screenshot     - disabled all CSS animations   - waiting for fonts to load...   - fonts loaded
+2026-06-02 16:44:07.609	WARN	hàng 3		STEP 4–5 (đổi avatar) — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.609	WARN	hàng 3	B***@gmail.com	hamcheckpass (pipeline sau đăng nhập / Form / Sheet / Script): TaskCanceledException — A task was canceled.
+2026-06-02 16:44:07.610	WARN	hàng 3	B***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.611	WARN	hàng 4		STEP 4–5 (đổi avatar) — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.611	WARN	hàng 4	F***@gmail.com	hamcheckpass (pipeline sau đăng nhập / Form / Sheet / Script): TaskCanceledException — A task was canceled.
+2026-06-02 16:44:07.611	WARN	hàng 4	F***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.614	DEBUG	hàng 9		Không chụp screenshot: Target page, context or browser has been closed Call log:   - taking page screenshot     - disabled all CSS animations   - waiting for fonts to load...   - fonts loaded
+2026-06-02 16:44:07.616	WARN	hàng 5		STEP 4–5 (đổi avatar) — thất bại sau 2 lần (có F5 retry): TargetClosedException — Target page, context or browser has been closed
+2026-06-02 16:44:07.616	WARN	hàng 5	V***@gmail.com	hamcheckpass (pipeline sau đăng nhập / Form / Sheet / Script): TaskCanceledException — A task was canceled.
+2026-06-02 16:44:07.616	WARN	hàng 5	V***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 16:44:07.618	DEBUG	hàng 10		Không chụp screenshot: Target page, context or browser has been closed Call log:   - taking page screenshot     - disabled all CSS animations   - waiting for fonts to load...   - fonts loaded
+2026-06-02 16:44:07.678	INFO	-		Kết thúc batch: OK=0 Fail=10 (Playwright đã đóng).
+2026-06-02 16:44:10.379	INFO	-		Người dùng bấm Dừng — đang đóng trình duyệt.
+2026-06-02 16:45:58.683	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="115", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-02 16:47:45.164	DEBUG	hàng 1	L***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:47:45.723	DEBUG	hàng 2	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:47:46.017	DEBUG	hàng 4	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:47:47.119	DEBUG	hàng 3	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:47:47.346	DEBUG	hàng 5	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:47:47.354	DEBUG	hàng 7	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:47:47.936	DEBUG	hàng 8	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:47:48.993	DEBUG	hàng 10	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:47:50.126	DEBUG	hàng 6	D***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:47:51.752	DEBUG	hàng 9	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:48:36.492	INFO	hàng 1		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:48:36.890	INFO	hàng 4		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:48:38.031	INFO	hàng 2		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:48:39.191	INFO	hàng 7		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:48:39.291	INFO	hàng 5		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:48:39.810	INFO	hàng 3		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:48:40.350	INFO	hàng 8		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:48:41.452	INFO	hàng 10		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:48:43.810	INFO	hàng 6		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:48:43.860	INFO	hàng 9		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:52:22.466	WARN	hàng 2	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:22.688	WARN	hàng 2	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:22.775	WARN	hàng 4	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:22.974	WARN	hàng 4	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:26.520	WARN	hàng 8	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:26.803	WARN	hàng 8	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:27.042	WARN	hàng 3	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:27.170	WARN	hàng 6	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:27.336	WARN	hàng 3	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:27.461	WARN	hàng 6	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:28.478	WARN	hàng 1	L***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:28.690	WARN	hàng 1	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:29.167	WARN	hàng 9	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:29.383	WARN	hàng 9	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:30.285	WARN	hàng 7	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:30.507	WARN	hàng 7	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:33.266	WARN	hàng 10	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:33.481	WARN	hàng 10	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:34.739	WARN	hàng 5	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 16:52:34.972	WARN	hàng 5	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:40.029	WARN	hàng 2	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:40.303	WARN	hàng 2	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:40.368	WARN	hàng 4	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:40.584	WARN	hàng 4	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:44.304	WARN	hàng 8	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:44.544	WARN	hàng 8	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:45.347	WARN	hàng 3	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:45.463	WARN	hàng 6	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:45.563	WARN	hàng 3	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:45.691	WARN	hàng 6	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:46.922	WARN	hàng 1	L***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:47.151	WARN	hàng 1	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:47.344	WARN	hàng 9	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:47.584	WARN	hàng 9	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:48.405	WARN	hàng 7	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:48.668	WARN	hàng 7	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:50.910	WARN	hàng 10	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:51.157	WARN	hàng 10	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:52:52.386	WARN	hàng 5	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 16:52:52.614	WARN	hàng 5	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 16:53:31.891	INFO	hàng 2	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:53:32.113	INFO	hàng 4	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:53:36.013	INFO	hàng 8	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:53:36.907	INFO	hàng 3	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:53:37.527	INFO	hàng 6	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:53:39.848	INFO	hàng 9	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:53:40.120	INFO	hàng 1	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:53:40.751	INFO	hàng 7	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:53:43.380	INFO	hàng 10	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:53:44.104	INFO	hàng 5	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 16:55:33.284	DEBUG	hàng 12	P***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:55:41.934	DEBUG	hàng 20	H***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:55:42.604	DEBUG	hàng 19	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:55:42.609	DEBUG	hàng 14	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:55:42.680	DEBUG	hàng 18	D***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:55:42.789	DEBUG	hàng 15	I***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:55:43.019	DEBUG	hàng 11	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:55:43.028	DEBUG	hàng 13	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:55:43.526	DEBUG	hàng 16	F***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:55:44.080	DEBUG	hàng 17	I***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 16:56:25.187	INFO	hàng 12		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:56:32.747	INFO	hàng 20		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:56:34.061	INFO	hàng 14		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:56:34.167	INFO	hàng 19		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:56:34.227	INFO	hàng 18		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:56:34.337	INFO	hàng 13		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:56:35.406	INFO	hàng 16		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:56:35.518	INFO	hàng 11		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:56:35.596	INFO	hàng 17		2fa.cn: đã nhập secret và Submit.
+2026-06-02 16:56:35.709	INFO	hàng 15		2fa.cn: đã nhập secret và Submit.
+2026-06-02 17:00:21.981	WARN	hàng 16	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:22.212	WARN	hàng 16	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:22.354	WARN	hàng 14	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:22.565	WARN	hàng 14	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:24.174	WARN	hàng 19	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:24.541	WARN	hàng 19	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:24.940	WARN	hàng 17	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:25.278	WARN	hàng 17	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:26.251	WARN	hàng 15	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:26.472	WARN	hàng 15	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:26.674	WARN	hàng 20	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:26.903	WARN	hàng 20	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:27.028	WARN	hàng 18	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:27.106	WARN	hàng 13	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:27.277	WARN	hàng 18	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:27.403	WARN	hàng 13	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:27.508	WARN	hàng 12	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:27.732	WARN	hàng 12	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:37.731	WARN	hàng 11	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:00:37.994	WARN	hàng 11	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:40.064	WARN	hàng 16	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:40.307	WARN	hàng 16	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:40.696	WARN	hàng 14	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:40.915	WARN	hàng 14	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:42.839	WARN	hàng 19	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:43.175	WARN	hàng 19	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:44.629	WARN	hàng 17	I***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:45.064	WARN	hàng 15	I***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:45.066	WARN	hàng 17	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:45.354	WARN	hàng 13	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:45.410	WARN	hàng 15	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:45.542	WARN	hàng 12	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:45.624	WARN	hàng 20	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:45.628	WARN	hàng 13	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:45.788	WARN	hàng 12	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:45.878	WARN	hàng 20	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:46.167	WARN	hàng 18	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:46.393	WARN	hàng 18	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:00:57.067	WARN	hàng 11	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:00:57.298	WARN	hàng 11	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:01:34.875	INFO	hàng 14	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:01:35.150	INFO	hàng 16	F***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:01:37.027	INFO	hàng 19	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:01:38.677	INFO	hàng 15	I***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:01:39.150	INFO	hàng 17	I***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:01:39.911	INFO	hàng 13	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:01:40.296	INFO	hàng 20	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:01:40.757	INFO	hàng 12	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:01:55.142	WARN	hàng 18	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-02 17:01:55.241	INFO	hàng 18		Screenshot lỗi: D:\Code\Auto_Login_Gmail_GPM_V2\Data\screenshots\login_flow_fail_hang18_20260602_170155157.png
+2026-06-02 17:01:57.200	INFO	hàng 11	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:03:42.052	DEBUG	hàng 25	Z***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 17:03:42.465	DEBUG	hàng 21	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 17:03:42.718	DEBUG	hàng 23	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 17:03:43.020	DEBUG	hàng 24	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 17:03:43.084	DEBUG	hàng 22	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 17:04:35.072	INFO	hàng 22		2fa.cn: đã nhập secret và Submit.
+2026-06-02 17:04:35.371	INFO	hàng 24		2fa.cn: đã nhập secret và Submit.
+2026-06-02 17:04:35.372	INFO	hàng 21		2fa.cn: đã nhập secret và Submit.
+2026-06-02 17:04:35.382	INFO	hàng 23		2fa.cn: đã nhập secret và Submit.
+2026-06-02 17:04:35.407	INFO	hàng 25		2fa.cn: đã nhập secret và Submit.
+2026-06-02 17:08:19.531	WARN	hàng 25	Z***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:08:19.834	WARN	hàng 25	Z***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:08:20.171	WARN	hàng 22	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:08:20.378	WARN	hàng 22	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:08:20.919	WARN	hàng 21	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:08:21.126	WARN	hàng 21	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:08:22.198	WARN	hàng 24	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:08:22.418	WARN	hàng 24	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:08:25.306	WARN	hàng 23	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 17:08:25.516	WARN	hàng 23	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:08:37.224	WARN	hàng 25	Z***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:08:37.431	WARN	hàng 25	Z***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:08:38.006	WARN	hàng 22	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:08:38.219	WARN	hàng 22	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:08:38.664	WARN	hàng 21	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:08:38.901	WARN	hàng 21	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:08:39.813	WARN	hàng 24	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:08:40.027	WARN	hàng 24	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:08:42.802	WARN	hàng 23	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 17:08:43.014	WARN	hàng 23	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 17:09:30.197	INFO	hàng 25	Z***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:09:30.319	INFO	hàng 22	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:09:30.462	INFO	hàng 21	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:09:33.313	INFO	hàng 24	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:09:34.417	INFO	hàng 23	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 17:09:34.878	INFO	-		Kết thúc batch: OK=24 Fail=1 (Playwright đã đóng).
+2026-06-02 19:26:01.916	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="116", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-02 19:27:55.822	DEBUG	hàng 3	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:27:56.289	DEBUG	hàng 4	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:27:56.745	DEBUG	hàng 6	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:27:56.959	DEBUG	hàng 5	R***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:27:57.704	DEBUG	hàng 7	F***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:27:58.317	DEBUG	hàng 8	F***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:27:59.194	DEBUG	hàng 10	O***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:27:59.638	DEBUG	hàng 9	H***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:28:47.375	INFO	hàng 3		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:28:48.123	INFO	hàng 4		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:28:48.484	INFO	hàng 6		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:28:49.043	INFO	hàng 5		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:28:49.645	INFO	hàng 8		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:28:50.443	INFO	hàng 7		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:28:51.082	INFO	hàng 10		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:28:57.773	INFO	hàng 9		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:29:01.623	INFO	hàng 3	G***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:29:04.813	INFO	hàng 7	F***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:29:05.403	INFO	hàng 10	O***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:29:07.717	INFO	hàng 3	G***@gmail.com	Drive upload tab 1: fileId=1cTJZ26tWPNGlKxEz67E2zMJd8P0onR_n
+2026-06-02 19:29:07.717	INFO	hàng 3	G***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:29:09.422	INFO	hàng 8	F***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:29:09.505	INFO	hàng 6	G***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:29:09.806	INFO	hàng 5	R***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:29:10.134	INFO	hàng 10	O***@gmail.com	Drive upload tab 1: fileId=1JS4Syawr6lEhsvsDuwTKoAYoxGiXjUmX
+2026-06-02 19:29:10.134	INFO	hàng 10	O***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:29:11.341	INFO	hàng 7	F***@gmail.com	Drive upload tab 1: fileId=1hFZFbavrD8xOdCJ88z6Ic8YG_CMc9OWQ
+2026-06-02 19:29:11.341	INFO	hàng 7	F***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:29:11.808	INFO	hàng 9	H***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:29:13.033	INFO	hàng 4	A***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:29:13.597	INFO	hàng 8	F***@gmail.com	Drive upload tab 1: fileId=1oFw_I-8uIWJif85PerYzbozaXYWWjy1z
+2026-06-02 19:29:13.597	INFO	hàng 8	F***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:29:13.691	INFO	hàng 6	G***@gmail.com	Drive upload tab 1: fileId=1H0wslZARVTkpUyjkQrqFFGnGeMl1CdnG
+2026-06-02 19:29:13.691	INFO	hàng 6	G***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:29:13.991	INFO	hàng 5	R***@gmail.com	Drive upload tab 1: fileId=1lrsyJp3Elsfg0rkY17-GunoQGeLSV8iJ
+2026-06-02 19:29:13.991	INFO	hàng 5	R***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:29:18.388	INFO	hàng 9	H***@gmail.com	Drive upload tab 1: fileId=1P65OEBCf8EYXz24Xc4B7Clp5N240SeS4
+2026-06-02 19:29:18.388	INFO	hàng 9	H***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:29:19.341	INFO	hàng 4	A***@gmail.com	Drive upload tab 1: fileId=18GgA_QPbUXJ2rjDcRLn_dThOM8aOgTCE
+2026-06-02 19:29:19.342	INFO	hàng 4	A***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:29:22.520	INFO	hàng 3	G***@gmail.com	Drive share tab 1: link OK fileId=1cTJZ26tWPNGlKxEz67E2zMJd8P0onR_n → https://drive.google.com/file/d/1cTJZ26tWPNGlKxEz67E2zMJd8P0onR_n/view?usp=sharing
+2026-06-02 19:29:24.386	INFO	hàng 10	O***@gmail.com	Drive share tab 1: link OK fileId=1JS4Syawr6lEhsvsDuwTKoAYoxGiXjUmX → https://drive.google.com/file/d/1JS4Syawr6lEhsvsDuwTKoAYoxGiXjUmX/view?usp=sharing
+2026-06-02 19:29:26.481	INFO	hàng 7	F***@gmail.com	Drive share tab 1: link OK fileId=1hFZFbavrD8xOdCJ88z6Ic8YG_CMc9OWQ → https://drive.google.com/file/d/1hFZFbavrD8xOdCJ88z6Ic8YG_CMc9OWQ/view?usp=sharing
+2026-06-02 19:29:28.618	INFO	hàng 8	F***@gmail.com	Drive share tab 1: link OK fileId=1oFw_I-8uIWJif85PerYzbozaXYWWjy1z → https://drive.google.com/file/d/1oFw_I-8uIWJif85PerYzbozaXYWWjy1z/view?usp=sharing
+2026-06-02 19:29:32.361	INFO	hàng 5	R***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 19:29:32.362	INFO	hàng 5	R***@gmail.com	Drive share tab 1: link OK fileId=1lrsyJp3Elsfg0rkY17-GunoQGeLSV8iJ → https://drive.google.com/file/d/1lrsyJp3Elsfg0rkY17-GunoQGeLSV8iJ/view?usp=sharing
+2026-06-02 19:29:32.376	INFO	hàng 6	G***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 19:29:32.376	INFO	hàng 6	G***@gmail.com	Drive share tab 1: link OK fileId=1H0wslZARVTkpUyjkQrqFFGnGeMl1CdnG → https://drive.google.com/file/d/1H0wslZARVTkpUyjkQrqFFGnGeMl1CdnG/view?usp=sharing
+2026-06-02 19:29:34.195	INFO	hàng 4	A***@gmail.com	Drive share tab 1: link OK fileId=18GgA_QPbUXJ2rjDcRLn_dThOM8aOgTCE → https://drive.google.com/file/d/18GgA_QPbUXJ2rjDcRLn_dThOM8aOgTCE/view?usp=sharing
+2026-06-02 19:29:37.550	INFO	hàng 9	H***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 19:29:37.550	INFO	hàng 9	H***@gmail.com	Drive share tab 1: link OK fileId=1P65OEBCf8EYXz24Xc4B7Clp5N240SeS4 → https://drive.google.com/file/d/1P65OEBCf8EYXz24Xc4B7Clp5N240SeS4/view?usp=sharing
+2026-06-02 19:29:40.075	INFO	hàng 3	G***@gmail.com	Drive: hàng 3 — upload+share+link OK 1/1 tab.
+2026-06-02 19:29:41.731	INFO	hàng 10	O***@gmail.com	Drive: hàng 10 — upload+share+link OK 1/1 tab.
+2026-06-02 19:29:42.260	INFO	hàng 7	F***@gmail.com	Drive: hàng 7 — upload+share+link OK 1/1 tab.
+2026-06-02 19:29:44.572	INFO	hàng 8	F***@gmail.com	Drive: hàng 8 — upload+share+link OK 1/1 tab.
+2026-06-02 19:29:48.204	INFO	hàng 6	G***@gmail.com	Drive: hàng 6 — upload+share+link OK 1/1 tab.
+2026-06-02 19:29:48.259	INFO	hàng 5	R***@gmail.com	Drive: hàng 5 — upload+share+link OK 1/1 tab.
+2026-06-02 19:29:50.578	INFO	hàng 4	A***@gmail.com	Drive: hàng 4 — upload+share+link OK 1/1 tab.
+2026-06-02 19:29:53.151	INFO	hàng 9	H***@gmail.com	Drive: hàng 9 — upload+share+link OK 1/1 tab.
+2026-06-02 19:31:06.927	WARN	hàng 3	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:31:07.130	WARN	hàng 3	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:10.366	WARN	hàng 7	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:31:10.574	WARN	hàng 7	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:10.673	WARN	hàng 8	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:31:10.880	WARN	hàng 8	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:16.444	WARN	hàng 6	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:31:16.660	WARN	hàng 6	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:19.124	WARN	hàng 4	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:31:19.354	WARN	hàng 4	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:21.177	WARN	hàng 9	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:31:21.393	WARN	hàng 9	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:24.580	WARN	hàng 10	O***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:31:24.645	WARN	hàng 3	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:31:24.832	WARN	hàng 10	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:24.905	WARN	hàng 3	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:27.884	WARN	hàng 5	R***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:31:28.092	WARN	hàng 5	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:28.636	WARN	hàng 8	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:31:28.645	WARN	hàng 7	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:31:28.848	WARN	hàng 8	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:28.925	WARN	hàng 7	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:33.799	WARN	hàng 6	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:31:34.009	WARN	hàng 6	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:36.640	WARN	hàng 4	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:31:36.861	WARN	hàng 4	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:38.722	WARN	hàng 9	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:31:38.931	WARN	hàng 9	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:43.123	WARN	hàng 10	O***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:31:43.393	WARN	hàng 10	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:31:46.090	WARN	hàng 5	R***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:31:46.336	WARN	hàng 5	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:32:20.979	INFO	hàng 3	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:32:25.383	DEBUG	hàng 1	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:32:26.562	DEBUG	hàng 2	O***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:32:27.246	INFO	hàng 6	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:32:27.462	INFO	hàng 7	F***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:32:27.517	INFO	hàng 8	F***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:32:28.951	INFO	hàng 4	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:32:30.622	INFO	hàng 9	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:32:37.319	INFO	hàng 10	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:32:38.410	INFO	hàng 5	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:33:17.171	INFO	hàng 1		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:33:18.350	INFO	hàng 2		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:33:37.104	INFO	hàng 1	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:33:39.068	INFO	hàng 2	O***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:33:41.346	INFO	hàng 1	S***@gmail.com	Drive upload tab 1: fileId=1eGDIjY_7lNHT2LFlU_dZZsCNgLkJ3VlN
+2026-06-02 19:33:41.346	INFO	hàng 1	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:33:43.274	INFO	hàng 2	O***@gmail.com	Drive upload tab 1: fileId=1f2yj0jY11cvigWSBSWq9N6xAGhgi9C9f
+2026-06-02 19:33:43.274	INFO	hàng 2	O***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:33:55.531	INFO	hàng 1	S***@gmail.com	Drive share tab 1: link OK fileId=1eGDIjY_7lNHT2LFlU_dZZsCNgLkJ3VlN → https://drive.google.com/file/d/1eGDIjY_7lNHT2LFlU_dZZsCNgLkJ3VlN/view?usp=sharing
+2026-06-02 19:33:57.503	INFO	hàng 2	O***@gmail.com	Drive share tab 1: link OK fileId=1f2yj0jY11cvigWSBSWq9N6xAGhgi9C9f → https://drive.google.com/file/d/1f2yj0jY11cvigWSBSWq9N6xAGhgi9C9f/view?usp=sharing
+2026-06-02 19:34:12.895	INFO	hàng 2	O***@gmail.com	Drive: hàng 2 — upload+share+link OK 1/1 tab.
+2026-06-02 19:34:12.926	INFO	hàng 1	S***@gmail.com	Drive: hàng 1 — upload+share+link OK 1/1 tab.
+2026-06-02 19:35:40.644	WARN	hàng 2	O***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:35:40.917	WARN	hàng 2	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:35:41.136	WARN	hàng 1	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:35:41.330	WARN	hàng 1	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:35:58.101	WARN	hàng 2	O***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:35:58.314	WARN	hàng 2	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:35:58.587	WARN	hàng 1	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:35:58.791	WARN	hàng 1	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:36:57.171	INFO	hàng 1	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:36:57.388	INFO	hàng 2	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:38:46.241	DEBUG	hàng 11	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:38:46.559	DEBUG	hàng 12	C***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:38:47.449	DEBUG	hàng 13	P***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:38:47.951	DEBUG	hàng 14	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:38:48.043	DEBUG	hàng 15	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:38:49.031	DEBUG	hàng 17	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:38:49.296	DEBUG	hàng 16	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:38:51.347	DEBUG	hàng 20	L***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:38:51.466	DEBUG	hàng 19	W***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:38:54.609	DEBUG	hàng 18	L***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:39:39.927	INFO	hàng 14		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:39:39.929	INFO	hàng 11		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:39:39.963	INFO	hàng 12		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:39:41.847	INFO	hàng 13		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:39:41.877	INFO	hàng 17		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:39:41.928	INFO	hàng 15		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:39:42.607	INFO	hàng 16		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:39:43.857	INFO	hàng 19		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:39:43.928	INFO	hàng 20		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:39:52.538	INFO	hàng 18		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:40:00.505	INFO	hàng 12	C***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:01.963	INFO	hàng 11	B***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:03.572	INFO	hàng 17	M***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:03.648	INFO	hàng 16	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:03.651	INFO	hàng 13	P***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:04.416	INFO	hàng 14	M***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:05.054	INFO	hàng 15	M***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:05.158	INFO	hàng 12	C***@gmail.com	Drive upload tab 1: fileId=15NL38CfbI1z4NLDbIGDyDb7R3Bl9Jn-A
+2026-06-02 19:40:05.158	INFO	hàng 12	C***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:09.013	INFO	hàng 11	B***@gmail.com	Drive upload tab 1: fileId=1-4pf1gjj79V4aASrmQoh_7SQyfyMILDO
+2026-06-02 19:40:09.013	INFO	hàng 11	B***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:10.032	INFO	hàng 20	L***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:11.871	INFO	hàng 13	P***@gmail.com	Drive upload tab 1: fileId=1wn9ldqSyq4Obz2hyfVaL-nbZigceS9QO
+2026-06-02 19:40:11.871	INFO	hàng 13	P***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:11.940	INFO	hàng 17	M***@gmail.com	Drive upload tab 1: fileId=1x9X1VIydLsPyK-0LZ_oJVDdYsUGq7yQi
+2026-06-02 19:40:11.940	INFO	hàng 17	M***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:12.014	INFO	hàng 16	S***@gmail.com	Drive upload tab 1: fileId=1FUo8w_BUwMc4-xJhLrdgvNW2d6gvo3sy
+2026-06-02 19:40:12.014	INFO	hàng 16	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:12.800	INFO	hàng 14	M***@gmail.com	Drive upload tab 1: fileId=1rT4m6OYGGo9d8FSjpGWWQ_2H4Zr6lJSS
+2026-06-02 19:40:12.800	INFO	hàng 14	M***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:13.398	INFO	hàng 19	W***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:13.420	INFO	hàng 15	M***@gmail.com	Drive upload tab 1: fileId=1g10AMv52ZVAteMHJ6L9eJJDaOnr3XkN9
+2026-06-02 19:40:13.420	INFO	hàng 15	M***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:13.998	INFO	hàng 18	L***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:40:16.482	INFO	hàng 20	L***@gmail.com	Drive upload tab 1: fileId=17vp2gtvrJHUbd72gVPHuqlf9Y1MH55CQ
+2026-06-02 19:40:16.482	INFO	hàng 20	L***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:20.814	INFO	hàng 12	C***@gmail.com	Drive share tab 1: link OK fileId=15NL38CfbI1z4NLDbIGDyDb7R3Bl9Jn-A → https://drive.google.com/file/d/15NL38CfbI1z4NLDbIGDyDb7R3Bl9Jn-A/view?usp=sharing
+2026-06-02 19:40:21.765	INFO	hàng 19	W***@gmail.com	Drive upload tab 1: fileId=1I_LrTdpJd0iaXDeTq6hOnVrMPZRdgtlR
+2026-06-02 19:40:21.765	INFO	hàng 19	W***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:22.429	INFO	hàng 18	L***@gmail.com	Drive upload tab 1: fileId=1vkyD7WM-py5lpOq5aKgr6m7Ggn5H5MXF
+2026-06-02 19:40:22.429	INFO	hàng 18	L***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:40:25.221	INFO	hàng 11	B***@gmail.com	Drive share tab 1: link OK fileId=1-4pf1gjj79V4aASrmQoh_7SQyfyMILDO → https://drive.google.com/file/d/1-4pf1gjj79V4aASrmQoh_7SQyfyMILDO/view?usp=sharing
+2026-06-02 19:40:28.243	INFO	hàng 17	M***@gmail.com	Drive share tab 1: link OK fileId=1x9X1VIydLsPyK-0LZ_oJVDdYsUGq7yQi → https://drive.google.com/file/d/1x9X1VIydLsPyK-0LZ_oJVDdYsUGq7yQi/view?usp=sharing
+2026-06-02 19:40:29.608	INFO	hàng 15	M***@gmail.com	Drive share tab 1: link OK fileId=1g10AMv52ZVAteMHJ6L9eJJDaOnr3XkN9 → https://drive.google.com/file/d/1g10AMv52ZVAteMHJ6L9eJJDaOnr3XkN9/view?usp=sharing
+2026-06-02 19:40:31.150	INFO	hàng 13	P***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 19:40:31.150	INFO	hàng 13	P***@gmail.com	Drive share tab 1: link OK fileId=1wn9ldqSyq4Obz2hyfVaL-nbZigceS9QO → https://drive.google.com/file/d/1wn9ldqSyq4Obz2hyfVaL-nbZigceS9QO/view?usp=sharing
+2026-06-02 19:40:31.347	INFO	hàng 16	S***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 19:40:31.347	INFO	hàng 16	S***@gmail.com	Drive share tab 1: link OK fileId=1FUo8w_BUwMc4-xJhLrdgvNW2d6gvo3sy → https://drive.google.com/file/d/1FUo8w_BUwMc4-xJhLrdgvNW2d6gvo3sy/view?usp=sharing
+2026-06-02 19:40:31.686	INFO	hàng 20	L***@gmail.com	Drive share tab 1: link OK fileId=17vp2gtvrJHUbd72gVPHuqlf9Y1MH55CQ → https://drive.google.com/file/d/17vp2gtvrJHUbd72gVPHuqlf9Y1MH55CQ/view?usp=sharing
+2026-06-02 19:40:32.325	INFO	hàng 14	M***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 19:40:32.325	INFO	hàng 14	M***@gmail.com	Drive share tab 1: link OK fileId=1rT4m6OYGGo9d8FSjpGWWQ_2H4Zr6lJSS → https://drive.google.com/file/d/1rT4m6OYGGo9d8FSjpGWWQ_2H4Zr6lJSS/view?usp=sharing
+2026-06-02 19:40:37.022	INFO	hàng 12	C***@gmail.com	Drive: hàng 12 — upload+share+link OK 1/1 tab.
+2026-06-02 19:40:37.802	INFO	hàng 19	W***@gmail.com	Drive share tab 1: link OK fileId=1I_LrTdpJd0iaXDeTq6hOnVrMPZRdgtlR → https://drive.google.com/file/d/1I_LrTdpJd0iaXDeTq6hOnVrMPZRdgtlR/view?usp=sharing
+2026-06-02 19:40:38.983	INFO	hàng 18	L***@gmail.com	Drive share tab 1: link OK fileId=1vkyD7WM-py5lpOq5aKgr6m7Ggn5H5MXF → https://drive.google.com/file/d/1vkyD7WM-py5lpOq5aKgr6m7Ggn5H5MXF/view?usp=sharing
+2026-06-02 19:40:41.393	INFO	hàng 11	B***@gmail.com	Drive: hàng 11 — upload+share+link OK 1/1 tab.
+2026-06-02 19:40:44.281	INFO	hàng 17	M***@gmail.com	Drive: hàng 17 — upload+share+link OK 1/1 tab.
+2026-06-02 19:40:47.789	INFO	hàng 20	L***@gmail.com	Drive: hàng 20 — upload+share+link OK 1/1 tab.
+2026-06-02 19:40:47.904	INFO	hàng 15	M***@gmail.com	Drive: hàng 15 — upload+share+link OK 1/1 tab.
+2026-06-02 19:40:48.803	INFO	hàng 13	P***@gmail.com	Drive: hàng 13 — upload+share+link OK 1/1 tab.
+2026-06-02 19:40:49.584	INFO	hàng 16	S***@gmail.com	Drive: hàng 16 — upload+share+link OK 1/1 tab.
+2026-06-02 19:40:49.881	INFO	hàng 14	M***@gmail.com	Drive: hàng 14 — upload+share+link OK 1/1 tab.
+2026-06-02 19:40:53.643	INFO	hàng 19	W***@gmail.com	Drive: hàng 19 — upload+share+link OK 1/1 tab.
+2026-06-02 19:40:55.277	INFO	hàng 18	L***@gmail.com	Drive: hàng 18 — upload+share+link OK 1/1 tab.
+2026-06-02 19:42:08.747	WARN	hàng 12	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:08.947	WARN	hàng 12	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:14.160	WARN	hàng 17	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:14.420	WARN	hàng 17	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:15.608	WARN	hàng 13	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:15.867	WARN	hàng 13	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:16.029	WARN	hàng 15	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:16.254	WARN	hàng 15	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:17.906	WARN	hàng 14	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:18.124	WARN	hàng 14	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:18.326	WARN	hàng 20	L***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:18.540	WARN	hàng 20	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:20.432	WARN	hàng 16	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:20.654	WARN	hàng 16	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:22.390	WARN	hàng 19	W***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:22.628	WARN	hàng 19	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:26.301	WARN	hàng 12	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:26.523	WARN	hàng 12	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:26.595	WARN	hàng 18	L***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:26.819	WARN	hàng 18	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:32.085	WARN	hàng 17	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:32.320	WARN	hàng 17	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:33.540	WARN	hàng 13	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:33.763	WARN	hàng 13	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:33.960	WARN	hàng 15	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:34.192	WARN	hàng 15	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:35.818	WARN	hàng 14	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:36.111	WARN	hàng 14	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:37.189	WARN	hàng 20	L***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:37.508	WARN	hàng 20	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:38.716	WARN	hàng 16	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:38.936	WARN	hàng 16	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:40.316	WARN	hàng 11	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:42:40.366	WARN	hàng 19	W***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:40.589	WARN	hàng 11	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:40.635	WARN	hàng 19	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:45.106	WARN	hàng 18	L***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:45.369	WARN	hàng 18	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:42:57.731	WARN	hàng 11	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:42:58.000	WARN	hàng 11	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:43:27.251	INFO	hàng 13	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:43:27.320	INFO	hàng 17	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:43:28.549	INFO	hàng 12	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:43:29.461	INFO	hàng 15	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:43:30.044	INFO	hàng 14	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:43:31.590	INFO	hàng 20	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:43:34.079	INFO	hàng 19	W***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:43:34.228	INFO	hàng 16	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:43:38.073	INFO	hàng 18	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:43:57.238	INFO	hàng 11	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:45:42.737	DEBUG	hàng 22	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:45:43.062	DEBUG	hàng 21	H***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:45:43.149	DEBUG	hàng 23	H***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:45:44.646	DEBUG	hàng 25	L***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:45:44.967	DEBUG	hàng 24	P***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 19:46:35.124	INFO	hàng 23		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:46:35.153	INFO	hàng 21		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:46:37.563	INFO	hàng 24		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:46:38.294	INFO	hàng 25		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:46:40.054	INFO	hàng 22		2fa.cn: đã nhập secret và Submit.
+2026-06-02 19:46:57.663	INFO	hàng 24	P***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:46:59.114	INFO	hàng 21	H***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:46:59.581	INFO	hàng 22	A***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:46:59.752	INFO	hàng 25	L***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:47:00.672	INFO	hàng 23	H***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 19:47:05.984	INFO	hàng 24	P***@gmail.com	Drive upload tab 1: fileId=1e5fLJZWmhns2y8vfWqmLAVjSgAMbf_Jt
+2026-06-02 19:47:05.984	INFO	hàng 24	P***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:47:07.525	INFO	hàng 21	H***@gmail.com	Drive upload tab 1: fileId=1n7RTRCggX0lPj79xp1dMKohCrp81ASl_
+2026-06-02 19:47:07.525	INFO	hàng 21	H***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:47:07.936	INFO	hàng 22	A***@gmail.com	Drive upload tab 1: fileId=1lj0JmxMKJZcRq_lU5HNP7YVaTNylYAYp
+2026-06-02 19:47:07.936	INFO	hàng 22	A***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:47:08.612	INFO	hàng 25	L***@gmail.com	Drive upload tab 1: fileId=19MvKobOek31Nwihx1VzOU-QRa3FNFEK7
+2026-06-02 19:47:08.612	INFO	hàng 25	L***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:47:09.064	INFO	hàng 23	H***@gmail.com	Drive upload tab 1: fileId=127zvAEf_FTm-zKmUzR2kkhoIeBfsE-wZ
+2026-06-02 19:47:09.064	INFO	hàng 23	H***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 19:47:21.348	INFO	hàng 24	P***@gmail.com	Drive share tab 1: link OK fileId=1e5fLJZWmhns2y8vfWqmLAVjSgAMbf_Jt → https://drive.google.com/file/d/1e5fLJZWmhns2y8vfWqmLAVjSgAMbf_Jt/view?usp=sharing
+2026-06-02 19:47:22.988	INFO	hàng 22	A***@gmail.com	Drive share tab 1: link OK fileId=1lj0JmxMKJZcRq_lU5HNP7YVaTNylYAYp → https://drive.google.com/file/d/1lj0JmxMKJZcRq_lU5HNP7YVaTNylYAYp/view?usp=sharing
+2026-06-02 19:47:24.960	INFO	hàng 23	H***@gmail.com	Drive share tab 1: link OK fileId=127zvAEf_FTm-zKmUzR2kkhoIeBfsE-wZ → https://drive.google.com/file/d/127zvAEf_FTm-zKmUzR2kkhoIeBfsE-wZ/view?usp=sharing
+2026-06-02 19:47:27.098	INFO	hàng 21	H***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 19:47:27.098	INFO	hàng 21	H***@gmail.com	Drive share tab 1: link OK fileId=1n7RTRCggX0lPj79xp1dMKohCrp81ASl_ → https://drive.google.com/file/d/1n7RTRCggX0lPj79xp1dMKohCrp81ASl_/view?usp=sharing
+2026-06-02 19:47:28.749	INFO	hàng 25	L***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 19:47:28.749	INFO	hàng 25	L***@gmail.com	Drive share tab 1: link OK fileId=19MvKobOek31Nwihx1VzOU-QRa3FNFEK7 → https://drive.google.com/file/d/19MvKobOek31Nwihx1VzOU-QRa3FNFEK7/view?usp=sharing
+2026-06-02 19:47:36.742	INFO	hàng 24	P***@gmail.com	Drive: hàng 24 — upload+share+link OK 1/1 tab.
+2026-06-02 19:47:38.870	INFO	hàng 22	A***@gmail.com	Drive: hàng 22 — upload+share+link OK 1/1 tab.
+2026-06-02 19:47:40.935	INFO	hàng 23	H***@gmail.com	Drive: hàng 23 — upload+share+link OK 1/1 tab.
+2026-06-02 19:47:43.689	INFO	hàng 21	H***@gmail.com	Drive: hàng 21 — upload+share+link OK 1/1 tab.
+2026-06-02 19:47:44.681	INFO	hàng 25	L***@gmail.com	Drive: hàng 25 — upload+share+link OK 1/1 tab.
+2026-06-02 19:49:06.930	WARN	hàng 24	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:49:07.152	WARN	hàng 24	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:49:08.925	WARN	hàng 22	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:49:09.129	WARN	hàng 22	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:49:13.291	WARN	hàng 25	L***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:49:13.516	WARN	hàng 25	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:49:14.076	WARN	hàng 23	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:49:14.304	WARN	hàng 23	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:49:15.376	WARN	hàng 21	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 19:49:15.616	WARN	hàng 21	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:49:25.163	WARN	hàng 24	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:49:25.380	WARN	hàng 24	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:49:26.431	WARN	hàng 22	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:49:26.665	WARN	hàng 22	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:49:30.831	WARN	hàng 25	L***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:49:31.056	WARN	hàng 25	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:49:31.974	WARN	hàng 23	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:49:32.190	WARN	hàng 23	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:49:33.046	WARN	hàng 21	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 19:49:33.268	WARN	hàng 21	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 19:50:27.287	INFO	hàng 24	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:50:27.544	INFO	hàng 23	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:50:27.608	INFO	hàng 22	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:50:28.155	INFO	hàng 21	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:50:28.296	INFO	hàng 25	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 19:50:28.819	INFO	-		Kết thúc batch: OK=25 Fail=0 (Playwright đã đóng).
+2026-06-02 22:24:40.261	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="117", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-02 22:26:42.283	DEBUG	hàng 2	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:26:42.509	DEBUG	hàng 4	D***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:26:42.824	DEBUG	hàng 10	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:26:42.830	DEBUG	hàng 9	Z***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:26:42.940	DEBUG	hàng 6	F***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:26:43.039	DEBUG	hàng 7	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:26:43.050	DEBUG	hàng 3	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:26:43.153	DEBUG	hàng 5	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:26:43.509	DEBUG	hàng 8	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:27:34.588	INFO	hàng 2		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:27:34.817	INFO	hàng 4		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:27:35.087	INFO	hàng 3		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:27:37.747	INFO	hàng 10		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:27:37.827	INFO	hàng 9		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:27:37.934	INFO	hàng 6		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:27:38.176	INFO	hàng 5		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:27:39.346	INFO	hàng 8		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:27:39.496	INFO	hàng 7		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:27:50.274	INFO	hàng 4	D***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:27:52.089	INFO	hàng 6	F***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:27:53.074	INFO	hàng 9	Z***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:27:53.974	INFO	hàng 5	B***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:27:54.171	INFO	hàng 7	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:27:54.189	INFO	hàng 8	G***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:27:54.627	INFO	hàng 3	G***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:27:54.996	INFO	hàng 4	D***@gmail.com	Drive upload tab 1: fileId=1Dn90a_81NUYsLaFjI9h1IIaMPQfAAPhU
+2026-06-02 22:27:54.996	INFO	hàng 4	D***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:27:55.277	INFO	hàng 2	M***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:27:56.636	INFO	hàng 10	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:27:56.845	INFO	hàng 6	F***@gmail.com	Drive upload tab 1: fileId=1L7kdUKjtL_U2qh3Z5D-qRtNzOrLO0gu5
+2026-06-02 22:27:56.846	INFO	hàng 6	F***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:27:57.486	INFO	hàng 9	Z***@gmail.com	Drive upload tab 1: fileId=12EeIcBWWVPiypm5McfaqHybs0PCxSVlY
+2026-06-02 22:27:57.486	INFO	hàng 9	Z***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:27:58.868	INFO	hàng 3	G***@gmail.com	Drive upload tab 1: fileId=1kmiVAvggscWLt3SkxvtjwEigVbCvPtFE
+2026-06-02 22:27:58.868	INFO	hàng 3	G***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:27:58.989	INFO	hàng 8	G***@gmail.com	Drive upload tab 1: fileId=13Xwu-HBmE9B5uL-rJYeFbbdgB7t0WWIL
+2026-06-02 22:27:58.989	INFO	hàng 8	G***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:27:59.512	INFO	hàng 2	M***@gmail.com	Drive upload tab 1: fileId=1zdDmGoEonyVswLbQHiAF-B1HqqTxT8Jc
+2026-06-02 22:27:59.512	INFO	hàng 2	M***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:28:00.461	INFO	hàng 7	S***@gmail.com	Drive upload tab 1: fileId=16frXwo-RW3dBITHYh7RHAjWFD-JoTzdD
+2026-06-02 22:28:00.461	INFO	hàng 7	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:28:00.663	INFO	hàng 5	B***@gmail.com	Drive upload tab 1: fileId=1UShZgWWxSN4jDWa3XGZzKkscRHf-FiXZ
+2026-06-02 22:28:00.663	INFO	hàng 5	B***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:28:02.901	INFO	hàng 10	S***@gmail.com	Drive upload tab 1: fileId=1XHbcKZ_Rk68qL-L4rJiOT037Bw29vJdC
+2026-06-02 22:28:02.901	INFO	hàng 10	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:28:09.664	INFO	hàng 4	D***@gmail.com	Drive share tab 1: link OK fileId=1Dn90a_81NUYsLaFjI9h1IIaMPQfAAPhU → https://drive.google.com/file/d/1Dn90a_81NUYsLaFjI9h1IIaMPQfAAPhU/view?usp=sharing
+2026-06-02 22:28:15.294	INFO	hàng 5	B***@gmail.com	Drive share tab 1: link OK fileId=1UShZgWWxSN4jDWa3XGZzKkscRHf-FiXZ → https://drive.google.com/file/d/1UShZgWWxSN4jDWa3XGZzKkscRHf-FiXZ/view?usp=sharing
+2026-06-02 22:28:16.415	INFO	hàng 6	F***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:28:16.415	INFO	hàng 6	F***@gmail.com	Drive share tab 1: link OK fileId=1L7kdUKjtL_U2qh3Z5D-qRtNzOrLO0gu5 → https://drive.google.com/file/d/1L7kdUKjtL_U2qh3Z5D-qRtNzOrLO0gu5/view?usp=sharing
+2026-06-02 22:28:17.274	INFO	hàng 9	Z***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:28:17.274	INFO	hàng 9	Z***@gmail.com	Drive share tab 1: link OK fileId=12EeIcBWWVPiypm5McfaqHybs0PCxSVlY → https://drive.google.com/file/d/12EeIcBWWVPiypm5McfaqHybs0PCxSVlY/view?usp=sharing
+2026-06-02 22:28:17.748	INFO	hàng 8	G***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:28:17.748	INFO	hàng 8	G***@gmail.com	Drive share tab 1: link OK fileId=13Xwu-HBmE9B5uL-rJYeFbbdgB7t0WWIL → https://drive.google.com/file/d/13Xwu-HBmE9B5uL-rJYeFbbdgB7t0WWIL/view?usp=sharing
+2026-06-02 22:28:18.264	INFO	hàng 2	M***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:28:18.264	INFO	hàng 2	M***@gmail.com	Drive share tab 1: link OK fileId=1zdDmGoEonyVswLbQHiAF-B1HqqTxT8Jc → https://drive.google.com/file/d/1zdDmGoEonyVswLbQHiAF-B1HqqTxT8Jc/view?usp=sharing
+2026-06-02 22:28:18.294	INFO	hàng 3	G***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:28:18.294	INFO	hàng 3	G***@gmail.com	Drive share tab 1: link OK fileId=1kmiVAvggscWLt3SkxvtjwEigVbCvPtFE → https://drive.google.com/file/d/1kmiVAvggscWLt3SkxvtjwEigVbCvPtFE/view?usp=sharing
+2026-06-02 22:28:18.389	INFO	hàng 10	S***@gmail.com	Drive share tab 1: link OK fileId=1XHbcKZ_Rk68qL-L4rJiOT037Bw29vJdC → https://drive.google.com/file/d/1XHbcKZ_Rk68qL-L4rJiOT037Bw29vJdC/view?usp=sharing
+2026-06-02 22:28:19.313	INFO	hàng 7	S***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:28:19.313	INFO	hàng 7	S***@gmail.com	Drive share tab 1: link OK fileId=16frXwo-RW3dBITHYh7RHAjWFD-JoTzdD → https://drive.google.com/file/d/16frXwo-RW3dBITHYh7RHAjWFD-JoTzdD/view?usp=sharing
+2026-06-02 22:28:25.013	INFO	hàng 4	D***@gmail.com	Drive: hàng 4 — upload+share+link OK 1/1 tab.
+2026-06-02 22:28:31.034	INFO	hàng 5	B***@gmail.com	Drive: hàng 5 — upload+share+link OK 1/1 tab.
+2026-06-02 22:28:33.749	INFO	hàng 9	Z***@gmail.com	Drive: hàng 9 — upload+share+link OK 1/1 tab.
+2026-06-02 22:28:33.899	INFO	hàng 6	F***@gmail.com	Drive: hàng 6 — upload+share+link OK 1/1 tab.
+2026-06-02 22:28:34.864	INFO	hàng 10	S***@gmail.com	Drive: hàng 10 — upload+share+link OK 1/1 tab.
+2026-06-02 22:28:34.966	INFO	hàng 7	S***@gmail.com	Drive: hàng 7 — upload+share+link OK 1/1 tab.
+2026-06-02 22:28:34.995	INFO	hàng 8	G***@gmail.com	Drive: hàng 8 — upload+share+link OK 1/1 tab.
+2026-06-02 22:28:35.838	INFO	hàng 2	M***@gmail.com	Drive: hàng 2 — upload+share+link OK 1/1 tab.
+2026-06-02 22:28:36.173	INFO	hàng 3	G***@gmail.com	Drive: hàng 3 — upload+share+link OK 1/1 tab.
+2026-06-02 22:30:02.458	WARN	hàng 5	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:30:02.713	WARN	hàng 5	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:04.270	WARN	hàng 3	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:30:04.602	WARN	hàng 3	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:04.820	WARN	hàng 2	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:30:05.065	WARN	hàng 2	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:05.203	WARN	hàng 7	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:30:05.463	WARN	hàng 7	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:06.622	WARN	hàng 10	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:30:06.833	WARN	hàng 10	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:06.890	WARN	hàng 4	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:30:07.154	WARN	hàng 4	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:08.885	WARN	hàng 6	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:30:09.175	WARN	hàng 6	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:11.661	WARN	hàng 8	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:30:11.884	WARN	hàng 8	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:12.737	WARN	hàng 9	Z***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:30:12.955	WARN	hàng 9	Z***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:20.201	WARN	hàng 5	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:30:20.527	WARN	hàng 5	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:22.224	WARN	hàng 3	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:30:22.436	WARN	hàng 3	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:22.987	WARN	hàng 2	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:30:23.205	WARN	hàng 2	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:23.410	WARN	hàng 7	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:30:23.620	WARN	hàng 7	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:24.748	WARN	hàng 10	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:30:24.973	WARN	hàng 10	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:25.034	WARN	hàng 4	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:30:25.304	WARN	hàng 4	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:26.743	WARN	hàng 6	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:30:26.956	WARN	hàng 6	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:29.370	WARN	hàng 8	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:30:29.605	WARN	hàng 8	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:30:30.905	WARN	hàng 9	Z***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:30:31.129	WARN	hàng 9	Z***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:31:12.625	DEBUG	hàng 1	P***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:31:12.904	INFO	hàng 5	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:31:14.056	INFO	hàng 3	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:31:15.368	INFO	hàng 2	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:31:15.643	INFO	hàng 7	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:31:17.133	INFO	hàng 4	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:31:17.392	INFO	hàng 10	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:31:27.622	INFO	hàng 9	Z***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:31:27.683	INFO	hàng 8	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:31:28.037	INFO	hàng 6	F***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:32:04.715	INFO	hàng 1		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:32:18.639	INFO	hàng 1	P***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:32:25.154	INFO	hàng 1	P***@gmail.com	Drive upload tab 1: fileId=1M99PpdeVkS15ypoU1bhB2I1h9ROCC6Eb
+2026-06-02 22:32:25.154	INFO	hàng 1	P***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:32:39.939	INFO	hàng 1	P***@gmail.com	Drive share tab 1: link OK fileId=1M99PpdeVkS15ypoU1bhB2I1h9ROCC6Eb → https://drive.google.com/file/d/1M99PpdeVkS15ypoU1bhB2I1h9ROCC6Eb/view?usp=sharing
+2026-06-02 22:32:56.905	INFO	hàng 1	P***@gmail.com	Drive: hàng 1 — upload+share+link OK 1/1 tab.
+2026-06-02 22:34:34.247	WARN	hàng 1	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:34:34.454	WARN	hàng 1	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:34:51.606	WARN	hàng 1	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:34:51.817	WARN	hàng 1	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:35:43.753	INFO	hàng 1	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:37:42.559	DEBUG	hàng 15	V***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:37:42.567	DEBUG	hàng 18	I***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:37:42.716	DEBUG	hàng 11	K***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:37:42.833	DEBUG	hàng 13	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:37:42.841	DEBUG	hàng 14	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:37:42.976	DEBUG	hàng 19	C***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:37:42.985	DEBUG	hàng 12	H***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:37:43.141	DEBUG	hàng 16	R***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:37:43.257	DEBUG	hàng 17	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:37:43.760	DEBUG	hàng 20	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:38:34.174	INFO	hàng 14		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:34.461	INFO	hàng 11		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:34.514	INFO	hàng 18		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:34.741	INFO	hàng 19		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:34.971	INFO	hàng 12		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:34.982	INFO	hàng 17		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:35.001	INFO	hàng 16		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:36.200	INFO	hàng 13		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:36.212	INFO	hàng 15		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:36.991	INFO	hàng 20		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:38:50.366	INFO	hàng 16	R***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:38:50.715	INFO	hàng 12	H***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:38:51.136	INFO	hàng 17	G***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:38:52.209	INFO	hàng 20	G***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:38:54.812	INFO	hàng 18	I***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:38:54.833	INFO	hàng 16	R***@gmail.com	Drive upload tab 1: fileId=124pezBwodQTCslRk3BDlUIbIcbwZJ9lW
+2026-06-02 22:38:54.833	INFO	hàng 16	R***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:38:55.018	INFO	hàng 19	C***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:38:55.229	INFO	hàng 14	G***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:38:55.268	INFO	hàng 12	H***@gmail.com	Drive upload tab 1: fileId=1Ix90PIwLOAqNwodgIy-7UXUkS7afsMnL
+2026-06-02 22:38:55.268	INFO	hàng 12	H***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:38:56.033	INFO	hàng 17	G***@gmail.com	Drive upload tab 1: fileId=1sQ5S3UIHYdczkbcZfEzvOBlIJJvlFz7e
+2026-06-02 22:38:56.033	INFO	hàng 17	G***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:38:56.324	INFO	hàng 11	K***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:38:56.717	INFO	hàng 20	G***@gmail.com	Drive upload tab 1: fileId=1xKk1Kxulhqxu0kNR2qi8HBt35flJvAmL
+2026-06-02 22:38:56.718	INFO	hàng 20	G***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:38:57.269	INFO	hàng 13	T***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:38:59.090	INFO	hàng 18	I***@gmail.com	Drive upload tab 1: fileId=1BiXIGOyxvoRFhIh05vM6dJ-Zq4TgeUH_
+2026-06-02 22:38:59.090	INFO	hàng 18	I***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:38:59.241	INFO	hàng 19	C***@gmail.com	Drive upload tab 1: fileId=17995vX2MzdS2iu7DcjdMWYRfLojNxUF0
+2026-06-02 22:38:59.241	INFO	hàng 19	C***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:38:59.528	INFO	hàng 14	G***@gmail.com	Drive upload tab 1: fileId=1ZBL3cT3qKxsna6lN9SImnm1UVCY8yEmE
+2026-06-02 22:38:59.528	INFO	hàng 14	G***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:39:02.643	INFO	hàng 11	K***@gmail.com	Drive upload tab 1: fileId=1s5D11p6G578ZmpBPCzXlD1n3Vur5ptle
+2026-06-02 22:39:02.643	INFO	hàng 11	K***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:39:03.039	INFO	hàng 13	T***@gmail.com	Drive upload tab 1: fileId=1J-feyi4B8oAJdEG5y4G2ksZxjoWfQ50I
+2026-06-02 22:39:03.039	INFO	hàng 13	T***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:39:04.206	INFO	hàng 15	V***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:39:10.463	INFO	hàng 15	V***@gmail.com	Drive upload tab 1: fileId=1Ck6Byl7gnodnoWA3ZIqpBumucB_1Omt6
+2026-06-02 22:39:10.463	INFO	hàng 15	V***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:39:11.240	INFO	hàng 20	G***@gmail.com	Drive share tab 1: link OK fileId=1xKk1Kxulhqxu0kNR2qi8HBt35flJvAmL → https://drive.google.com/file/d/1xKk1Kxulhqxu0kNR2qi8HBt35flJvAmL/view?usp=sharing
+2026-06-02 22:39:14.078	INFO	hàng 12	H***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:39:14.078	INFO	hàng 12	H***@gmail.com	Drive share tab 1: link OK fileId=1Ix90PIwLOAqNwodgIy-7UXUkS7afsMnL → https://drive.google.com/file/d/1Ix90PIwLOAqNwodgIy-7UXUkS7afsMnL/view?usp=sharing
+2026-06-02 22:39:14.140	INFO	hàng 16	R***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:39:14.140	INFO	hàng 16	R***@gmail.com	Drive share tab 1: link OK fileId=124pezBwodQTCslRk3BDlUIbIcbwZJ9lW → https://drive.google.com/file/d/124pezBwodQTCslRk3BDlUIbIcbwZJ9lW/view?usp=sharing
+2026-06-02 22:39:14.216	INFO	hàng 18	I***@gmail.com	Drive share tab 1: link OK fileId=1BiXIGOyxvoRFhIh05vM6dJ-Zq4TgeUH_ → https://drive.google.com/file/d/1BiXIGOyxvoRFhIh05vM6dJ-Zq4TgeUH_/view?usp=sharing
+2026-06-02 22:39:14.913	INFO	hàng 17	G***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:39:14.913	INFO	hàng 17	G***@gmail.com	Drive share tab 1: link OK fileId=1sQ5S3UIHYdczkbcZfEzvOBlIJJvlFz7e → https://drive.google.com/file/d/1sQ5S3UIHYdczkbcZfEzvOBlIJJvlFz7e/view?usp=sharing
+2026-06-02 22:39:17.969	INFO	hàng 19	C***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:39:17.969	INFO	hàng 19	C***@gmail.com	Drive share tab 1: link OK fileId=17995vX2MzdS2iu7DcjdMWYRfLojNxUF0 → https://drive.google.com/file/d/17995vX2MzdS2iu7DcjdMWYRfLojNxUF0/view?usp=sharing
+2026-06-02 22:39:18.108	INFO	hàng 13	T***@gmail.com	Drive share tab 1: link OK fileId=1J-feyi4B8oAJdEG5y4G2ksZxjoWfQ50I → https://drive.google.com/file/d/1J-feyi4B8oAJdEG5y4G2ksZxjoWfQ50I/view?usp=sharing
+2026-06-02 22:39:18.242	INFO	hàng 14	G***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:39:18.242	INFO	hàng 14	G***@gmail.com	Drive share tab 1: link OK fileId=1ZBL3cT3qKxsna6lN9SImnm1UVCY8yEmE → https://drive.google.com/file/d/1ZBL3cT3qKxsna6lN9SImnm1UVCY8yEmE/view?usp=sharing
+2026-06-02 22:39:21.328	INFO	hàng 11	K***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:39:21.328	INFO	hàng 11	K***@gmail.com	Drive share tab 1: link OK fileId=1s5D11p6G578ZmpBPCzXlD1n3Vur5ptle → https://drive.google.com/file/d/1s5D11p6G578ZmpBPCzXlD1n3Vur5ptle/view?usp=sharing
+2026-06-02 22:39:25.567	INFO	hàng 15	V***@gmail.com	Drive share tab 1: link OK fileId=1Ck6Byl7gnodnoWA3ZIqpBumucB_1Omt6 → https://drive.google.com/file/d/1Ck6Byl7gnodnoWA3ZIqpBumucB_1Omt6/view?usp=sharing
+2026-06-02 22:39:27.000	INFO	hàng 20	G***@gmail.com	Drive: hàng 20 — upload+share+link OK 1/1 tab.
+2026-06-02 22:39:30.081	INFO	hàng 12	H***@gmail.com	Drive: hàng 12 — upload+share+link OK 1/1 tab.
+2026-06-02 22:39:30.651	INFO	hàng 18	I***@gmail.com	Drive: hàng 18 — upload+share+link OK 1/1 tab.
+2026-06-02 22:39:31.784	INFO	hàng 17	G***@gmail.com	Drive: hàng 17 — upload+share+link OK 1/1 tab.
+2026-06-02 22:39:31.826	INFO	hàng 16	R***@gmail.com	Drive: hàng 16 — upload+share+link OK 1/1 tab.
+2026-06-02 22:39:33.488	INFO	hàng 19	C***@gmail.com	Drive: hàng 19 — upload+share+link OK 1/1 tab.
+2026-06-02 22:39:34.268	INFO	hàng 13	T***@gmail.com	Drive: hàng 13 — upload+share+link OK 1/1 tab.
+2026-06-02 22:39:34.520	INFO	hàng 14	G***@gmail.com	Drive: hàng 14 — upload+share+link OK 1/1 tab.
+2026-06-02 22:39:38.900	INFO	hàng 11	K***@gmail.com	Drive: hàng 11 — upload+share+link OK 1/1 tab.
+2026-06-02 22:39:43.136	INFO	hàng 15	V***@gmail.com	Drive: hàng 15 — upload+share+link OK 1/1 tab.
+2026-06-02 22:40:58.142	WARN	hàng 12	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:40:58.371	WARN	hàng 12	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:00.377	WARN	hàng 18	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:41:00.614	WARN	hàng 18	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:02.101	WARN	hàng 19	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:41:02.366	WARN	hàng 19	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:02.707	WARN	hàng 13	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:41:02.941	WARN	hàng 13	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:04.586	WARN	hàng 14	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:41:04.904	WARN	hàng 14	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:06.925	WARN	hàng 16	R***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:41:07.151	WARN	hàng 16	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:07.700	WARN	hàng 20	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:41:07.960	WARN	hàng 20	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:10.442	WARN	hàng 11	K***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:41:10.672	WARN	hàng 11	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:14.064	WARN	hàng 15	V***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:41:14.358	WARN	hàng 15	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:16.651	WARN	hàng 12	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:16.891	WARN	hàng 12	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:18.138	WARN	hàng 18	I***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:18.384	WARN	hàng 18	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:19.682	WARN	hàng 19	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:19.956	WARN	hàng 19	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:20.603	WARN	hàng 13	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:20.868	WARN	hàng 13	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:24.088	WARN	hàng 14	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:24.392	WARN	hàng 14	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:24.444	WARN	hàng 17	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:41:24.679	WARN	hàng 17	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:25.125	WARN	hàng 16	R***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:25.441	WARN	hàng 16	R***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:26.559	WARN	hàng 20	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:26.855	WARN	hàng 20	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:29.884	WARN	hàng 11	K***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:30.121	WARN	hàng 11	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:33.107	WARN	hàng 15	V***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:33.364	WARN	hàng 15	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:41:42.354	WARN	hàng 17	G***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:41:42.586	WARN	hàng 17	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:42:10.915	INFO	hàng 12	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:42:13.225	INFO	hàng 18	I***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:42:13.699	INFO	hàng 19	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:42:13.909	INFO	hàng 13	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:42:18.442	INFO	hàng 16	R***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:42:27.455	INFO	hàng 11	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:42:27.834	INFO	hàng 14	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:42:27.897	INFO	hàng 15	V***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:42:28.040	INFO	hàng 20	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:42:35.117	INFO	hàng 17	G***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:44:18.266	DEBUG	hàng 21	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:44:18.709	DEBUG	hàng 22	O***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:44:18.772	DEBUG	hàng 23	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:44:19.632	DEBUG	hàng 24	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:44:19.911	DEBUG	hàng 25	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-02 22:45:09.948	INFO	hàng 21		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:45:10.298	INFO	hàng 23		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:45:10.308	INFO	hàng 22		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:45:11.907	INFO	hàng 25		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:45:12.557	INFO	hàng 24		2fa.cn: đã nhập secret và Submit.
+2026-06-02 22:45:24.363	INFO	hàng 23	A***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:45:24.621	INFO	hàng 21	T***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:45:24.916	INFO	hàng 22	O***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:45:27.098	INFO	hàng 24	T***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:45:30.980	INFO	hàng 21	T***@gmail.com	Drive upload tab 1: fileId=1pZUY_3mvLvzcAD0Wpl22TGhh3ZlXr7Ke
+2026-06-02 22:45:30.980	INFO	hàng 21	T***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:45:30.997	INFO	hàng 23	A***@gmail.com	Drive upload tab 1: fileId=1UEggNzctpW-wAa3DQINLQ_tRNC1UmQL6
+2026-06-02 22:45:30.997	INFO	hàng 23	A***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:45:31.228	INFO	hàng 22	O***@gmail.com	Drive upload tab 1: fileId=1UX1SMWLUSxp2xc495aGUinR7VSbCQnwd
+2026-06-02 22:45:31.228	INFO	hàng 22	O***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:45:31.768	INFO	hàng 25	A***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-02 22:45:33.737	INFO	hàng 24	T***@gmail.com	Drive upload tab 1: fileId=1Gkh57CyQAG8S4xSlRRKc0m3L206_nyU9
+2026-06-02 22:45:33.737	INFO	hàng 24	T***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:45:35.982	INFO	hàng 25	A***@gmail.com	Drive upload tab 1: fileId=1JUEoafEZHoVq3VwnE4nVwwrV0a-ol82d
+2026-06-02 22:45:35.982	INFO	hàng 25	A***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-02 22:45:45.846	INFO	hàng 22	O***@gmail.com	Drive share tab 1: link OK fileId=1UX1SMWLUSxp2xc495aGUinR7VSbCQnwd → https://drive.google.com/file/d/1UX1SMWLUSxp2xc495aGUinR7VSbCQnwd/view?usp=sharing
+2026-06-02 22:45:48.605	INFO	hàng 24	T***@gmail.com	Drive share tab 1: link OK fileId=1Gkh57CyQAG8S4xSlRRKc0m3L206_nyU9 → https://drive.google.com/file/d/1Gkh57CyQAG8S4xSlRRKc0m3L206_nyU9/view?usp=sharing
+2026-06-02 22:45:49.713	INFO	hàng 23	A***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:45:49.713	INFO	hàng 23	A***@gmail.com	Drive share tab 1: link OK fileId=1UEggNzctpW-wAa3DQINLQ_tRNC1UmQL6 → https://drive.google.com/file/d/1UEggNzctpW-wAa3DQINLQ_tRNC1UmQL6/view?usp=sharing
+2026-06-02 22:45:49.728	INFO	hàng 21	T***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-02 22:45:49.728	INFO	hàng 21	T***@gmail.com	Drive share tab 1: link OK fileId=1pZUY_3mvLvzcAD0Wpl22TGhh3ZlXr7Ke → https://drive.google.com/file/d/1pZUY_3mvLvzcAD0Wpl22TGhh3ZlXr7Ke/view?usp=sharing
+2026-06-02 22:45:51.062	INFO	hàng 25	A***@gmail.com	Drive share tab 1: link OK fileId=1JUEoafEZHoVq3VwnE4nVwwrV0a-ol82d → https://drive.google.com/file/d/1JUEoafEZHoVq3VwnE4nVwwrV0a-ol82d/view?usp=sharing
+2026-06-02 22:46:02.383	INFO	hàng 22	O***@gmail.com	Drive: hàng 22 — upload+share+link OK 1/1 tab.
+2026-06-02 22:46:05.247	INFO	hàng 24	T***@gmail.com	Drive: hàng 24 — upload+share+link OK 1/1 tab.
+2026-06-02 22:46:05.585	INFO	hàng 23	A***@gmail.com	Drive: hàng 23 — upload+share+link OK 1/1 tab.
+2026-06-02 22:46:07.419	INFO	hàng 21	T***@gmail.com	Drive: hàng 21 — upload+share+link OK 1/1 tab.
+2026-06-02 22:46:07.425	INFO	hàng 25	A***@gmail.com	Drive: hàng 25 — upload+share+link OK 1/1 tab.
+2026-06-02 22:47:32.067	WARN	hàng 22	O***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:47:32.310	WARN	hàng 22	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:47:34.473	WARN	hàng 24	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:47:34.716	WARN	hàng 24	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:47:36.910	WARN	hàng 25	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:47:37.112	WARN	hàng 25	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:47:40.900	WARN	hàng 23	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:47:41.107	WARN	hàng 23	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:47:48.805	WARN	hàng 21	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-02 22:47:49.048	WARN	hàng 21	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:47:49.608	WARN	hàng 22	O***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:47:49.806	WARN	hàng 22	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:47:51.946	WARN	hàng 24	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:47:52.151	WARN	hàng 24	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:47:54.370	WARN	hàng 25	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:47:54.577	WARN	hàng 25	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:47:58.241	WARN	hàng 23	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:47:58.450	WARN	hàng 23	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:48:06.316	WARN	hàng 21	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-02 22:48:06.518	WARN	hàng 21	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-02 22:48:42.344	INFO	hàng 22	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:48:45.139	INFO	hàng 24	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:48:46.548	INFO	hàng 25	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:48:57.340	INFO	hàng 23	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:48:58.423	INFO	hàng 21	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-02 22:48:58.881	INFO	-		Kết thúc batch: OK=25 Fail=0 (Playwright đã đóng).
+2026-06-03 12:54:59.860	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="118", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-03 12:55:24.396	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="118", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-03 12:57:11.741	DEBUG	hàng 2	D***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:57:11.836	DEBUG	hàng 3	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:57:12.813	DEBUG	hàng 6	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:57:12.919	DEBUG	hàng 1	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:57:13.105	DEBUG	hàng 5	F***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:57:14.089	DEBUG	hàng 7	Z***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:57:14.095	DEBUG	hàng 9	Q***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:57:14.803	DEBUG	hàng 10	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:57:15.026	DEBUG	hàng 4	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:57:15.833	DEBUG	hàng 8	K***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 12:58:03.947	INFO	hàng 2		2fa.cn: đã nhập secret và Submit.
+2026-06-03 12:58:04.575	INFO	hàng 6		2fa.cn: đã nhập secret và Submit.
+2026-06-03 12:58:04.976	INFO	hàng 5		2fa.cn: đã nhập secret và Submit.
+2026-06-03 12:58:05.196	INFO	hàng 3		2fa.cn: đã nhập secret và Submit.
+2026-06-03 12:58:05.496	INFO	hàng 1		2fa.cn: đã nhập secret và Submit.
+2026-06-03 12:58:05.794	INFO	hàng 9		2fa.cn: đã nhập secret và Submit.
+2026-06-03 12:58:06.706	INFO	hàng 7		2fa.cn: đã nhập secret và Submit.
+2026-06-03 12:58:06.764	INFO	hàng 10		2fa.cn: đã nhập secret và Submit.
+2026-06-03 12:58:07.175	INFO	hàng 4		2fa.cn: đã nhập secret và Submit.
+2026-06-03 12:58:09.174	INFO	hàng 8		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:01:05.290	WARN	hàng 10	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:05.492	WARN	hàng 10	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:09.745	WARN	hàng 5	F***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:10.083	WARN	hàng 5	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:10.145	WARN	hàng 2	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:10.513	WARN	hàng 2	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:10.766	WARN	hàng 6	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:10.959	WARN	hàng 1	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:11.016	WARN	hàng 3	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:11.067	WARN	hàng 6	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:11.218	WARN	hàng 1	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:11.280	WARN	hàng 3	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:11.661	WARN	hàng 8	K***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:11.941	WARN	hàng 8	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:13.755	WARN	hàng 9	Q***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:14.029	WARN	hàng 9	Q***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:14.274	WARN	hàng 7	Z***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:14.503	WARN	hàng 7	Z***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:17.165	WARN	hàng 4	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:01:17.441	WARN	hàng 4	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:22.881	WARN	hàng 10	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:23.272	WARN	hàng 10	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:28.266	WARN	hàng 5	F***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:28.584	WARN	hàng 5	F***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:28.927	WARN	hàng 2	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:29.222	WARN	hàng 2	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:29.921	WARN	hàng 3	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:30.070	WARN	hàng 6	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:30.207	WARN	hàng 3	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:30.416	WARN	hàng 6	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:30.494	WARN	hàng 1	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:30.508	WARN	hàng 8	K***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:30.824	WARN	hàng 1	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:30.986	WARN	hàng 8	K***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:31.568	WARN	hàng 9	Q***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:31.888	WARN	hàng 9	Q***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:32.135	WARN	hàng 7	Z***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:32.389	WARN	hàng 7	Z***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:01:35.902	WARN	hàng 4	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:01:36.137	WARN	hàng 4	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:02:17.346	INFO	hàng 10	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:02:26.790	INFO	hàng 9	Q***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:02:27.217	INFO	hàng 8	K***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:02:27.429	INFO	hàng 1	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:02:27.791	INFO	hàng 6	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:02:27.863	INFO	hàng 2	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:02:28.025	INFO	hàng 7	Z***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:02:28.091	INFO	hàng 3	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:02:28.157	INFO	hàng 5	F***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:02:28.354	INFO	hàng 4	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:04:19.497	DEBUG	hàng 11	W***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:04:21.162	DEBUG	hàng 12	V***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:04:21.704	DEBUG	hàng 14	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:04:22.122	DEBUG	hàng 15	D***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:04:22.446	DEBUG	hàng 16	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:04:23.279	DEBUG	hàng 18	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:04:23.439	DEBUG	hàng 13	C***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:04:24.030	DEBUG	hàng 19	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:04:24.123	DEBUG	hàng 17	O***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:04:24.604	DEBUG	hàng 20	E***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:05:11.011	INFO	hàng 11		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:05:13.071	INFO	hàng 12		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:05:13.514	INFO	hàng 14		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:05:14.252	INFO	hàng 16		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:05:15.384	INFO	hàng 18		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:05:15.712	INFO	hàng 15		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:05:16.072	INFO	hàng 17		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:05:17.472	INFO	hàng 19		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:05:18.114	INFO	hàng 13		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:05:21.261	INFO	hàng 20		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:08:20.626	WARN	hàng 14	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:20.765	WARN	hàng 12	V***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:20.897	WARN	hàng 14	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:21.073	WARN	hàng 12	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:21.286	WARN	hàng 16	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:21.529	WARN	hàng 16	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:21.986	WARN	hàng 17	O***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:22.221	WARN	hàng 17	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:24.444	WARN	hàng 19	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:24.704	WARN	hàng 19	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:25.714	WARN	hàng 13	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:25.975	WARN	hàng 13	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:26.848	WARN	hàng 20	E***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:27.070	WARN	hàng 20	E***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:31.869	WARN	hàng 18	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:32.089	WARN	hàng 18	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:33.320	WARN	hàng 15	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:33.593	WARN	hàng 15	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:39.167	WARN	hàng 14	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:08:39.182	WARN	hàng 12	V***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:08:39.441	WARN	hàng 16	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:08:39.445	WARN	hàng 14	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:39.720	WARN	hàng 12	V***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:39.802	WARN	hàng 16	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:40.389	WARN	hàng 17	O***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:08:40.697	WARN	hàng 17	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:41.861	WARN	hàng 11	W***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:08:42.172	WARN	hàng 11	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:42.739	WARN	hàng 19	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:08:43.048	WARN	hàng 19	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:44.271	WARN	hàng 13	C***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:08:44.501	WARN	hàng 13	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:45.119	WARN	hàng 20	E***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:08:45.353	WARN	hàng 20	E***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:49.679	WARN	hàng 18	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:08:49.906	WARN	hàng 18	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:08:51.182	WARN	hàng 15	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:08:51.423	WARN	hàng 15	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:09:01.217	WARN	hàng 11	W***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:09:01.515	WARN	hàng 11	W***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:09:35.486	INFO	hàng 14	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:09:35.910	INFO	hàng 12	V***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:09:36.225	INFO	hàng 16	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:09:38.686	INFO	hàng 19	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:09:39.206	INFO	hàng 13	C***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:09:39.593	INFO	hàng 17	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:09:40.837	INFO	hàng 20	E***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:09:43.663	INFO	hàng 18	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:09:46.502	INFO	hàng 15	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:09:59.353	INFO	hàng 11	W***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:11:47.424	DEBUG	hàng 21	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:11:47.813	DEBUG	hàng 22	L***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:11:48.548	DEBUG	hàng 24	D***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:11:49.399	DEBUG	hàng 25	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:11:51.581	DEBUG	hàng 23	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 13:12:39.088	INFO	hàng 21		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:12:40.288	INFO	hàng 24		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:12:40.868	INFO	hàng 22		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:12:42.438	INFO	hàng 23		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:12:42.669	INFO	hàng 25		2fa.cn: đã nhập secret và Submit.
+2026-06-03 13:16:01.527	WARN	hàng 24	D***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:16:01.837	WARN	hàng 24	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:16:24.838	WARN	hàng 24	D***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:16:25.073	WARN	hàng 24	D***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:16:30.751	WARN	hàng 23	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:16:30.967	WARN	hàng 23	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:16:42.705	WARN	hàng 25	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:16:42.939	WARN	hàng 25	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:16:44.914	WARN	hàng 21	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:16:45.150	WARN	hàng 21	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:16:49.089	WARN	hàng 23	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:16:49.309	WARN	hàng 23	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:17:03.536	WARN	hàng 21	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:17:03.827	WARN	hàng 25	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:17:03.832	WARN	hàng 21	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:17:04.116	WARN	hàng 25	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:17:06.543	WARN	hàng 22	L***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 13:17:06.814	WARN	hàng 22	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:17:27.929	WARN	hàng 22	L***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 13:17:28.154	WARN	hàng 22	L***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 13:17:29.119	INFO	hàng 24	D***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:17:57.922	INFO	hàng 23	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:17:58.375	INFO	hàng 25	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:18:00.609	INFO	hàng 21	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:18:27.318	INFO	hàng 22	L***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 13:18:27.821	INFO	-		Kết thúc batch: OK=25 Fail=0 (Playwright đã đóng).
+2026-06-03 18:17:25.363	INFO	-		Bắt đầu batch: 25 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="119", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-03 18:19:23.368	DEBUG	hàng 2	U***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:23.919	DEBUG	hàng 3	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:23.994	DEBUG	hàng 1	N***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:24.159	DEBUG	hàng 4	O***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:24.460	DEBUG	hàng 7	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:24.972	DEBUG	hàng 6	J***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:25.443	DEBUG	hàng 8	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:25.846	DEBUG	hàng 9	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:26.657	DEBUG	hàng 10	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:28.051	DEBUG	hàng 5	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:19:31.484	INFO	hàng 1		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:19:45.883	INFO	hàng 1	N***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:19:52.181	INFO	hàng 1	N***@gmail.com	Drive upload tab 1: fileId=1ZS6F9M4XF81vt2l37N8yqcuXSnQinewL
+2026-06-03 18:19:52.181	INFO	hàng 1	N***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:06.929	INFO	hàng 1	N***@gmail.com	Drive share tab 1: link OK fileId=1ZS6F9M4XF81vt2l37N8yqcuXSnQinewL → https://drive.google.com/file/d/1ZS6F9M4XF81vt2l37N8yqcuXSnQinewL/view?usp=sharing
+2026-06-03 18:20:15.883	INFO	hàng 4		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:20:16.091	INFO	hàng 2		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:20:16.151	INFO	hàng 3		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:20:17.000	INFO	hàng 6		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:20:17.529	INFO	hàng 8		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:20:18.271	INFO	hàng 10		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:20:19.270	INFO	hàng 7		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:20:22.221	INFO	hàng 1	N***@gmail.com	Drive: hàng 1 — upload+share+link OK 1/1 tab.
+2026-06-03 18:20:24.334	INFO	hàng 5		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:20:27.502	INFO	hàng 9		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:20:31.898	INFO	hàng 2	U***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:20:32.825	INFO	hàng 8	B***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:20:33.021	INFO	hàng 10	T***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:20:36.625	INFO	hàng 2	U***@gmail.com	Drive upload tab 1: fileId=1wuWI8rPIHhVLJRKJ-b7rxGdKcCZy0IKO
+2026-06-03 18:20:36.625	INFO	hàng 2	U***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:36.676	INFO	hàng 4	O***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:20:37.510	INFO	hàng 8	B***@gmail.com	Drive upload tab 1: fileId=1k8goZ6ghQ3u7i8VIX58MuZO8462MilJL
+2026-06-03 18:20:37.510	INFO	hàng 8	B***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:38.327	INFO	hàng 6	J***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:20:38.988	INFO	hàng 7	A***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:20:39.421	INFO	hàng 5	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:20:40.001	INFO	hàng 10	T***@gmail.com	Drive upload tab 1: fileId=15BPqQzMiqhZwsnopq0nlL7eipWBadqqw
+2026-06-03 18:20:40.001	INFO	hàng 10	T***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:40.021	INFO	hàng 3	A***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:20:40.939	INFO	hàng 4	O***@gmail.com	Drive upload tab 1: fileId=12jVOkLYenyeTVVywfMszjMvNjz-vPyzR
+2026-06-03 18:20:40.939	INFO	hàng 4	O***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:43.914	INFO	hàng 5	S***@gmail.com	Drive upload tab 1: fileId=1Dev3BcImc5cJQgqPZNDRggYIRhK_L9lR
+2026-06-03 18:20:43.914	INFO	hàng 5	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:44.727	INFO	hàng 6	J***@gmail.com	Drive upload tab 1: fileId=1QKIwhkMRfkaBTy5qkLfo4L9wFDSh2p30
+2026-06-03 18:20:44.727	INFO	hàng 6	J***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:45.294	INFO	hàng 7	A***@gmail.com	Drive upload tab 1: fileId=1JPK-slxll_jzNRJggwIK_1qPYpRBoWnu
+2026-06-03 18:20:45.294	INFO	hàng 7	A***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:46.386	INFO	hàng 3	A***@gmail.com	Drive upload tab 1: fileId=1yeSOR0f_CAy5rqAoak-bVljRus0PdWZn
+2026-06-03 18:20:46.386	INFO	hàng 3	A***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:48.275	INFO	hàng 9	T***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:20:52.578	INFO	hàng 9	T***@gmail.com	Drive upload tab 1: fileId=17eCPUAVQwObrIx6yArli6jk_JEE9qzRv
+2026-06-03 18:20:52.578	INFO	hàng 9	T***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:20:52.710	INFO	hàng 8	B***@gmail.com	Drive share tab 1: link OK fileId=1k8goZ6ghQ3u7i8VIX58MuZO8462MilJL → https://drive.google.com/file/d/1k8goZ6ghQ3u7i8VIX58MuZO8462MilJL/view?usp=sharing
+2026-06-03 18:20:54.749	INFO	hàng 10	T***@gmail.com	Drive share tab 1: link OK fileId=15BPqQzMiqhZwsnopq0nlL7eipWBadqqw → https://drive.google.com/file/d/15BPqQzMiqhZwsnopq0nlL7eipWBadqqw/view?usp=sharing
+2026-06-03 18:20:56.286	INFO	hàng 2	U***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-03 18:20:56.286	INFO	hàng 2	U***@gmail.com	Drive share tab 1: link OK fileId=1wuWI8rPIHhVLJRKJ-b7rxGdKcCZy0IKO → https://drive.google.com/file/d/1wuWI8rPIHhVLJRKJ-b7rxGdKcCZy0IKO/view?usp=sharing
+2026-06-03 18:20:56.634	INFO	hàng 4	O***@gmail.com	Drive share tab 1: link OK fileId=12jVOkLYenyeTVVywfMszjMvNjz-vPyzR → https://drive.google.com/file/d/12jVOkLYenyeTVVywfMszjMvNjz-vPyzR/view?usp=sharing
+2026-06-03 18:21:01.016	INFO	hàng 3	A***@gmail.com	Drive share tab 1: link OK fileId=1yeSOR0f_CAy5rqAoak-bVljRus0PdWZn → https://drive.google.com/file/d/1yeSOR0f_CAy5rqAoak-bVljRus0PdWZn/view?usp=sharing
+2026-06-03 18:21:03.727	INFO	hàng 5	S***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-03 18:21:03.727	INFO	hàng 5	S***@gmail.com	Drive share tab 1: link OK fileId=1Dev3BcImc5cJQgqPZNDRggYIRhK_L9lR → https://drive.google.com/file/d/1Dev3BcImc5cJQgqPZNDRggYIRhK_L9lR/view?usp=sharing
+2026-06-03 18:21:04.121	INFO	hàng 6	J***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-03 18:21:04.121	INFO	hàng 6	J***@gmail.com	Drive share tab 1: link OK fileId=1QKIwhkMRfkaBTy5qkLfo4L9wFDSh2p30 → https://drive.google.com/file/d/1QKIwhkMRfkaBTy5qkLfo4L9wFDSh2p30/view?usp=sharing
+2026-06-03 18:21:04.971	INFO	hàng 7	A***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-03 18:21:04.971	INFO	hàng 7	A***@gmail.com	Drive share tab 1: link OK fileId=1JPK-slxll_jzNRJggwIK_1qPYpRBoWnu → https://drive.google.com/file/d/1JPK-slxll_jzNRJggwIK_1qPYpRBoWnu/view?usp=sharing
+2026-06-03 18:21:07.356	INFO	hàng 9	T***@gmail.com	Drive share tab 1: link OK fileId=17eCPUAVQwObrIx6yArli6jk_JEE9qzRv → https://drive.google.com/file/d/17eCPUAVQwObrIx6yArli6jk_JEE9qzRv/view?usp=sharing
+2026-06-03 18:21:10.176	INFO	hàng 8	B***@gmail.com	Drive: hàng 8 — upload+share+link OK 1/1 tab.
+2026-06-03 18:21:12.003	INFO	hàng 2	U***@gmail.com	Drive: hàng 2 — upload+share+link OK 1/1 tab.
+2026-06-03 18:21:12.319	INFO	hàng 10	T***@gmail.com	Drive: hàng 10 — upload+share+link OK 1/1 tab.
+2026-06-03 18:21:14.657	INFO	hàng 4	O***@gmail.com	Drive: hàng 4 — upload+share+link OK 1/1 tab.
+2026-06-03 18:21:16.679	INFO	hàng 3	A***@gmail.com	Drive: hàng 3 — upload+share+link OK 1/1 tab.
+2026-06-03 18:21:19.506	INFO	hàng 5	S***@gmail.com	Drive: hàng 5 — upload+share+link OK 1/1 tab.
+2026-06-03 18:21:20.754	INFO	hàng 7	A***@gmail.com	Drive: hàng 7 — upload+share+link OK 1/1 tab.
+2026-06-03 18:21:21.471	INFO	hàng 6	J***@gmail.com	Drive: hàng 6 — upload+share+link OK 1/1 tab.
+2026-06-03 18:21:24.877	INFO	hàng 9	T***@gmail.com	Drive: hàng 9 — upload+share+link OK 1/1 tab.
+2026-06-03 18:21:51.631	WARN	hàng 1	N***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:21:51.872	WARN	hàng 1	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:22:09.491	WARN	hàng 1	N***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:22:09.782	WARN	hàng 1	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:22:41.552	WARN	hàng 2	U***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:22:41.764	WARN	hàng 2	U***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:22:45.789	WARN	hàng 4	O***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:22:46.001	WARN	hàng 4	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:22:46.998	WARN	hàng 10	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:22:47.230	WARN	hàng 10	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:22:48.526	WARN	hàng 5	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:22:48.759	WARN	hàng 5	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:22:51.990	WARN	hàng 9	T***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:22:52.148	WARN	hàng 6	J***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:22:52.220	WARN	hàng 9	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:22:52.452	WARN	hàng 6	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:22:59.171	WARN	hàng 2	U***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:22:59.419	WARN	hàng 2	U***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:02.288	WARN	hàng 8	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:23:02.514	WARN	hàng 8	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:04.648	WARN	hàng 4	O***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:23:04.926	WARN	hàng 4	O***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:05.594	INFO	hàng 1	N***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:23:06.043	WARN	hàng 10	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:23:06.329	WARN	hàng 10	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:07.721	WARN	hàng 5	S***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:23:07.977	WARN	hàng 5	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:08.146	WARN	hàng 7	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:23:08.394	WARN	hàng 7	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:10.991	WARN	hàng 9	T***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:23:11.268	WARN	hàng 9	T***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:11.376	WARN	hàng 6	J***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:23:11.621	WARN	hàng 6	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:15.792	WARN	hàng 3	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:23:16.101	WARN	hàng 3	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:20.105	WARN	hàng 8	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:23:20.395	WARN	hàng 8	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:27.873	WARN	hàng 7	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:23:28.130	WARN	hàng 7	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:34.517	WARN	hàng 3	A***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:23:34.759	WARN	hàng 3	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:23:57.644	INFO	hàng 2	U***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:23:59.089	INFO	hàng 4	O***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:24:00.679	INFO	hàng 10	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:24:02.148	INFO	hàng 5	S***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:24:05.946	INFO	hàng 6	J***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:24:07.070	INFO	hàng 9	T***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:24:14.920	INFO	hàng 8	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:24:28.018	INFO	hàng 7	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:24:28.786	INFO	hàng 3	A***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:26:21.561	DEBUG	hàng 13	G***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:26:22.699	DEBUG	hàng 12	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:26:22.709	DEBUG	hàng 15	E***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:26:23.203	DEBUG	hàng 11	S***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:26:23.886	DEBUG	hàng 14	C***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:26:24.085	DEBUG	hàng 17	A***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:26:25.711	DEBUG	hàng 18	I***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:26:26.030	DEBUG	hàng 19	J***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:26:28.032	DEBUG	hàng 20	D***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:26:29.789	DEBUG	hàng 16	T***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:27:13.037	INFO	hàng 13		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:14.869	INFO	hàng 11		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:15.321	INFO	hàng 15		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:16.967	INFO	hàng 14		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:17.800	INFO	hàng 19		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:18.528	INFO	hàng 18		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:20.768	INFO	hàng 20		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:21.080	INFO	hàng 12		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:22.112	INFO	hàng 16		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:22.198	INFO	hàng 17		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:27:37.209	INFO	hàng 13	G***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:37.336	INFO	hàng 11	S***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:37.442	INFO	hàng 15	E***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:38.738	INFO	hàng 17	A***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:39.903	INFO	hàng 14	C***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:44.720	INFO	hàng 12	A***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:45.631	INFO	hàng 13	G***@gmail.com	Drive upload tab 1: fileId=1adiUFvBjAVcEmVIXYt1Fv4Iz01nBh7hZ
+2026-06-03 18:27:45.631	INFO	hàng 13	G***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:27:45.983	INFO	hàng 15	E***@gmail.com	Drive upload tab 1: fileId=1kN15jy5nIODIsGHCEu-zK7S-RR0EJQ4A
+2026-06-03 18:27:45.983	INFO	hàng 15	E***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:27:46.011	INFO	hàng 11	S***@gmail.com	Drive upload tab 1: fileId=1vUg1PObinSa25WHu-tn-lNf6l8UQLcUh
+2026-06-03 18:27:46.011	INFO	hàng 11	S***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:27:46.451	INFO	hàng 19	J***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:47.128	INFO	hàng 17	A***@gmail.com	Drive upload tab 1: fileId=15rUhscJFtSCRA402r607m3FZdv_HBgOT
+2026-06-03 18:27:47.128	INFO	hàng 17	A***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:27:48.393	INFO	hàng 14	C***@gmail.com	Drive upload tab 1: fileId=1XFHx_2p0mcsZU_YExVkxxlhgkjDIJ5K6
+2026-06-03 18:27:48.393	INFO	hàng 14	C***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:27:48.854	INFO	hàng 20	D***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:49.135	INFO	hàng 18	I***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:51.204	INFO	hàng 16	T***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:27:53.177	INFO	hàng 12	A***@gmail.com	Drive upload tab 1: fileId=1atnbBmCD4Ggy-nSj-b4FVPcQ1gofeZBm
+2026-06-03 18:27:53.177	INFO	hàng 12	A***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:27:54.892	INFO	hàng 19	J***@gmail.com	Drive upload tab 1: fileId=1aQhe3jgJTFiHpeAsuwjhAQyDrERvcy7S
+2026-06-03 18:27:54.892	INFO	hàng 19	J***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:27:57.330	INFO	hàng 20	D***@gmail.com	Drive upload tab 1: fileId=1r3e2E3wR575atolS-tILm5y_6QVQAm6I
+2026-06-03 18:27:57.330	INFO	hàng 20	D***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:27:59.667	INFO	hàng 16	T***@gmail.com	Drive upload tab 1: fileId=16DugPf_kzW1M7Vp0w0usta6OHYRjHPOl
+2026-06-03 18:27:59.667	INFO	hàng 16	T***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:27:59.770	INFO	hàng 18	I***@gmail.com	Drive upload tab 1: fileId=1EviciEx2ARhOjHHjJ2lXG7eQoVh45ycp
+2026-06-03 18:27:59.770	INFO	hàng 18	I***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:28:03.261	INFO	hàng 17	A***@gmail.com	Drive share tab 1: link OK fileId=15rUhscJFtSCRA402r607m3FZdv_HBgOT → https://drive.google.com/file/d/15rUhscJFtSCRA402r607m3FZdv_HBgOT/view?usp=sharing
+2026-06-03 18:28:04.945	INFO	hàng 14	C***@gmail.com	Drive share tab 1: link OK fileId=1XFHx_2p0mcsZU_YExVkxxlhgkjDIJ5K6 → https://drive.google.com/file/d/1XFHx_2p0mcsZU_YExVkxxlhgkjDIJ5K6/view?usp=sharing
+2026-06-03 18:28:06.379	INFO	hàng 13	G***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-03 18:28:06.379	INFO	hàng 13	G***@gmail.com	Drive share tab 1: link OK fileId=1adiUFvBjAVcEmVIXYt1Fv4Iz01nBh7hZ → https://drive.google.com/file/d/1adiUFvBjAVcEmVIXYt1Fv4Iz01nBh7hZ/view?usp=sharing
+2026-06-03 18:28:06.695	INFO	hàng 15	E***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-03 18:28:06.695	INFO	hàng 15	E***@gmail.com	Drive share tab 1: link OK fileId=1kN15jy5nIODIsGHCEu-zK7S-RR0EJQ4A → https://drive.google.com/file/d/1kN15jy5nIODIsGHCEu-zK7S-RR0EJQ4A/view?usp=sharing
+2026-06-03 18:28:06.830	INFO	hàng 11	S***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-03 18:28:06.830	INFO	hàng 11	S***@gmail.com	Drive share tab 1: link OK fileId=1vUg1PObinSa25WHu-tn-lNf6l8UQLcUh → https://drive.google.com/file/d/1vUg1PObinSa25WHu-tn-lNf6l8UQLcUh/view?usp=sharing
+2026-06-03 18:28:09.500	INFO	hàng 12	A***@gmail.com	Drive share tab 1: link OK fileId=1atnbBmCD4Ggy-nSj-b4FVPcQ1gofeZBm → https://drive.google.com/file/d/1atnbBmCD4Ggy-nSj-b4FVPcQ1gofeZBm/view?usp=sharing
+2026-06-03 18:28:10.994	INFO	hàng 19	J***@gmail.com	Drive share tab 1: link OK fileId=1aQhe3jgJTFiHpeAsuwjhAQyDrERvcy7S → https://drive.google.com/file/d/1aQhe3jgJTFiHpeAsuwjhAQyDrERvcy7S/view?usp=sharing
+2026-06-03 18:28:13.284	INFO	hàng 20	D***@gmail.com	Drive share tab 1: link OK fileId=1r3e2E3wR575atolS-tILm5y_6QVQAm6I → https://drive.google.com/file/d/1r3e2E3wR575atolS-tILm5y_6QVQAm6I/view?usp=sharing
+2026-06-03 18:28:16.394	INFO	hàng 18	I***@gmail.com	Drive share tab 1: link OK fileId=1EviciEx2ARhOjHHjJ2lXG7eQoVh45ycp → https://drive.google.com/file/d/1EviciEx2ARhOjHHjJ2lXG7eQoVh45ycp/view?usp=sharing
+2026-06-03 18:28:19.763	INFO	hàng 16	T***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-03 18:28:19.763	INFO	hàng 16	T***@gmail.com	Drive share tab 1: link OK fileId=16DugPf_kzW1M7Vp0w0usta6OHYRjHPOl → https://drive.google.com/file/d/16DugPf_kzW1M7Vp0w0usta6OHYRjHPOl/view?usp=sharing
+2026-06-03 18:28:20.016	INFO	hàng 17	A***@gmail.com	Drive: hàng 17 — upload+share+link OK 1/1 tab.
+2026-06-03 18:28:23.063	INFO	hàng 14	C***@gmail.com	Drive: hàng 14 — upload+share+link OK 1/1 tab.
+2026-06-03 18:28:25.339	INFO	hàng 15	E***@gmail.com	Drive: hàng 15 — upload+share+link OK 1/1 tab.
+2026-06-03 18:28:25.621	INFO	hàng 13	G***@gmail.com	Drive: hàng 13 — upload+share+link OK 1/1 tab.
+2026-06-03 18:28:25.796	INFO	hàng 11	S***@gmail.com	Drive: hàng 11 — upload+share+link OK 1/1 tab.
+2026-06-03 18:28:29.801	INFO	hàng 12	A***@gmail.com	Drive: hàng 12 — upload+share+link OK 1/1 tab.
+2026-06-03 18:28:29.975	INFO	hàng 19	J***@gmail.com	Drive: hàng 19 — upload+share+link OK 1/1 tab.
+2026-06-03 18:28:34.047	INFO	hàng 18	I***@gmail.com	Drive: hàng 18 — upload+share+link OK 1/1 tab.
+2026-06-03 18:28:36.996	INFO	hàng 20	D***@gmail.com	Drive: hàng 20 — upload+share+link OK 1/1 tab.
+2026-06-03 18:28:37.928	INFO	hàng 16	T***@gmail.com	Drive: hàng 16 — upload+share+link OK 1/1 tab.
+2026-06-03 18:29:54.123	WARN	hàng 17	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:29:54.355	WARN	hàng 17	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:29:58.633	WARN	hàng 14	C***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:29:58.961	WARN	hàng 14	C***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:30:00.486	WARN	hàng 11	S***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:30:00.752	WARN	hàng 11	S***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:30:02.141	WARN	hàng 13	G***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:30:02.373	WARN	hàng 13	G***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:30:02.873	WARN	hàng 15	E***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:30:03.137	WARN	hàng 15	E***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:30:03.188	WARN	hàng 12	A***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:30:03.454	WARN	hàng 12	A***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:30:06.556	WARN	hàng 19	J***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:30:06.923	WARN	hàng 19	J***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:30:08.128	WARN	hàng 13	G***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-03 18:30:09.585	WARN	hàng 18	I***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:30:09.957	WARN	hàng 18	I***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:30:10.995	WARN	hàng 18	I***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-03 18:30:10.997	DEBUG	hàng 18		Không chụp screenshot: Process exited
+2026-06-03 18:30:11.081	DEBUG	hàng 13		Không chụp screenshot: Process exited
+2026-06-03 18:30:12.045	WARN	hàng 20	D***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-03 18:30:12.046	DEBUG	hàng 20		Không chụp screenshot: Process exited
+2026-06-03 18:30:13.300	WARN	hàng 14	C***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-03 18:30:13.301	DEBUG	hàng 14		Không chụp screenshot: Process exited
+2026-06-03 18:30:15.865	WARN	hàng 11	S***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-03 18:30:15.866	DEBUG	hàng 11		Không chụp screenshot: Process exited
+2026-06-03 18:30:18.008	WARN	hàng 12	A***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-03 18:30:18.009	DEBUG	hàng 12		Không chụp screenshot: Process exited
+2026-06-03 18:30:22.112	WARN	hàng 19	J***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-03 18:30:22.113	DEBUG	hàng 19		Không chụp screenshot: Process exited
+2026-06-03 18:30:29.281	INFO	hàng 15	E***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:30:55.255	WARN	hàng 17	A***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-03 18:30:55.256	DEBUG	hàng 17		Không chụp screenshot: Process exited
+2026-06-03 18:30:55.536	WARN	hàng 16	T***@gmail.com	hamcheckpass trả về false — kiểm tra cột STATUS và Data/screenshots.
+2026-06-03 18:30:55.537	DEBUG	hàng 16		Không chụp screenshot: Process exited
+2026-06-03 18:30:59.286	ERROR	hàng 21	B***@gmail.com	ConnectOverCDP: Process exited
+2026-06-03 18:31:01.522	ERROR	hàng 22	P***@gmail.com	ConnectOverCDP: Process exited
+2026-06-03 18:31:03.599	ERROR	hàng 23	N***@gmail.com	ConnectOverCDP: Process exited
+2026-06-03 18:31:05.674	ERROR	hàng 24	H***@gmail.com	ConnectOverCDP: Process exited
+2026-06-03 18:31:07.789	ERROR	hàng 25	M***@gmail.com	ConnectOverCDP: Process exited
+2026-06-03 18:31:07.794	WARN	-		Batch 21–25: không profile nào vượt kiểm tra chrome://version (proxy khớp lưới).
+2026-06-03 18:31:07.795	INFO	-		Kết thúc batch: OK=11 Fail=9 (Playwright đã đóng).
+2026-06-03 18:45:33.575	INFO	-		Bắt đầu batch: 5 account, luồng 10, bắt buộc PROXY mỗi hàng=True, nhóm GPM log="119", Log mail=mới (không lọc/ghi dead_*.log; mail chết chỉ ghi chú GPM, không xóa profile).
+2026-06-03 18:47:30.723	DEBUG	hàng 21	B***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:47:30.985	DEBUG	hàng 24	H***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:47:31.313	DEBUG	hàng 25	M***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:47:31.823	DEBUG	hàng 22	P***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:47:39.248	INFO	hàng 22		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:47:43.020	DEBUG	hàng 23	N***@gmail.com	Preferred language hiện tại: English (United States)
+2026-06-03 18:48:00.567	INFO	hàng 22	P***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:48:23.136	INFO	hàng 25		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:48:23.490	INFO	hàng 22	P***@gmail.com	Drive upload tab 1: fileId=1DuyI6mxqgXUILOEn4U4dofBEBgF7AAtj
+2026-06-03 18:48:23.490	INFO	hàng 22	P***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:48:23.596	INFO	hàng 24		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:48:23.975	INFO	hàng 21		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:48:34.776	INFO	hàng 23		2fa.cn: đã nhập secret và Submit.
+2026-06-03 18:48:45.536	INFO	hàng 22	P***@gmail.com	Drive share tab 1: dùng link dựng từ fileId (Copy link không đọc được).
+2026-06-03 18:48:45.536	INFO	hàng 22	P***@gmail.com	Drive share tab 1: link OK fileId=1DuyI6mxqgXUILOEn4U4dofBEBgF7AAtj → https://drive.google.com/file/d/1DuyI6mxqgXUILOEn4U4dofBEBgF7AAtj/view?usp=sharing
+2026-06-03 18:48:45.563	INFO	hàng 24	H***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:48:47.923	INFO	hàng 25	M***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:48:48.207	INFO	hàng 21	B***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:48:51.048	INFO	hàng 23	N***@gmail.com	Drive upload tab 1: đã SetFiles qua file chooser.
+2026-06-03 18:48:51.839	INFO	hàng 24	H***@gmail.com	Drive upload tab 1: fileId=1E8gWqcHtEywG7TQIPUqz7iMXbKBMRk7J
+2026-06-03 18:48:51.839	INFO	hàng 24	H***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:49:01.077	INFO	hàng 22	P***@gmail.com	Drive: hàng 22 — upload+share+link OK 1/1 tab.
+2026-06-03 18:49:05.029	INFO	hàng 21	B***@gmail.com	Drive upload tab 1: fileId=1cttSwJRoXeHbyI46OCMrmSg32-KL8ajw
+2026-06-03 18:49:05.029	INFO	hàng 21	B***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:49:06.486	INFO	hàng 24	H***@gmail.com	Drive share tab 1: link OK fileId=1E8gWqcHtEywG7TQIPUqz7iMXbKBMRk7J → https://drive.google.com/file/d/1E8gWqcHtEywG7TQIPUqz7iMXbKBMRk7J/view?usp=sharing
+2026-06-03 18:49:11.564	INFO	hàng 23	N***@gmail.com	Drive upload tab 1: fileId=190On8gKpooDJEgnz9vz0vjF5GeCorp_Z
+2026-06-03 18:49:11.564	INFO	hàng 23	N***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:49:12.416	INFO	hàng 25	M***@gmail.com	Drive upload tab 1: fileId=1IXLAB8UbzjgXb8mY_nuZE1EZ2PHt6FPX
+2026-06-03 18:49:12.416	INFO	hàng 25	M***@gmail.com	Drive upload tab 1: xác nhận OK — 'Meta Verified.pdf' đã có trên Drive.
+2026-06-03 18:49:19.549	INFO	hàng 21	B***@gmail.com	Drive share tab 1: link OK fileId=1cttSwJRoXeHbyI46OCMrmSg32-KL8ajw → https://drive.google.com/file/d/1cttSwJRoXeHbyI46OCMrmSg32-KL8ajw/view?usp=sharing
+2026-06-03 18:49:21.827	INFO	hàng 24	H***@gmail.com	Drive: hàng 24 — upload+share+link OK 1/1 tab.
+2026-06-03 18:49:26.132	INFO	hàng 23	N***@gmail.com	Drive share tab 1: link OK fileId=190On8gKpooDJEgnz9vz0vjF5GeCorp_Z → https://drive.google.com/file/d/190On8gKpooDJEgnz9vz0vjF5GeCorp_Z/view?usp=sharing
+2026-06-03 18:49:28.638	INFO	hàng 25	M***@gmail.com	Drive share tab 1: link OK fileId=1IXLAB8UbzjgXb8mY_nuZE1EZ2PHt6FPX → https://drive.google.com/file/d/1IXLAB8UbzjgXb8mY_nuZE1EZ2PHt6FPX/view?usp=sharing
+2026-06-03 18:49:36.725	INFO	hàng 21	B***@gmail.com	Drive: hàng 21 — upload+share+link OK 1/1 tab.
+2026-06-03 18:49:41.868	INFO	hàng 23	N***@gmail.com	Drive: hàng 23 — upload+share+link OK 1/1 tab.
+2026-06-03 18:49:48.370	INFO	hàng 25	M***@gmail.com	Drive: hàng 25 — upload+share+link OK 1/1 tab.
+2026-06-03 18:50:25.373	WARN	hàng 22	P***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:50:25.607	WARN	hàng 22	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:50:42.993	WARN	hàng 22	P***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:50:43.203	WARN	hàng 22	P***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:50:52.447	WARN	hàng 24	H***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:50:52.648	WARN	hàng 24	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:51:07.638	WARN	hàng 21	B***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:51:07.847	WARN	hàng 21	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:51:09.709	WARN	hàng 23	N***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:51:09.927	WARN	hàng 23	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:51:10.249	WARN	hàng 24	H***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:51:10.499	WARN	hàng 24	H***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:51:18.041	WARN	hàng 25	M***@gmail.com	[Script] Lỗi deleted function sau Run lần 1 — F5 + Run lại.
+2026-06-03 18:51:18.252	WARN	hàng 25	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:51:27.376	WARN	hàng 21	B***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:51:27.500	WARN	hàng 23	N***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:51:27.607	WARN	hàng 21	B***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:51:27.722	WARN	hàng 23	N***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:51:35.549	WARN	hàng 25	M***@gmail.com	[Script] Authorization required sau Run lần 1 — chạy thêm 1 vòng F5 + Run.
+2026-06-03 18:51:35.618	INFO	hàng 22	P***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:51:35.776	WARN	hàng 25	M***@gmail.com	[Script] Reload (F5) editor sau cảnh báo Execution log — chạy lại Run.
+2026-06-03 18:52:04.198	INFO	hàng 24	H***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:52:27.472	INFO	hàng 23	N***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:52:29.637	INFO	hàng 21	B***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:52:33.203	INFO	hàng 25	M***@gmail.com	Hoàn tất chu trình (hamcheckpass OK).
+2026-06-03 18:52:33.688	INFO	-		Kết thúc batch: OK=5 Fail=0 (Playwright đã đóng).

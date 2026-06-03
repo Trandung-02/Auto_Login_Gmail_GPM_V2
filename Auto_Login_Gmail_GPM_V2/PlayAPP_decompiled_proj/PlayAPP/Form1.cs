@@ -6186,16 +6186,16 @@ public partial class Form1 : Form
 						}
 						try
 						{
-							SetText(vitri, "STATUS", "[Form] Theme: chọn 1 màu (#076ff6 → #0a74f7 → #0e72ea)...");
+							SetText(vitri, "STATUS", "[Form] Theme: chọn 1 màu (#0e72ea → #5b83b2)...");
 							await PageWaitCancellableAsync(formPage, 2000f);
 							bool colorApplied = false;
 							string appliedThemeHex = "";
 							string themeColorHex = GoogleFormsThemeColorPriority[0];
-							const string themeColorHexUpper = "076FF6";
+							string themeColorHexUpper = themeColorHex.TrimStart('#').ToUpperInvariant();
 							LocatorFilterOptions hasThemeBlue = new LocatorFilterOptions
 							{
 								Has = formPage.Locator(
-									"div.UBrD9d[data-color='#076ff6'], div.UBrD9d[data-color='#0a74f7'], div.UBrD9d[data-color='#0e72ea']")
+									"div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#5b83b2']")
 							};
 							ILocator themeDialog = formPage.Locator("div[role='dialog'][aria-label='Theme']");
 							try
@@ -6254,7 +6254,7 @@ public partial class Form1 : Form
 							{
 								bool jsPick = await formPage.EvaluateAsync<bool>(
 									@"() => {
-  const colors = ['#076ff6', '#0a74f7', '#0e72ea'];
+  const colors = ['#0e72ea', '#5b83b2'];
   const pick = (root, hex) => {
     if (!root) return null;
     return root.querySelector('div.UBrD9d[role=""listitem""][data-color=""' + hex + '""][data-label=""' + hex + '""]')
@@ -6324,7 +6324,7 @@ public partial class Form1 : Form
 							{
 								try
 								{
-									SetText(vitri, "STATUS", "[Form] Theme: không thấy preset — Add custom color #076FF6 (fallback)...");
+									SetText(vitri, "STATUS", "[Form] Theme: không thấy preset — Add custom color " + themeColorHexUpper + " (fallback)...");
 									int dialogsBefore = await formPage.Locator("div[role='dialog']").CountAsync();
 									ILocator addCustomBtn = themeDialog.Locator("div.UBrD9d[aria-label='Add custom color'], div[aria-label='Add custom color'][role='button']").First;
 									if (await addCustomBtn.CountAsync() == 0)
@@ -6508,7 +6508,7 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								throw new Exception("Không tìm thấy ô màu #076ff6 / #0a74f7 / #0e72ea (dialog Theme hoặc sidebar) và không thể thêm custom color.");
+								throw new Exception("Không tìm thấy ô màu #0e72ea / #5b83b2 (dialog Theme hoặc sidebar) và không thể thêm custom color #0e72ea.");
 							}
 							await PageWaitCancellableAsync(formPage, 1000f);
 							SetText(vitri, "STATUS", "[Form] Theme: đã Apply màu / hoàn tất tùy chỉnh");
@@ -7517,12 +7517,11 @@ public partial class Form1 : Form
 		}
 	}
 
-	/// <summary>Ưu tiên chọn một màu theme: có #076ff6 thì dùng, không thì #0a74f7, rồi #0e72ea.</summary>
-	private static readonly string[] GoogleFormsThemeColorPriority = new string[3]
+	/// <summary>Ưu tiên chọn một màu theme: #0e72ea → #5b83b2.</summary>
+	private static readonly string[] GoogleFormsThemeColorPriority = new string[2]
 	{
-		"#076ff6",
-		"#0a74f7",
-		"#0e72ea"
+		"#0e72ea",
+		"#5b83b2"
 	};
 
 	private static ILocator GoogleFormsThemeColorSwatchLocator(ILocator root, string hexLower)
