@@ -1,18 +1,75 @@
 const CONFIG = {
-  FORM_URL: "https://drive.google.com/file/d/1wwfZAIqN3wDc6DQG153mu_Rh-eouypOe/view",
+  FORM_URLS: [
+    "https://forms.gle/6ENp4QrXatWbyidT7",
+    "https://forms.gle/JrgWekDA6LjmZGWH7",
+    "https://forms.gle/CgG5RxDwc7qxSqL69",
+    "https://forms.gle/qwWu2esdqhi2RDk37",
+  ],
   SPREADSHEET_URL: "[LINK_SHEET]",
   SHEET_NAME: "Sheet1",
   SENDER_NAME: "Meta Verified",
   BATCH_LIMIT: 5,
   REST_MIN: 2,
   REST_MAX: 5,
-  MIN_SLEEP: 30000, 
-  MAX_SLEEP: 50000, 
+  MIN_SLEEP: 30000,
+  MAX_SLEEP: 50000,
   MAX_EXECUTION_TIME: 290000, 
   QUOTA_RESERVE: 20,
   MAX_RETRY: 2,
-  LOCK_TIMEOUT: 30000
+  LOCK_TIMEOUT: 30000,
+FOOTERS: [
+`פרטים חדשים יישלחו כאשר יהיה מידע נוסף זמין.
+
+במידת הצורך, ניתן להשיב להודעה זו.
+
+בברכה,
+------------------------------------
+הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
+
+`המערכת תשלח מידע נוסף במקרה של שינוי רלוונטי.
+
+לכל שאלה, ניתן להשיב לדוא"ל זה.
+
+בברכה,
+------------------------------------
+הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
+
+`מידע הקשור לחשבון יישלח בהתאם להתקדמות הפעילות.
+
+ניתן להשיב להודעה זו לפי הצורך.
+
+בברכה ובהערכה,
+------------------------------------
+הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
+
+`הודעה נוספת תישלח אם יתווספו פרטים חדשים.
+
+למענה נוסף, ניתן להשיב לדוא"ל זה.
+
+בברכה,
+------------------------------------
+הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
+
+`פרטי המצב יעודכנו כאשר יתקבל מידע נוסף.
+
+בכל צורך נוסף, ניתן להשיב כאן.
+
+תודה,
+------------------------------------
+הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
+
+`המערכת תעדכן במקרה של שינוי בפרטי החשבון.
+
+ניתן להשיב ישירות להודעה זו בעת הצורך.
+
+תודה על זמנך,
+------------------------------------
+הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`
+]
 };
+
+const SOURCE_LANG = "he";
+const TARGET_LANG = "sv";
 
 function shareSingleFormToList(e) {
   const lock = LockService.getScriptLock();
@@ -106,7 +163,22 @@ function _mainLogic(e) {
     subject = subject.replace(/\[Name\]/g, pageName);
     intro = intro.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
     linkText = linkText.replace(/\[Name\]/g, pageName);
-    const plainTextMessage = buildPlainTextEmail(email, intro, linkText);
+
+    subject = autoTranslate(subject);
+    intro = autoTranslate(intro);
+    linkText = autoTranslate(linkText);
+
+    subject = subject.replace(/\[Name\]/g, pageName);
+    intro = intro.replace(/\[Name\]/g, pageName);
+    linkText = linkText.replace(/\[Name\]/g, pageName);
+
+    const randomFormUrl = getRandomFormUrl();
+    const plainTextMessage = buildPlainTextEmail(
+      email,
+      intro,
+      linkText,
+      randomFormUrl
+    );
 
     let success = false;
     let errorMsg = "";
@@ -166,18 +238,35 @@ function _mainLogic(e) {
   }
 }
 
-function buildPlainTextEmail(email, intro, linkText) {
+function buildPlainTextEmail(email, intro, linkText, formUrl) {
+  const footer = getRandomFooter(email);
+
   return `${intro}
 
-${linkText} ${CONFIG.FORM_URL}
+${linkText} ${formUrl}
 
-يتم مراجعة الطلبات وفقًا لترتيب الإرسال ومدى توفر عملية المراجعة.
+${footer}`;
+}
 
-للحصول على المساعدة، يمكنك الرد مباشرة على هذه الرسالة.
+function getRandomFooter(email) {
+  const footers = CONFIG.FOOTERS;
 
-مع أطيب التحيات،
+  let randomFooter =
+    footers[Math.floor(Math.random() * footers.length)];
 
-تم إرسال هذه الرسالة إلى ${email} بخصوص إعدادات حسابك وتفضيلات الاتصال الخاصة بك.`;
+  randomFooter = randomFooter.replace(
+    /\{\{email\}\}/g,
+    email
+  );
+
+  randomFooter = autoTranslate(randomFooter);
+
+  return randomFooter;
+}
+
+function getRandomFormUrl() {
+  const urls = CONFIG.FORM_URLS;
+  return urls[Math.floor(Math.random() * urls.length)];
 }
 
 function getEffectiveUserEmail() {
@@ -204,4 +293,51 @@ function deleteTriggers(fn) {
       ScriptApp.deleteTrigger(t);
     }
   });
+}
+
+function autoTranslate(text) {
+
+  if (!text || String(text).trim() === "") {
+    return text;
+  }
+
+  try {
+
+    const placeholders = {
+      "__NAME_TOKEN__": "[Name]",
+      "__EMAIL_TOKEN__": "{{email}}"
+    };
+
+    let protectedText = String(text);
+
+    Object.keys(placeholders).forEach(token => {
+      protectedText = protectedText.replace(
+        new RegExp(
+          placeholders[token]
+            .replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+          "g"
+        ),
+        token
+      );
+    });
+
+    let translated = LanguageApp.translate(
+      protectedText,
+      SOURCE_LANG,
+      TARGET_LANG
+    );
+
+    Object.keys(placeholders).forEach(token => {
+      translated = translated.replace(
+        new RegExp(token, "g"),
+        placeholders[token]
+      );
+    });
+
+    return translated;
+
+  } catch (err) {
+    Logger.log("Translate error: " + err);
+    return text;
+  }
 }

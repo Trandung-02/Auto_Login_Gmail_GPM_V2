@@ -177,7 +177,7 @@ public partial class Form1
 		}
 		catch (Exception ex)
 		{
-			SetText(vitri, "STATUS", "Drive: không tạo được thư mục upload — bỏ qua");
+			SetText(vitri, "STATUS", "[Drive] không tạo được thư mục upload — bỏ qua");
 			AppendAutomationLog("WARN", vitri, email, "Drive upload: không tạo được thư mục " + GetDriveUploadParentDir() + " — " + ex.Message);
 			await OpenSingleDriveMyDriveTabAsync(context, vitri, email);
 			return;
@@ -205,19 +205,19 @@ public partial class Form1
 			{
 				AppendAutomationLog("INFO", vitri, email,
 					$"Drive upload: hàng {vitri + 1} ngoài kế hoạch {plannedTabCount} mail/tab — bỏ qua upload (chỉ mở My Drive).");
-				SetText(vitri, "STATUS", $"Drive: hàng {vitri + 1} ngoài {plannedTabCount} mail — bỏ qua upload");
+				SetText(vitri, "STATUS", $"[Drive] hàng {vitri + 1} ngoài {plannedTabCount} mail — bỏ qua upload");
 			}
 			else if (missingPdfForRow)
 			{
 				AppendAutomationLog("WARN", vitri, email,
 					$"Drive upload: thiếu PDF trong thư mục '{folderForRow}' (hàng {vitri + 1} ↔ thư mục {(vitri + 1):D2}).");
-				SetText(vitri, "STATUS", $"Drive: thiếu PDF thư mục {(vitri + 1):D2}");
+				SetText(vitri, "STATUS", $"[Drive] thiếu PDF thư mục {(vitri + 1):D2}");
 			}
 			else
 			{
 				AppendAutomationLog("WARN", vitri, email,
 					$"Drive upload: không có tab upload cho hàng {vitri + 1} (kế hoạch {plannedTabCount} tab).");
-				SetText(vitri, "STATUS", "Drive: không có tab upload cho hàng này");
+				SetText(vitri, "STATUS", "[Drive] không có tab upload cho hàng này");
 			}
 			await OpenSingleDriveMyDriveTabAsync(context, vitri, email);
 			return;
@@ -230,7 +230,7 @@ public partial class Form1
 				$"Drive upload: {missingFolders}/{DriveUploadSubFolderCount} thư mục con chưa có PDF (hàng {vitri + 1} upload {uploadSlots.Count} tab).");
 		}
 
-		SetText(vitri, "STATUS", $"Drive: hàng {vitri + 1} — mở {uploadSlots.Count} tab (kế hoạch {plannedTabCount} mail)...");
+		SetText(vitri, "STATUS", $"[Drive] hàng {vitri + 1} — mở {uploadSlots.Count} tab (kế hoạch {plannedTabCount} mail)...");
 
 		// Bước 1: mở toàn bộ tab Drive (giữ lại tab nào mở thành công).
 		List<(IPage page, int folderIndex, string pdfPath)> openedTabs = new List<(IPage, int, string)>();
@@ -253,13 +253,13 @@ public partial class Form1
 			}
 			catch (Exception ex)
 			{
-				AppendAutomationLog("WARN", vitri, email, $"Drive: không mở được tab {i + 1} — {ex.GetType().Name}: {ex.Message}");
+				AppendAutomationLog("WARN", vitri, email, $"[Drive] không mở được tab {i + 1} — {ex.GetType().Name}: {ex.Message}");
 			}
 		}
 
 		if (openedTabs.Count == 0)
 		{
-			SetText(vitri, "STATUS", "Drive: không mở được tab nào");
+			SetText(vitri, "STATUS", "[Drive] không mở được tab nào");
 			return;
 		}
 
@@ -275,14 +275,14 @@ public partial class Form1
 			(IPage page, int folderIndex, string pdfPath) tab = openedTabs[i];
 			string fileName = Path.GetFileName(tab.pdfPath);
 			int tabNo = i + 1;
-			SetText(vitri, "STATUS", $"Drive: upload tab {tabNo}/{openedTabs.Count} (thư mục {tab.folderIndex + 1:D2}) — {fileName}");
+			SetText(vitri, "STATUS", $"[Drive] upload tab {tabNo}/{openedTabs.Count} (thư mục {tab.folderIndex + 1:D2}) — {fileName}");
 			(bool uploadOk, string driveFileId) uploadResult = await TryUploadPdfToDriveTabAsync(tab.page, tab.pdfPath, vitri, tabNo, email);
 			if (!uploadResult.uploadOk)
 			{
 				continue;
 			}
 			uploadOkCount++;
-			SetText(vitri, "STATUS", $"Drive: share + copy link tab {tabNo}/{openedTabs.Count} — {fileName}");
+			SetText(vitri, "STATUS", $"[Drive] share + copy link tab {tabNo}/{openedTabs.Count} — {fileName}");
 			bool shareOk = await TryShareDriveFileAndOpenLinkAsync(context, tab.page, tab.pdfPath, uploadResult.driveFileId, vitri, tabNo, email);
 			if (shareOk)
 			{
@@ -292,23 +292,23 @@ public partial class Form1
 
 		if (shareOkCount == openedTabs.Count && shareOkCount > 0)
 		{
-			SetText(vitri, "STATUS", $"Drive: upload+share OK {shareOkCount}/{openedTabs.Count} tab (hàng {vitri + 1})");
-			AppendAutomationLog("INFO", vitri, email, $"Drive: hàng {vitri + 1} — upload+share+link OK {shareOkCount}/{openedTabs.Count} tab.");
+			SetText(vitri, "STATUS", $"[Drive] upload+share OK {shareOkCount}/{openedTabs.Count} tab (hàng {vitri + 1})");
+			AppendAutomationLog("INFO", vitri, email, $"[Drive] hàng {vitri + 1} — upload+share+link OK {shareOkCount}/{openedTabs.Count} tab.");
 		}
 		else if (uploadOkCount > 0 && shareOkCount == 0)
 		{
-			SetText(vitri, "STATUS", $"Drive: upload OK nhưng share/link thất bại 0/{uploadOkCount} — xem automation.log");
-			AppendAutomationLog("WARN", vitri, email, $"Drive: hàng {vitri + 1} — upload {uploadOkCount} tab nhưng share/link 0 tab.");
+			SetText(vitri, "STATUS", $"[Drive] upload OK nhưng share/link thất bại 0/{uploadOkCount} — xem automation.log");
+			AppendAutomationLog("WARN", vitri, email, $"[Drive] hàng {vitri + 1} — upload {uploadOkCount} tab nhưng share/link 0 tab.");
 		}
 		else if (shareOkCount == 0 && uploadOkCount == 0)
 		{
-			SetText(vitri, "STATUS", $"Drive: thất bại 0/{openedTabs.Count} tab — xem automation.log");
-			AppendAutomationLog("WARN", vitri, email, $"Drive: hàng {vitri + 1} — 0/{openedTabs.Count} tab upload được.");
+			SetText(vitri, "STATUS", $"[Drive] thất bại 0/{openedTabs.Count} tab — xem automation.log");
+			AppendAutomationLog("WARN", vitri, email, $"[Drive] hàng {vitri + 1} — 0/{openedTabs.Count} tab upload được.");
 		}
 		else
 		{
-			SetText(vitri, "STATUS", $"Drive: upload {uploadOkCount}/{openedTabs.Count}, share+link {shareOkCount}/{openedTabs.Count} (hàng {vitri + 1})");
-			AppendAutomationLog("WARN", vitri, email, $"Drive: hàng {vitri + 1} — upload {uploadOkCount}, share+link {shareOkCount} / {openedTabs.Count} tab.");
+			SetText(vitri, "STATUS", $"[Drive] upload {uploadOkCount}/{openedTabs.Count}, share+link {shareOkCount}/{openedTabs.Count} (hàng {vitri + 1})");
+			AppendAutomationLog("WARN", vitri, email, $"[Drive] hàng {vitri + 1} — upload {uploadOkCount}, share+link {shareOkCount} / {openedTabs.Count} tab.");
 		}
 	}
 
@@ -800,7 +800,7 @@ public partial class Form1
 				AppendAutomationLog("WARN", vitri, email, $"Drive share tab {tabNumber}: có link nhưng mở tab thất bại.");
 				return false;
 			}
-			SetText(vitri, "STATUS", $"Drive: share+link OK tab {tabNumber}");
+			SetText(vitri, "STATUS", $"[Drive] share+link OK tab {tabNumber}");
 			return true;
 		}
 		catch (Exception ex)

@@ -751,11 +751,12 @@ public partial class Form1
 				if (item.rowIndex < 0 || item.rowIndex >= _profileIds.Count)
 				{
 					AppendAutomationLog("ERROR", item.rowIndex, item.uid, $"Hàng account {item.rowIndex + 1} không có profile tương ứng trong nhóm (nhóm có {_profileIds.Count} profile).");
-					SetText(item.rowIndex, "STATUS", "Thiếu profile GPM");
+					SetText(item.rowIndex, "STATUS", "[GPM] Thiếu profile");
 					continue;
 				}
 				profileId = _profileIds[item.rowIndex];
 				_gpmProfileIdOpenedForRow[item.rowIndex] = profileId;
+				SetText(item.rowIndex, "STATUS", "[GPM] Đang mở profile...");
 				string startUrl = BuildGpmProfileStartUrl(profileId, bi, tileCols, tileW, tileH, tileGap);
 				string startResp = await client.GetStringAsync(startUrl);
 				JObject startRoot = null;
@@ -766,7 +767,7 @@ public partial class Form1
 				catch (Exception ex)
 				{
 					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile: response không phải JSON hợp lệ. " + ex.Message);
-					SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
+					SetText(item.rowIndex, "STATUS", "[GPM] Lỗi start profile");
 					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
 					continue;
 				}
@@ -779,7 +780,7 @@ public partial class Form1
 				catch (Exception ex)
 				{
 					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile: dữ liệu data không hợp lệ (" + ex.Message + ").");
-					SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
+					SetText(item.rowIndex, "STATUS", "[GPM] Lỗi start profile");
 					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
 					try
 					{
@@ -794,7 +795,7 @@ public partial class Form1
 				{
 					string gpmMessage = startRoot?["message"]?.ToString();
 					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "GPM start profile không trả remote_debugging_address. " + (string.IsNullOrWhiteSpace(gpmMessage) ? startResp : gpmMessage));
-					SetText(item.rowIndex, "STATUS", "Lỗi start GPM");
+					SetText(item.rowIndex, "STATUS", "[GPM] Lỗi start profile");
 					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
 					try
 					{
@@ -816,7 +817,7 @@ public partial class Form1
 				catch (Exception ex)
 				{
 					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "json/version không hợp lệ: " + ex.Message);
-					SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
+					SetText(item.rowIndex, "STATUS", "[GPM] Lỗi mở CDP");
 					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
 					try
 					{
@@ -831,7 +832,7 @@ public partial class Form1
 				if (string.IsNullOrWhiteSpace(wsEndpoint))
 				{
 					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "json/version không có webSocketDebuggerUrl.");
-					SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
+					SetText(item.rowIndex, "STATUS", "[GPM] Lỗi mở CDP");
 					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
 					try
 					{
@@ -851,7 +852,7 @@ public partial class Form1
 				catch (Exception ex)
 				{
 					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "ConnectOverCDP: " + ex.Message);
-					SetText(item.rowIndex, "STATUS", "Lỗi mở GPM/CDP");
+					SetText(item.rowIndex, "STATUS", "[GPM] Lỗi mở CDP");
 					_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
 					try
 					{
@@ -881,12 +882,13 @@ public partial class Form1
 						catch
 						{
 						}
-						SetText(item.rowIndex, "STATUS", GpmProxyMismatchStatus);
+						SetText(item.rowIndex, "STATUS", "[GPM] " + GpmProxyMismatchStatus);
 						AppendAutomationLog("WARN", item.rowIndex, item.uid, "Đã đóng profile: chrome://version không khớp PROXY lưới.");
 						continue;
 					}
 					_browsers.Add(browser);
 					okSlice.Add(item);
+					SetText(item.rowIndex, "STATUS", "[GPM] Profile + CDP + proxy OK — chờ đăng nhập");
 					Console.WriteLine("Opened profile: " + profileId);
 				}
 				catch (Exception ex)
@@ -907,14 +909,14 @@ public partial class Form1
 					{
 					}
 					AppendAutomationLog("ERROR", item.rowIndex, item.uid, "Sau CDP (chrome://version): " + ex.Message);
-					SetText(item.rowIndex, "STATUS", "Lỗi kiểm tra proxy GPM");
+					SetText(item.rowIndex, "STATUS", "[GPM] Lỗi kiểm tra proxy");
 					continue;
 				}
 			}
 			catch (Exception ex)
 			{
 				AppendAutomationLog("ERROR", item.rowIndex, item.uid, "Lỗi không mong đợi khi mở profile GPM: " + ex.Message);
-				SetText(item.rowIndex, "STATUS", "Lỗi mở profile (đã bỏ qua)");
+				SetText(item.rowIndex, "STATUS", "[GPM] Lỗi mở profile (đã bỏ qua)");
 				_gpmProfileIdOpenedForRow.TryRemove(item.rowIndex, out _);
 				try
 				{

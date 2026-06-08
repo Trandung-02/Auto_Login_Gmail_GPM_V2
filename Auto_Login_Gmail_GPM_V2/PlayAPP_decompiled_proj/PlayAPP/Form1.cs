@@ -1504,6 +1504,7 @@ public partial class Form1 : Form
 		UpdateStatus();
 		try
 		{
+			SetText(currentRowIndex, "STATUS", "[Luồng] Bắt đầu xử lý tài khoản...");
 			await RunOneCycle(browser, account.uid, account.pass, account.ma2fa, account.mail2, currentRowIndex);
 		}
 		catch (OperationCanceledException)
@@ -1585,11 +1586,12 @@ public partial class Form1 : Form
 					}
 				});
 				await page2.BringToFrontAsync();
+				SetText(rowIndex, "STATUS", "[Login] Mở accounts.google.com (hl=en)...");
 				await page2.GotoAsync("https://accounts.google.com/?hl=en", PwGotoGoogleDomLoaded());
 				string content = await page2.ContentAsync();
 				if (content.Contains("ERR_PROXY_CONNECTION_FAILED") || content.Contains("ERR_NAME_NOT_RESOLVED") || content.Contains("ERR_INTERNET_DISCONNECTED") || content.Contains("ERR_CONNECTION_TIMED_OUT") || content.Contains("ERR_CONNECTION_REFUSED") || content.Contains("ERR_NETWORK_CHANGED") || content.Contains("ERR_SSL_PROTOCOL_ERROR") || content.Contains("ERR_ADDRESS_UNREACHABLE") || content.Contains("ERR_TUNNEL_CONNECTION_FAILED") || content.Contains("ERR_CONNECTION_RESET") || content.Contains("ERR_BAD_SSL_CLIENT_AUTH_CERT") || content.Contains("ERR_QUIC_PROTOCOL_ERROR") || content.Contains("ERR_EMPTY_RESPONSE") || content.Contains("ERR_SSL_VERSION_OR_CIPHER_MISMATCH"))
 				{
-					SetText(rowIndex, "STATUS", "PROXY RỚT MẠNG");
+					SetText(rowIndex, "STATUS", "[Login] PROXY RỚT MẠNG");
 					AppendAutomationLog("WARN", rowIndex, emailCur, "Trang accounts.google báo lỗi mạng/proxy (Chrome error page).");
 					Interlocked.Increment(ref _batchFail);
 					UpdateStatus();
@@ -1597,7 +1599,7 @@ public partial class Form1 : Form
 				}
 				if (await hamcheckpass(rowIndex, context, page2, emailCur, passwordCur, cookieCur, filenameCur))
 				{
-					SetText(rowIndex, "STATUS", "Xong");
+					SetText(rowIndex, "STATUS", "[Xong] DONE — toàn bộ luồng OK");
 					AppendLoginSuccessLine(emailCur, GetGpmGroupIdForLoginLog(), proxyInfo?.RawLineForGpm ?? "");
 					AppendAutomationLog("INFO", rowIndex, emailCur, "Hoàn tất chu trình (hamcheckpass OK).");
 					Interlocked.Increment(ref _batchOk);
@@ -4690,6 +4692,28 @@ public partial class Form1 : Form
 		SetText(vitri, "STATUS", "Ngôn ngữ: đã đặt English (United States).");
 	}
 
+	/// <summary>Đóng tab đăng nhập / myaccount dùng cho đổi avatar — Form/Sheet mở tab mới qua context.</summary>
+	private async Task TryCloseLoginTabAfterAvatarAsync(IPage page, int vitri, string emailForLog)
+	{
+		if (page == null)
+		{
+			return;
+		}
+		try
+		{
+			if (!page.IsClosed)
+			{
+				await page.CloseAsync();
+				SetText(vitri, "STATUS", "[Avatar] Đã đóng tab đăng nhập / Personal Info");
+				AppendAutomationLog("INFO", vitri, emailForLog, "[Avatar] Đã đóng tab sau khi lưu avatar.");
+			}
+		}
+		catch (Exception ex)
+		{
+			AppendAutomationLog("WARN", vitri, emailForLog, "[Avatar] Không đóng được tab: " + ex.Message);
+		}
+	}
+
 	private static ILocator GooglePrimaryActionButton(IPage page)
 	{
 		return page.Locator("#knowledgePreregisteredEmailNext, #next, main div[jsname='Njthtb'] button[jsname='LgbsSe'], main [data-primary-action-label] div[jsname='Njthtb'] button[jsname='LgbsSe'], main [data-primary-action-label] button[jsname='LgbsSe']");
@@ -5330,12 +5354,12 @@ public partial class Form1 : Form
 				string urlpage = page.Url;
 				if (urlpage.Contains("myaccount"))
 				{
-					SetText(vitri, "STATUS", "Đã Login");
+					SetText(vitri, "STATUS", "[Login] Đã đăng nhập sẵn — bỏ qua STEP 1–3");
 				}
 				else
 				{
 					await DelayBatchStaggerForRowAsync(vitri);
-					SetText(vitri, "STATUS", "STEP 1: Nhập email");
+					SetText(vitri, "STATUS", "[Login] STEP 1: Nhập email");
 					await RunStepWithReloadRetryAsync(page, vitri, "STEP 1 (email)", async delegate
 					{
 						await page.WaitForSelectorAsync("input[type='email']", new PageWaitForSelectorOptions
@@ -5872,6 +5896,7 @@ public partial class Form1 : Form
 				AFTER_VERIFY_STEP_3:
 				try
 				{
+					SetText(vitri, "STATUS", "[Ngôn ngữ] Đặt Preferred language = English (United States)...");
 					await EnsurePreferredLanguageEnglishUnitedStatesAsync(page, vitri, email);
 				}
 				catch (Exception exLang)
@@ -5891,7 +5916,7 @@ public partial class Form1 : Form
 				SetText(vitri, "STATUS", "Lỗi Login " + ex2.Message);
 				return false;
 			}
-			SetText(vitri, "STATUS", "Đăng nhập xong — mở tab Gmail Inbox...");
+			SetText(vitri, "STATUS", "[Hậu đăng nhập] Đăng nhập xong — mở tab Gmail Inbox...");
 			try
 			{
 				IPage inbox = await context.NewPageAsync();
@@ -5920,10 +5945,14 @@ public partial class Form1 : Form
 			{
 				await TryOpenAndFill2faCnAsync(context, vitri, ma2fa);
 			}
+			else
+			{
+				SetText(vitri, "STATUS", "[2fa.cn] Bỏ qua (không bật Mở 2fa.cn)");
+			}
 			if (cb_mo_drive != null && cb_mo_drive.Checked)
 			{
 				bool uploadPdf = cb_drive_upload_pdf != null && cb_drive_upload_pdf.Checked;
-				SetText(vitri, "STATUS", uploadPdf ? "Mở tab Google Drive + upload PDF..." : "Mở tab Google Drive (My Drive)...");
+				SetText(vitri, "STATUS", uploadPdf ? "[Drive] Mở tab + upload PDF..." : "[Drive] Mở tab My Drive...");
 				try
 				{
 					await RunDriveOpenAndUploadAsync(context, vitri, email, uploadPdf);
@@ -5931,8 +5960,13 @@ public partial class Form1 : Form
 				catch (Exception exDrive)
 				{
 					// ignore: mở tab/upload Drive chỉ là tiện ích, không ảnh hưởng luồng đăng nhập chính
+					SetText(vitri, "STATUS", "[Drive] Lỗi (luồng vẫn tiếp tục): " + exDrive.Message);
 					AppendAutomationLog("WARN", vitri, email, "Drive: lỗi tổng — " + exDrive.GetType().Name + ": " + exDrive.Message);
 				}
+			}
+			else
+			{
+				SetText(vitri, "STATUS", "[Drive] Bỏ qua (không bật Mở Drive)");
 			}
 			if (cb_changeinfo.Checked)
 			{
@@ -5995,22 +6029,31 @@ public partial class Form1 : Form
 						});
 						await saveBtn.ClickAsync();
 						await DelayBatchAsync(4000);
+						SetText(vitri, "STATUS", "[Avatar] Đã lưu ảnh đại diện ✓");
 					});
+					await TryCloseLoginTabAfterAvatarAsync(page, vitri, email);
 				}
 				catch (Exception ex)
 				{
 					Exception ex3 = ex;
-					SetText(vitri, "STATUS", "Lỗi đổi Avatar " + ex3.Message);
+					SetText(vitri, "STATUS", "[Avatar] Lỗi đổi avatar: " + ex3.Message);
 				}
+			}
+			else
+			{
+				SetText(vitri, "STATUS", "[Avatar] Bỏ qua (không bật đổi avatar)");
 			}
 			bool wantTaoForm = cb_tao_form.Checked;
 			bool wantTaoSheetScript = cb_tao_sheet_script.Checked;
 			if (!wantTaoForm && !wantTaoSheetScript)
 			{
-				SetText(vitri, "STATUS", "[Link] Không bật ‘Tạo Form’ hoặc ‘Tạo Sheet + Script’ — bỏ qua pipeline.");
+				SetText(vitri, "STATUS", "[Pipeline] Bỏ qua Form/Sheet/Script (không bật checkbox).");
 			}
 			else
 			{
+				SetText(vitri, "STATUS", wantTaoForm && wantTaoSheetScript
+					? "[Pipeline] Bắt đầu Form + Sheet + Script..."
+					: (wantTaoForm ? "[Pipeline] Bắt đầu chỉ Form..." : "[Pipeline] Bắt đầu Sheet + Script..."));
 				if (_noidung.Count == 0)
 				{
 					MessageBox.Show("Không có nội dung (Data: tieude.txt, noidung.txt, codesc.txt…).");
@@ -6186,7 +6229,7 @@ public partial class Form1 : Form
 						}
 						try
 						{
-							SetText(vitri, "STATUS", "[Form] Theme: chọn 1 màu (#0e72ea → #5b83b2)...");
+							SetText(vitri, "STATUS", "[Form] Theme: chọn 1 màu (#0e72ea → #5b83b2 → #0081fb)...");
 							await PageWaitCancellableAsync(formPage, 2000f);
 							bool colorApplied = false;
 							string appliedThemeHex = "";
@@ -6195,7 +6238,7 @@ public partial class Form1 : Form
 							LocatorFilterOptions hasThemeBlue = new LocatorFilterOptions
 							{
 								Has = formPage.Locator(
-									"div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#5b83b2']")
+									"div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#5b83b2'], div.UBrD9d[data-color='#0081fb']")
 							};
 							ILocator themeDialog = formPage.Locator("div[role='dialog'][aria-label='Theme']");
 							try
@@ -6254,7 +6297,7 @@ public partial class Form1 : Form
 							{
 								bool jsPick = await formPage.EvaluateAsync<bool>(
 									@"() => {
-  const colors = ['#0e72ea', '#5b83b2'];
+  const colors = ['#0e72ea', '#5b83b2', '#0081fb'];
   const pick = (root, hex) => {
     if (!root) return null;
     return root.querySelector('div.UBrD9d[role=""listitem""][data-color=""' + hex + '""][data-label=""' + hex + '""]')
@@ -6316,7 +6359,11 @@ public partial class Form1 : Form
 									}
 								}
 							}
-							if (colorApplied && !string.IsNullOrEmpty(appliedThemeHex) && appliedThemeHex != "(JS)")
+							if (colorApplied && appliedThemeHex == "(JS)")
+							{
+								SetText(vitri, "STATUS", "[Form] Theme: đã chọn màu preset (#0e72ea / #5b83b2 / #0081fb) bằng JS");
+							}
+							else if (colorApplied && !string.IsNullOrEmpty(appliedThemeHex))
 							{
 								SetText(vitri, "STATUS", "[Form] Theme: đã chọn màu " + appliedThemeHex);
 							}
@@ -6508,7 +6555,7 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								throw new Exception("Không tìm thấy ô màu #0e72ea / #5b83b2 (dialog Theme hoặc sidebar) và không thể thêm custom color #0e72ea.");
+								throw new Exception("Không tìm thấy ô màu #0e72ea / #5b83b2 / #0081fb (dialog Theme hoặc sidebar) và không thể thêm custom color #0e72ea.");
 							}
 							await PageWaitCancellableAsync(formPage, 1000f);
 							SetText(vitri, "STATUS", "[Form] Theme: đã Apply màu / hoàn tất tùy chỉnh");
@@ -7193,20 +7240,25 @@ public partial class Form1 : Form
 					SetText(vitri, "STATUS", "ERROR [Sheet/Script] Chưa hoàn tất do vẫn còn lỗi/warning ở bước Script/OAuth.");
 					return false;
 				}
-				if (wantTaoForm && wantTaoSheetScript)
-				{
-					SetText(vitri, "STATUS", "[Form+Sheet+Script] Hoàn tất pipeline — sẵn sàng DONE");
-				}
-				else if (wantTaoForm)
-				{
-					SetText(vitri, "STATUS", "[Form] Hoàn tất — đã bỏ qua Sheet/Script (chỉ tạo Form).");
-				}
-				else if (wantTaoSheetScript)
-				{
-					SetText(vitri, "STATUS", "[Sheet+Script] Hoàn tất — không tạo Form ([LINK_FORM] để trống nếu chưa có link).");
-				}
 			}
-			SetText(vitri, "STATUS", "[Xong] DONE");
+			string donePhase;
+			if (wantTaoForm && wantTaoSheetScript)
+			{
+				donePhase = "Form + Sheet + Script";
+			}
+			else if (wantTaoForm)
+			{
+				donePhase = "Form (không Sheet/Script)";
+			}
+			else if (wantTaoSheetScript)
+			{
+				donePhase = "Sheet + Script (không Form)";
+			}
+			else
+			{
+				donePhase = "đăng nhập + Gmail/Drive/Avatar (không Form/Sheet)";
+			}
+			SetText(vitri, "STATUS", "[Xong] DONE — " + donePhase);
 			return true;
 		}
 		catch (Exception ex)
@@ -7517,11 +7569,12 @@ public partial class Form1 : Form
 		}
 	}
 
-	/// <summary>Ưu tiên chọn một màu theme: #0e72ea → #5b83b2.</summary>
-	private static readonly string[] GoogleFormsThemeColorPriority = new string[2]
+	/// <summary>Ưu tiên chọn một màu theme: #0e72ea → #5b83b2 → #0081fb.</summary>
+	private static readonly string[] GoogleFormsThemeColorPriority = new string[3]
 	{
 		"#0e72ea",
-		"#5b83b2"
+		"#5b83b2",
+		"#0081fb"
 	};
 
 	private static ILocator GoogleFormsThemeColorSwatchLocator(ILocator root, string hexLower)

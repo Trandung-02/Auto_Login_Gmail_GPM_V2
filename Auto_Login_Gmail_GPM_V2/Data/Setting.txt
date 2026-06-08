@@ -1,12 +1,12 @@
 changeinfo=True
 drive_upload_pdf=True
 form_h=660
-form_link_short=False
+form_link_short=True
 form_maximized=False
 form_w=1329
-form_x=342
-form_y=226
-gpm_proxy_group_id=119
+form_x=303
+form_y=208
+gpm_proxy_group_id=128
 log_mail_moi=True
 luong=10
 mo_2fa_cn=True
