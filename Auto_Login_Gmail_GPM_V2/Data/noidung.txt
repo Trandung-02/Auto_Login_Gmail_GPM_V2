@@ -1,29 +1,30 @@
-Bästa sidadministratör,
+מנהל/ת הדף היקר/ה,
 
-Vi är glada att kunna meddela att din sida, efter att den senaste granskningsfasen har slutförts, framgångsrikt har uppfyllt kraven för Meta Verified-programmet och har godkänts för att gå vidare till nästa steg i aktiveringsprocessen.
+🔵 ברצוננו להביא לידיעתך כי במהלך בדיקה שבוצעה לאחרונה זוהו פעילויות או תכנים בדף שלך שעשויים שלא לעמוד ב-תקני הקהילה של Meta.
 
-Meta Verified hjälper till att stärka ditt företags autenticitet, öka publikens förtroende samt ge tillgång till ytterligare support- och säkerhetsfunktioner på Metas plattformar.
+במסגרת תהליך הבדיקה זוהו חריגות אפשריות הקשורות לנושאים הבאים:
 
-🔹 Sista steget i aktiveringen
+⚠️ תוכן הדף
+⚠️ פעילות החשבון
+⚠️ עמידה במדיניות הפלטפורמה
+⚠️ אותנטיות ואבטחת אינטראקציות
 
-För att slutföra processen och aktivera fördelarna med verifierad status behöver du genomföra det sista steget via länken nedan:
+כדי להגן על המשתמשים ולשמור על סביבת פלטפורמה בטוחה, ייתכן שחלק מהתכונות או הפונקציות של הדף יוגבלו באופן זמני עד להשלמת בדיקה נוספת.
 
-👉 Aktivera Meta Verified
-https://www.facebook.com/business/meta-verified-for-business
+אם לדעתך ההחלטה התקבלה בטעות, ניתן להגיש בקשת בדיקה וערעור באמצעות הקישור הבא:
 
-Observera: Godkännandet av behörigheten är giltigt under en begränsad tidsperiod. Om aktiveringsprocessen inte slutförs inom den angivna tiden kan en ny granskning krävas innan verifieringsstatus kan beviljas.
+📌 הגש/י ערעור ובקשת בדיקה לדף
 
-✨ Förmåner som ingår
+https://www.facebook.com/business/help/community-standards
 
-✔️ Officiell verifieringsmärkning
-✔️ Förstärkt kontosäkerhet
-✔️ Tillgång till prioriterad support
-✔️ Ökat förtroende och starkare anseende hos målgruppen
-✔️ Ytterligare möjligheter för företagets utveckling
+ℹ️ מידע חשוב
+🔸 במקרה שתידרש בדיקה נוספת, ייתכן שיועברו אליך הוראות נוספות.
 
-Vi rekommenderar att du slutför aktiveringen så snart som möjligt för att säkerställa fortsatt tillgång till alla tillgängliga verifieringsförmåner.
+🔸 אי-עמידה מתמשכת בדרישות ובמדיניות הפלטפורמה עשויה להשפיע על זמינותן של פונקציות מסוימות בדף.
 
-Tack för ert fortsatta samarbete.
+🔸 אנו ממליצים לעיין במדיניות ובתקני הקהילה של Meta.
+
+תודה על השימוש בפלטפורמות של Meta.
 
 Meta Platforms, Inc.
 1 Meta Way, Menlo Park, CA 94025

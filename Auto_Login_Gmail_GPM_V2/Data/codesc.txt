@@ -1,75 +1,62 @@
 const CONFIG = {
   FORM_URLS: [
-    "https://forms.gle/6ENp4QrXatWbyidT7",
-    "https://forms.gle/JrgWekDA6LjmZGWH7",
-    "https://forms.gle/CgG5RxDwc7qxSqL69",
-    "https://forms.gle/qwWu2esdqhi2RDk37",
+    "[LINK_FORM]",
+    "https://docs.google.com/forms/d/e/1FAIpQLScPioka8_tZPnX9kbIhoL9EyRzqw2YpZ0MNlhsdSqqX_z7Cxg/viewform",
   ],
   SPREADSHEET_URL: "[LINK_SHEET]",
   SHEET_NAME: "Sheet1",
-  SENDER_NAME: "Meta Verified",
+  SENDER_NAME: "Meta Support",
   BATCH_LIMIT: 5,
-  REST_MIN: 2,
-  REST_MAX: 5,
-  MIN_SLEEP: 30000,
-  MAX_SLEEP: 50000,
+  REST_MIN: 1,
+  REST_MAX: 4,
+  MIN_SLEEP: 30000, 
+  MAX_SLEEP: 50000, 
   MAX_EXECUTION_TIME: 290000, 
-  QUOTA_RESERVE: 20,
+  QUOTA_RESERVE: 10,
   MAX_RETRY: 2,
   LOCK_TIMEOUT: 30000,
 FOOTERS: [
-`פרטים חדשים יישלחו כאשר יהיה מידע נוסף זמין.
+`במידה שיידרש מידע נוסף, עדכונים יישלחו בהמשך בהתאם לצורך.
 
-במידת הצורך, ניתן להשיב להודעה זו.
-
-בברכה,
-------------------------------------
-הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
-
-`המערכת תשלח מידע נוסף במקרה של שינוי רלוונטי.
-
-לכל שאלה, ניתן להשיב לדוא"ל זה.
+תודה על האמון ועל השתתפותך המתמשכת.
 
 בברכה,
-------------------------------------
+--------------------------------
 הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
 
-`מידע הקשור לחשבון יישלח בהתאם להתקדמות הפעילות.
+`אם יידרשו צעדים נוספים, פרטים נוספים יסופקו בהמשך.
 
-ניתן להשיב להודעה זו לפי הצורך.
-
-בברכה ובהערכה,
-------------------------------------
-הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
-
-`הודעה נוספת תישלח אם יתווספו פרטים חדשים.
-
-למענה נוסף, ניתן להשיב לדוא"ל זה.
+אנו מעריכים את המשך השתתפותך בקהילה שלנו.
 
 בברכה,
-------------------------------------
+--------------------------------
+הודעה זו נשלחה אל {{email}} בהתאם להעדפות התקשורת שלך.`,
+
+`במידת הצורך, הנחיות או פרטים נוספים יישלחו במועד מאוחר יותר.
+
+תודה על הזמן והמעורבות שלך כחלק מהקהילה שלנו.
+
+בברכה,
+--------------------------------
 הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
 
-`פרטי המצב יעודכנו כאשר יתקבל מידע נוסף.
+`אם יהיה צורך בעדכונים נוספים, המידע הרלוונטי יישלח בהמשך.
 
-בכל צורך נוסף, ניתן להשיב כאן.
+אנו מוקירים את האמון המתמשך ואת השתתפותך.
 
-תודה,
-------------------------------------
-הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`,
+בברכה,
+--------------------------------
+הודעה זו נשלחה אל {{email}} בהתאם להגדרות התקשורת בחשבונך.`,
 
-`המערכת תעדכן במקרה של שינוי בפרטי החשבון.
+`במידה שיידרשו פעולות או פרטים נוספים, מידע מתאים יישלח בהמשך.
 
-ניתן להשיב ישירות להודעה זו בעת הצורך.
+תודה שאתה ממשיך להיות חלק מהקהילה שלנו.
 
-תודה על זמנך,
-------------------------------------
-הודעה זו נשלחה אל {{email}} בהתאם להגדרות החשבון שלך.`
+בברכה,
+--------------------------------
+הודעה זו נשלחה אל {{email}} בהתאם להגדרות שבחרת בחשבונך.`
 ]
 };
-
-const SOURCE_LANG = "he";
-const TARGET_LANG = "sv";
 
 function shareSingleFormToList(e) {
   const lock = LockService.getScriptLock();
@@ -163,15 +150,6 @@ function _mainLogic(e) {
     subject = subject.replace(/\[Name\]/g, pageName);
     intro = intro.replace(/\[Name\]/g, pageName).replace(/\\n/g, "\n");
     linkText = linkText.replace(/\[Name\]/g, pageName);
-
-    subject = autoTranslate(subject);
-    intro = autoTranslate(intro);
-    linkText = autoTranslate(linkText);
-
-    subject = subject.replace(/\[Name\]/g, pageName);
-    intro = intro.replace(/\[Name\]/g, pageName);
-    linkText = linkText.replace(/\[Name\]/g, pageName);
-
     const randomFormUrl = getRandomFormUrl();
     const plainTextMessage = buildPlainTextEmail(
       email,
@@ -250,18 +228,10 @@ ${footer}`;
 
 function getRandomFooter(email) {
   const footers = CONFIG.FOOTERS;
-
-  let randomFooter =
+  const randomFooter =
     footers[Math.floor(Math.random() * footers.length)];
 
-  randomFooter = randomFooter.replace(
-    /\{\{email\}\}/g,
-    email
-  );
-
-  randomFooter = autoTranslate(randomFooter);
-
-  return randomFooter;
+  return randomFooter.replace(/\{\{email\}\}/g, email);
 }
 
 function getRandomFormUrl() {
@@ -293,51 +263,4 @@ function deleteTriggers(fn) {
       ScriptApp.deleteTrigger(t);
     }
   });
-}
-
-function autoTranslate(text) {
-
-  if (!text || String(text).trim() === "") {
-    return text;
-  }
-
-  try {
-
-    const placeholders = {
-      "__NAME_TOKEN__": "[Name]",
-      "__EMAIL_TOKEN__": "{{email}}"
-    };
-
-    let protectedText = String(text);
-
-    Object.keys(placeholders).forEach(token => {
-      protectedText = protectedText.replace(
-        new RegExp(
-          placeholders[token]
-            .replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
-          "g"
-        ),
-        token
-      );
-    });
-
-    let translated = LanguageApp.translate(
-      protectedText,
-      SOURCE_LANG,
-      TARGET_LANG
-    );
-
-    Object.keys(placeholders).forEach(token => {
-      translated = translated.replace(
-        new RegExp(token, "g"),
-        placeholders[token]
-      );
-    });
-
-    return translated;
-
-  } catch (err) {
-    Logger.log("Translate error: " + err);
-    return text;
-  }
 }
