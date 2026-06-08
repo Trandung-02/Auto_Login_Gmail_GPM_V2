@@ -6229,7 +6229,7 @@ public partial class Form1 : Form
 						}
 						try
 						{
-							SetText(vitri, "STATUS", "[Form] Theme: chọn 1 màu (#0e72ea → #5b83b2 → #0081fb)...");
+							SetText(vitri, "STATUS", "[Form] Theme: chọn 1 màu (#0e72ea → #5b83b2 → #0081fb → #0075f0)...");
 							await PageWaitCancellableAsync(formPage, 2000f);
 							bool colorApplied = false;
 							string appliedThemeHex = "";
@@ -6238,7 +6238,7 @@ public partial class Form1 : Form
 							LocatorFilterOptions hasThemeBlue = new LocatorFilterOptions
 							{
 								Has = formPage.Locator(
-									"div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#5b83b2'], div.UBrD9d[data-color='#0081fb']")
+									"div.UBrD9d[data-color='#0e72ea'], div.UBrD9d[data-color='#5b83b2'], div.UBrD9d[data-color='#0081fb'], div.UBrD9d[data-color='#0075f0']")
 							};
 							ILocator themeDialog = formPage.Locator("div[role='dialog'][aria-label='Theme']");
 							try
@@ -6297,7 +6297,7 @@ public partial class Form1 : Form
 							{
 								bool jsPick = await formPage.EvaluateAsync<bool>(
 									@"() => {
-  const colors = ['#0e72ea', '#5b83b2', '#0081fb'];
+  const colors = ['#0e72ea', '#5b83b2', '#0081fb', '#0075f0'];
   const pick = (root, hex) => {
     if (!root) return null;
     return root.querySelector('div.UBrD9d[role=""listitem""][data-color=""' + hex + '""][data-label=""' + hex + '""]')
@@ -6361,7 +6361,7 @@ public partial class Form1 : Form
 							}
 							if (colorApplied && appliedThemeHex == "(JS)")
 							{
-								SetText(vitri, "STATUS", "[Form] Theme: đã chọn màu preset (#0e72ea / #5b83b2 / #0081fb) bằng JS");
+								SetText(vitri, "STATUS", "[Form] Theme: đã chọn màu preset (#0e72ea / #5b83b2 / #0081fb / #0075f0) bằng JS");
 							}
 							else if (colorApplied && !string.IsNullOrEmpty(appliedThemeHex))
 							{
@@ -6555,7 +6555,7 @@ public partial class Form1 : Form
 							}
 							if (!colorApplied)
 							{
-								throw new Exception("Không tìm thấy ô màu #0e72ea / #5b83b2 / #0081fb (dialog Theme hoặc sidebar) và không thể thêm custom color #0e72ea.");
+								throw new Exception("Không tìm thấy ô màu #0e72ea / #5b83b2 / #0081fb / #0075f0 (dialog Theme hoặc sidebar) và không thể thêm custom color #0e72ea.");
 							}
 							await PageWaitCancellableAsync(formPage, 1000f);
 							SetText(vitri, "STATUS", "[Form] Theme: đã Apply màu / hoàn tất tùy chỉnh");
@@ -7569,12 +7569,13 @@ public partial class Form1 : Form
 		}
 	}
 
-	/// <summary>Ưu tiên chọn một màu theme: #0e72ea → #5b83b2 → #0081fb.</summary>
-	private static readonly string[] GoogleFormsThemeColorPriority = new string[3]
+	/// <summary>Ưu tiên chọn một màu theme: #0e72ea → #5b83b2 → #0081fb → #0075f0.</summary>
+	private static readonly string[] GoogleFormsThemeColorPriority = new string[4]
 	{
 		"#0e72ea",
 		"#5b83b2",
-		"#0081fb"
+		"#0081fb",
+		"#0075f0"
 	};
 
 	private static ILocator GoogleFormsThemeColorSwatchLocator(ILocator root, string hexLower)
